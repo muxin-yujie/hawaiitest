@@ -1,0 +1,29 @@
+{
+  "name": "阳光夏威夷 - Language Tour",
+  "short_name": "夏威夷",
+  "description": "沉浸式英语学习游戏，在夏威夷旅行中提升口语能力",
+  "start_url": "/mobile.html",
+  "display": "standalone",
+  "background_color": "#FFB6C1",
+  "theme_color": "#FF6B9D",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "pictures/檀香山机场.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "pictures/檀香山机场.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "games", "travel"],
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false
+}

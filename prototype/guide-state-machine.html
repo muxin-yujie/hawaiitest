@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导游对话状态机原型</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        /* 状态显示面板 */
+        .state-panel {
+            background: #f8f9fa;
+            border-left: 4px solid #FF6B9D;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .state-panel h3 {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .state-name {
+            display: inline-block;
+            background: #FF6B9D;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .state-instruction {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+
+        /* 对话历史 */
+        .chat-history {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #fafafa;
+            border-radius: 8px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: #FF6B9D;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.guide {
+            background: #e9ecef;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message .role {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        /* 输入区域 */
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .input-area input:focus {
+            border-color: #FF6B9D;
+        }
+
+        .input-area button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .input-area button:hover {
+            transform: translateY(-2px);
+        }
+
+        .input-area button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 状态转换日志 */
+        .transition-log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #856404;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .transition-log h4 {
+            margin-bottom: 8px;
+            color: #664d03;
+        }
+
+        .log-entry {
+            padding: 4px 0;
+            border-bottom: 1px solid #e6d6a3;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌺 夏威夷导游对话系统</h1>
+            <p>基于状态机的智能对话原型</p>
+        </div>
+
+        <div class="content">
+            <!-- 当前状态显示 -->
+            <div class="state-panel">
+                <h3>当前状态</h3>
+                <span class="state-name" id="currentState">greeting</span>
+                <div class="state-instruction" id="stateInstruction">
+                    AI 指令：请问候游客并询问是否需要帮助
+                </div>
+            </div>
+
+            <!-- 对话历史 -->
+            <div class="chat-history" id="chatHistory">
+                <div class="message guide">
+                    <div class="role">导游 AI</div>
+                    <div class="content">Aloha！欢迎来到夏威夷！我是你的导游。第一次来夏威夷吗？有什么我可以帮你的吗？</div>
+                </div>
+            </div>
+
+            <!-- 输入区域 -->
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="输入你的回复..." onkeypress="if(event.keyCode===13) sendMessage()">
+                <button onclick="sendMessage()" id="sendBtn">发送</button>
+            </div>
+
+            <!-- 状态转换日志 -->
+            <div class="transition-log" id="transitionLog">
+                <h4>📋 状态转换日志</h4>
+                <div class="log-entry">初始状态：greeting</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 对话状态机核心 ==========
+        class GuideStateMachine {
+            constructor() {
+                this.currentState = 'greeting';
+                this.conversationHistory = [];
+                this.states = this.defineStates();
+            }
+
+            // 定义所有状态和转换规则
+            defineStates() {
+                return {
+                    greeting: {
+                        instruction: "AI，请问候游客并询问是否需要帮助",
+                        transitions: [
+                            { 
+                                keywords: ['yes', 'first time', '第一次', 'never been'], 
+                                next: 'first_time_welcome',
+                                message: '检测到游客表示是第一次来'
+                            },
+                            { 
+                                keywords: ['no', 'been here', '再来', '第二次', 'third'], 
+                                next: 'returning_visitor',
+                                message: '检测到游客不是第一次来'
+                            },
+                            { 
+                                keywords: ['hotel', '酒店', '住宿', 'stay'], 
+                                next: 'hotel_info',
+                                message: '检测到游客询问酒店'
+                            },
+                            { 
+                                keywords: ['food', '吃', 'restaurant', '餐厅'], 
+                                next: 'food_recommendation',
+                                message: '检测到游客询问美食'
+                            }
+                        ]
+                    },
+                    first_time_welcome: {
+                        instruction: "AI，欢迎第一次来的游客，推荐 3 个必去景点，并询问对什么感兴趣",
+                        transitions: [
+                            { 
+                                keywords: ['beach', '海滩', 'swim', '游泳'], 
+                                next: 'beach_intro',
+                                message: '游客对海滩感兴趣'
+                            },
+                            { 
+                                keywords: ['volcano', '火山', 'hiking', '爬山'], 
+                                next: 'volcano_intro',
+                                message: '游客对火山感兴趣'
+                            },
+                            { 
+                                keywords: ['culture', '文化', 'history', '历史'], 
+                                next: 'culture_intro',
+                                message: '游客对文化感兴趣'
+                            }
+                        ]
+                    },
+                    returning_visitor: {
+                        instruction: "AI，欢迎回头客，询问这次想体验什么新内容",
+                        transitions: [
+                            { 
+                                keywords: ['beach', '海滩'], 
+                                next: 'beach_intro' 
+                            },
+                            { 
+                                keywords: ['food', '吃', 'restaurant'], 
+                                next: 'food_recommendation' 
+                            }
+                        ]
+                    },
+                    beach_intro: {
+                        instruction: "AI，介绍威基基海滩，包含：1.位置 2.特色 3.最佳时间 4.注意事项",
+                        transitions: [
+                            { 
+                                keywords: ['how', 'get', '去', '交通'], 
+                                next: 'transport_info',
+                                message: '游客询问交通方式'
+                            },
+                            { 
+                                keywords: ['hotel', '酒店', '附近'], 
+                                next: 'hotel_near_beach',
+                                message: '游客询问附近酒店'
+                            }
+                        ]
+                    },
+                    volcano_intro: {
+                        instruction: "AI，介绍钻石山火山，包含：1.高度 2.徒步时间 3.风景描述 4.安全提示",
+                        transitions: [
+                            { 
+                                keywords: ['difficult', 'hard', '难', '累'], 
+                                next: 'hiking_difficulty',
+                                message: '游客询问难度'
+                            }
+                        ]
+                    },
+                    culture_intro: {
+                        instruction: "AI，介绍夏威夷文化，包含：1.Aloha 精神 2.草裙舞 3.鲁奥宴会",
+                        transitions: []
+                    },
+                    hotel_info: {
+                        instruction: "AI，推荐 3 个不同价位的酒店：1.奢华 2.中等 3.经济，并询问预算",
+                        transitions: [
+                            { 
+                                keywords: ['cheap', 'budget', '便宜', '经济'], 
+                                next: 'budget_hotel',
+                                message: '游客询问经济型酒店'
+                            }
+                        ]
+                    },
+                    food_recommendation: {
+                        instruction: "AI，推荐 3 种夏威夷特色美食：1.Poke 2.Loco Moco 3.Malasada，并询问想尝试哪个",
+                        transitions: []
+                    },
+                    transport_info: {
+                        instruction: "AI，说明交通方式：1.公交 2.打车 3.租车，并给出建议",
+                        transitions: []
+                    },
+                    hotel_near_beach: {
+                        instruction: "AI，推荐威基基海滩附近的酒店",
+                        transitions: []
+                    },
+                    hiking_difficulty: {
+                        instruction: "AI，说明徒步难度和所需体力",
+                        transitions: []
+                    },
+                    budget_hotel: {
+                        instruction: "AI，推荐经济型住宿选择",
+                        transitions: []
+                    }
+                };
+            }
+
+            // 处理用户输入，返回下一个状态
+            processInput(userInput) {
+                const currentStateConfig = this.states[this.currentState];
+                
+                if (!currentStateConfig || !currentStateConfig.transitions) {
+                    return null;
+                }
+
+                const inputLower = userInput.toLowerCase();
+                
+                for (const transition of currentStateConfig.transitions) {
+                    for (const keyword of transition.keywords) {
+                        if (inputLower.includes(keyword.toLowerCase())) {
+                            return {
+                                nextState: transition.next,
+                                reason: transition.message || `匹配到关键词：${keyword}`
+                            };
+                        }
+                    }
+                }
+
+                return null;
+            }
+
+            // 获取当前状态的 AI 指令
+            getCurrentInstruction() {
+                return this.states[this.currentState]?.instruction || 'No instruction available';
+            }
+
+            // 转换到新状态
+            transitionTo(newState, reason) {
+                const oldState = this.currentState;
+                this.currentState = newState;
+                return {
+                    from: oldState,
+                    to: newState,
+                    reason: reason
+                };
+            }
+        }
+
+        // ========== 调用 AI API 获取真实回复 ==========
+        async function getAIResponse(userInput, instruction) {
+            // 配置 DeepSeek API
+            const API_CONFIG = {
+                url: 'https://api.deepseek.com/chat/completions', // DeepSeek API
+                key: 'sk-a0e31c0e743847eea76c53ba20fa985f', // 用户的 API key
+                model: 'deepseek-chat' // DeepSeek 对话模型
+            };
+            
+            // 构建系统指令
+            const systemPrompt = `你是一个热情专业的夏威夷导游助手。
+            
+【当前任务指令】
+${instruction}
+
+【要求】
+1. 用友好、自然的语气回复
+2. 结合游客的具体问题
+3. 回复要口语化，像真人在说话
+4. 适当使用 emoji 增加亲和力
+5. 中文回复为主，关键名词可以加英文
+6. 回复长度控制在 100-200 字之间`;
+
+            try {
+                const response = await fetch(API_CONFIG.url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.key}`
+                    },
+                    body: JSON.stringify({
+                        model: API_CONFIG.model,
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userInput }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 500
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API 错误：${response.status} - ${errorText}`);
+                }
+
+                const data = await response.json();
+                return data.choices[0].message.content;
+                
+            } catch (error) {
+                console.error('AI API 错误:', error);
+                
+                // 降级方案：返回一个友好的错误提示
+                return `🤖 AI 服务暂时不可用：${error.message}
+
+请检查：
+1. API key 是否有效
+2. 网络连接是否正常
+3. DeepSeek API 是否在线`;
+            }
+        }
+
+        // ========== UI 交互逻辑 ==========
+        const stateMachine = new GuideStateMachine();
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const userInput = input.value.trim();
+
+            if (!userInput) return;
+
+            // 禁用输入防止重复提交
+            input.disabled = true;
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'AI 思考中...';
+
+            // 添加用户消息到对话历史
+            addMessage('user', userInput);
+
+            // 处理状态转换
+            const transition = stateMachine.processInput(userInput);
+            
+            if (transition) {
+                // 记录状态转换
+                const transitionInfo = stateMachine.transitionTo(transition.nextState, transition.reason);
+                addLog(`🔄 ${transitionInfo.from} → ${transitionInfo.to}\n   原因：${transitionInfo.reason}`);
+                
+                // 更新状态显示
+                updateStateDisplay();
+            }
+
+            // 获取当前状态指令
+            const instruction = stateMachine.getCurrentInstruction();
+            
+            // 调用 AI API 获取真实回复
+            try {
+                const aiResponse = await getAIResponse(userInput, instruction);
+                addMessage('guide', aiResponse);
+            } catch (error) {
+                addMessage('guide', `⚠️ AI 响应出错：${error.message}`);
+            }
+            
+            // 恢复输入
+            input.value = '';
+            input.disabled = false;
+            sendBtn.disabled = false;
+            sendBtn.textContent = '发送';
+            input.focus();
+            
+            // 滚动到底部
+            const chatHistory = document.getElementById('chatHistory');
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function addMessage(role, content) {
+            const chatHistory = document.getElementById('chatHistory');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            messageDiv.innerHTML = `
+                <div class="role">${role === 'user' ? '👤 你' : '🌺 导游 AI'}</div>
+                <div class="content">${content}</div>
+            `;
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        function updateStateDisplay() {
+            const currentStateEl = document.getElementById('currentState');
+            const stateInstructionEl = document.getElementById('stateInstruction');
+            
+            currentStateEl.textContent = stateMachine.currentState;
+            stateInstructionEl.textContent = `AI 指令：${stateMachine.getCurrentInstruction()}`;
+        }
+
+        function addLog(message) {
+            const logEl = document.getElementById('transitionLog');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.appendChild(logEntry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        // 初始化
+        updateStateDisplay();
+    </script>
+</body>
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FF6B9D">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple 触摸图标 -->
+    <link rel="apple-touch-icon" href="pictures/檀香山机场.png">
+    
+    <title>🌺 language tour~ 阳光夏威夷 🌺</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+    <!-- 背景音乐 -->
+    <audio id="bgMusic1">
+        <source src="music/wave.flac" type="audio/flac">
+    </audio>
+    <audio id="bgMusic2">
+        <source src="music/Antonio Carlos Jobim - The Girl from Ipanema.flac" type="audio/flac">
+    </audio>
+    <audio id="bgMusic3">
+        <source src="music/Antonio Carlos Jobim - The Red Blouse.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- 环境音效 -->
+    <audio id="ambientOcean" loop>
+        <source src="music/ocean-ambient.mp3?v=2" type="audio/mpeg">
+    </audio>
+    <audio id="ambientAirport" loop>
+        <source src="music/airport-ambient.mp3?v=2" type="audio/mpeg">
+    </audio>
+    <audio id="ambientHotel" loop>
+        <source src="music/hotel-ambient.mp3?v=2" type="audio/mpeg">
+    </audio>
+    <audio id="ambientNature" loop>
+        <source src="music/nature-ambient.mp3?v=2" type="audio/mpeg">
+    </audio>
+    
+    <!-- 名字设置页面 -->
+    <div id="nameSetupPage" class="setup-page" style="display: none;">
+        <div class="floating-elements">
+            <div class="floating-element">👒</div>
+            <div class="floating-element">🌊</div>
+            <div class="floating-element">🌸</div>
+            <div class="floating-element">🏄‍♀️</div>
+            <div class="floating-element">🌺</div>
+            <div class="floating-element">🌴</div>
+            <div class="floating-element">☀️</div>
+            <div class="floating-element">✨</div>
+            <div class="floating-element">🌞</div>
+            <div class="floating-element">🏖️</div>
+            <div class="floating-element">🌼</div>
+            <div class="floating-element">💫</div>
+        </div>
+    </div>
+
+    <!-- 游戏页面 -->
+    <div id="gamePage" class="container mobile">
+        <!-- 头部区域 - 柔和精致设计 -->
+        <div class="scene-header mobile">
+            <div class="scene-name mobile">
+                <span>✈️</span>
+                <span>檀香山国际机场</span>
+                <span>🌺</span>
+            </div>
+            <span id="musicToggle" class="music-toggle" onclick="toggleMusic()" title="切换音乐">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                </svg>
+            </span>
+        </div>
+        
+        <!-- 聊天容器 -->
+        <div class="chat-container mobile" id="chatContainer">
+            <!-- 初始加载提示 -->
+            <div class="system-message" style="text-align: center;">
+                🌺 正在初始化游戏，请稍候...
+            </div>
+        </div>
+        
+        <!-- 底部功能栏 -->
+        <div class="function-bar mobile">
+            <button class="function-btn mobile" onclick="showLocation()" title="当前位置">
+                <span>📍</span>
+            </button>
+            <button class="function-btn mobile" onclick="showEncounters()" title="邂逅记录">
+                <span>💕</span>
+            </button>
+            <button class="function-btn mobile" onclick="showMedals()" title="勋章">
+                <span>🏅</span>
+            </button>
+            <button class="function-btn mobile" onclick="showPhotos()" title="照片">
+                <span>📸</span>
+            </button>
+            <button class="function-btn mobile" onclick="showBranches()" title="剧情分支">
+                <span>🌿</span>
+            </button>
+            <button class="function-btn mobile" onclick="showHelpSuggestions()" title="获取回答建议">
+                <span>💡</span>
+            </button>
+        </div>
+        
+        <!-- 输入区域 -->
+        <div class="input-container mobile">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="input-area mobile">
+                    <input type="text" id="userInput" placeholder="请用英语回复，按 💡 获取帮助">
+                </div>
+                <button id="voiceInputBtn" onclick="toggleVoiceInput()" style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; border: none; border-radius: 50%; background: #FF6B9D; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; flex-shrink: 0; box-shadow: 0 1px 3px rgba(255, 107, 157, 0.2); transition: all 0.2s ease;" title="语音输入">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                </button>
+                <button onclick="handleInput()" style="width: 40px; height: 40px; min-width: 40px; min-height: 40px; border: none; border-radius: 50%; background: #FF6B9D; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; flex-shrink: 0; box-shadow: 0 1px 3px rgba(255, 107, 157, 0.2); transition: all 0.2s ease;" title="发送">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 模态框 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent">内容</div>
+        </div>
+    </div>
+    
+    <!-- 引入 JavaScript 文件（与桌面端共用） -->
+    <script src="js/core.js"></script>
+    <script src="js/utils/error-handler.js"></script>
+    <script src="js/config/game-config.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/prompts/index.js"></script>
+    <script src="js/prompts/encounter.js"></script>
+    <script src="js/prompts/medal.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/modules/npc.js?v=3"></script>
+    <script src="js/aigenerate/ai.js"></script>
+    <script src="js/modules/help.js"></script>
+    <script src="js/aigenerate/Cclip.js"></script>
+    <script src="js/aigenerate/encounter.js"></script>
+    <script src="js/aigenerate/medal.js"></script>
+    <script src="js/aigenerate/invitation.js"></script>
+    <script src="js/aigenerate/innermo.js"></script>
+    <script src="js/story/progress.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/ui-show.js"></script>
+    <script src="js/music.js"></script>
+    <script src="js/ambient-sound.js"></script>
+    <script src="js/prompts/monologue.js"></script>
+    <script src="js/data/itinerary.js"></script>
+    <script src="js/data/fixed-npcs.js"></script>
+    <script src="js/data/airport-npcs.js"></script>
+    <script src="js/data/airport-medals.js"></script>
+    <script src="js/data/waikiki-medals.js"></script>
+    <script src="js/data/luau-npcs.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/game-tests.js"></script>
+    <script src="js/entry.js"></script>
+
+<!-- 移动端专属脚本 -->
+<script>
+// ========== 游戏入口和场景调度模块 ==========
+window.playerContext = GameCore.state.playerContext;
+
+// 提交玩家姓名
+function submitName() {
+    const nameInput = document.getElementById('nameInput');
+    const name = nameInput.value.trim();
+    
+    if (name) {
+        startGameWithName(name);
+    } else {
+        alert('请输入你的姓名');
+    }
+}
+
+// 从 URL 读取名字
+function checkURLForName() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name');
+    
+    if (name) {
+        startGameWithName(name);
+    } else {
+        document.getElementById('nameSetupPage').style.display = 'flex';
+    }
+}
+
+// 使用名字开始游戏
+function startGameWithName(name) {
+    if (typeof gameState === 'undefined') {
+        console.error('gameState 未定义！请确保 game.js 已加载');
+        alert('游戏初始化失败，请刷新页面重试');
+        return;
+    }
+    
+    gameState.player.name = name;
+    
+    document.getElementById('nameSetupPage').style.display = 'none';
+    document.getElementById('gamePage').style.display = 'flex';
+    initGame();
+}
+
+// 游戏初始化
+function initGame() {
+    gameState.locations = [];
+    gameState.encounters = [];
+    gameState.notebook = [];
+    gameState.medals = [];
+    gameState.branches = [];
+    gameState.completedTasks = [];
+    gameState.storyPhase = "customs";
+    gameState.currentItineraryIndex = 0;
+    gameState.itinerary = [];
+    gameState.dynamicNpcRoles = {};
+    
+    gameState.medalTriggered = false;
+    gameState.koaEncounterTriggered = false;
+    gameState.airportEventTriggered = false;
+    gameState.luauEncounterTriggered = false;
+    
+    startCustomsScene();
+}
+
+// ========== 处理用户输入（核心交互入口） ==========
+async function handleInput() {
+    const inputEl = document.getElementById('userInput');
+    if (!inputEl) return;
+
+    const userInput = inputEl.value;
+    if (!userInput.trim()) return;
+    
+    if (!gameState.currentNpc && gameState.storyPhase === "test") {
+        alert("当前没有可以对话的 NPC。请刷新页面或开始新游戏！");
+        return;
+    }
+    
+    // 防止重复提交
+    if (inputEl.disabled) {
+        return;
+    }
+    
+    // 显示玩家消息
+    displayPlayerMessage(userInput);
+    
+    // 保存到对话历史
+    gameState.conversationHistory.push({ role: "user", content: userInput });
+    
+    // 同时保存到当前 NPC 的对话历史（用于邀约系统）
+    if (gameState.currentNpc && gameState.storyPhase === "encounter") {
+        const npcEncounter = gameState.encounters.find(e => e.name === gameState.currentNpc);
+        if (npcEncounter) {
+            if (!npcEncounter.chatHistory) {
+                npcEncounter.chatHistory = [];
+            }
+            npcEncounter.chatHistory.push({ role: "user", content: userInput });
+        }
+    }
+    
+    // 清空输入框
+    inputEl.value = '';
+    
+    // 禁用输入框防止重复提交
+    inputEl.disabled = true;
+    
+    // 显示加载提示
+    displayLoadingMessage(gameState.currentNpc);
+    
+    try {
+        // 获取 AI 回复（英文）
+        const npcResponse = await getAIResponse(userInput, gameState.currentNpc, gameState.conversationHistory);
+        
+        // 翻译成中文
+        const translation = await translateToChinese(npcResponse);
+        
+        // 移除加载提示
+        removeLoadingMessage();
+        
+        // 显示 NPC 消息（英文 + 中文翻译）
+        displayNPCMessage(gameState.currentNpc, npcResponse, translation);
+        
+        // 保存到对话历史
+        gameState.conversationHistory.push({ role: "assistant", content: npcResponse });
+        
+        // 同时保存到当前 NPC 的对话历史（用于邀约系统）
+        if (gameState.currentNpc && gameState.storyPhase === "encounter") {
+            const npcEncounter = gameState.encounters.find(e => e.name === gameState.currentNpc);
+            if (npcEncounter) {
+                if (!npcEncounter.chatHistory) {
+                    npcEncounter.chatHistory = [];
+                }
+                npcEncounter.chatHistory.push({ role: "assistant", content: npcResponse });
+            }
+        }
+        
+        // 90% 概率生成文化提示
+        if (Math.random() < 0.9) {
+            await generateAICultureTip(gameState.currentPrimaryLocation, npcResponse);
+        }
+        
+        // 对话计数 +1（必须在 checkStoryProgress 之前）
+        gameState.conversationCount = (gameState.conversationCount || 0) + 1;
+        
+        // 调试日志
+        console.log("=== 对话完成 ===");
+        console.log("对话计数:", gameState.conversationCount);
+        console.log("当前阶段:", gameState.storyPhase);
+        console.log("准备检查剧情进度...");
+        
+        // 检查剧情进度
+        await checkStoryProgress(userInput, npcResponse);
+        
+    } catch (error) {
+        console.error('获取 AI 回复失败:', error);
+        removeLoadingMessage();
+        const errorMsg = error.message.includes('API') 
+            ? '⚠️ 网络错误，请检查连接后重试'
+            : '⚠️ 请求失败，请重试';
+        
+        const errorEl = document.createElement('div');
+        errorEl.className = 'system-message';
+        errorEl.style.cssText = 'background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); color: #c62828;';
+        errorEl.textContent = errorMsg;
+        document.getElementById('chatContainer').appendChild(errorEl);
+        errorEl.scrollIntoView({ behavior: 'smooth' });
+    } finally {
+        // 恢复输入框
+        inputEl.disabled = false;
+        inputEl.placeholder = '用英语回复...';
+        inputEl.focus();
+    }
+}
+    
+
+
+// 全局暴露
+window.submitName = submitName;
+window.handleInput = handleInput;
+
+// 移动端直接开始游戏，不需要输入名字
+document.addEventListener('DOMContentLoaded', function() {
+    // 直接使用默认名字"旅行者"开始游戏
+    startGameWithName("旅行者");
+});
+
+window.onclick = function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// 回车键发送消息
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        handleInput();
+    }
+});
+
+// ========== 注册 Service Worker（PWA 支持） ==========
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then((registration) => {
+              console.log('✅ Service Worker 注册成功:', registration.scope);
+          })
+          .catch((error) => {
+              console.log('❌ Service Worker 注册失败:', error);
+          });
+    });
+}
+
+// ========== 语音输入功能 ==========
+let recognition = null;
+let isListening = false;
+let permissionChecked = false;
+
+async function checkMicrophonePermission() {
+    if (permissionChecked) return true;
+    
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+        permissionChecked = true;
+        return true;
+    } catch (error) {
+        console.error('❌ 麦克风权限请求失败:', error);
+        permissionChecked = false;
+        return false;
+    }
+}
+
+function initSpeechRecognition() {
+    if (recognition) return recognition;
+    
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        return null;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    
+    recognition.lang = 'en-US';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.isFirstStart = true;
+    
+    recognition.onresult = function(event) {
+        const transcript = Array.from(event.results)
+            .map(result => result[0].transcript)
+            .join('');
+        
+        document.getElementById('userInput').value = transcript;
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('语音识别错误:', event.error);
+        let errorMsg = '语音识别失败';
+        
+        switch(event.error) {
+            case 'no-speech':
+                errorMsg = '未检测到语音，请重试';
+                break;
+            case 'audio-capture':
+                errorMsg = '无法访问麦克风';
+                break;
+            case 'not-allowed':
+                errorMsg = '麦克风权限被拒绝';
+                isListening = false;
+                permissionChecked = false;
+                break;
+            case 'network':
+                errorMsg = '网络错误，请检查连接';
+                break;
+        }
+        
+        showVoiceStatus(errorMsg, '⚠️');
+    };
+    
+    recognition.onend = function() {
+        console.log('语音识别已停止');
+        if (isListening && !recognition.manuallyStopped) {
+            isListening = false;
+            const voiceBtn = document.getElementById('voiceInputBtn');
+            if (voiceBtn) {
+                voiceBtn.classList.remove('listening');
+            }
+        }
+        recognition.manuallyStopped = false;
+    };
+    
+    return recognition;
+}
+
+async function toggleVoiceInput() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        showVoiceStatus('您的浏览器不支持语音输入', '❌');
+        return;
+    }
+
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    
+    if (isListening) {
+        stopVoiceInput();
+    } else {
+        const hasPermission = await checkMicrophonePermission();
+        if (!hasPermission) {
+            showVoiceStatus('麦克风权限被拒绝', '❌');
+            return;
+        }
+        
+        startVoiceInput();
+    }
+}
+
+async function startVoiceInput() {
+    if (isListening) return;
+    
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    
+    if (!recognition) {
+        recognition = initSpeechRecognition();
+        if (!recognition) {
+            showVoiceStatus('您的浏览器不支持语音输入', '❌');
+            return;
+        }
+    }
+    
+    try {
+        if (!window.persistentAudioStream) {
+            window.persistentAudioStream = await navigator.mediaDevices.getUserMedia({ 
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                } 
+            });
+        }
+        
+        voiceBtn.classList.add('listening');
+        showVoiceStatus('正在听，请说英语...', '🎤');
+        recognition.start();
+        isListening = true;
+    } catch(e) {
+        console.error('启动语音识别失败:', e);
+        showVoiceStatus('启动失败，请重试', '⚠️');
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+    }
+}
+
+function stopVoiceInput() {
+    if (!isListening) return;
+    
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    voiceBtn.classList.remove('listening');
+    
+    if (recognition) {
+        try {
+            recognition.manuallyStopped = true;
+            recognition.stop();
+        } catch(e) {
+            console.log('语音识别已停止');
+        }
+    }
+    
+    isListening = false;
+    showVoiceStatus('录音已停止，按回车键发送', '✅');
+    
+    setTimeout(() => {
+        hideVoiceStatus();
+    }, 1500);
+}
+
+function showVoiceStatus(message, icon) {
+    const existingStatus = document.querySelector('.voice-input-status');
+    if (existingStatus) {
+        existingStatus.remove();
+    }
+    
+    const statusEl = document.createElement('div');
+    statusEl.className = 'voice-input-status';
+    statusEl.innerHTML = `
+        <span class="mic-icon">${icon}</span>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(statusEl);
+    
+    if (icon === '❌' || icon === '⚠️') {
+        setTimeout(() => {
+            hideVoiceStatus();
+        }, 3000);
+    }
+}
+
+function hideVoiceStatus() {
+    const statusEl = document.querySelector('.voice-input-status');
+    if (statusEl) {
+        statusEl.classList.add('hide');
+        setTimeout(() => {
+            statusEl.remove();
+        }, 300);
+    }
+}
+
+window.toggleVoiceInput = toggleVoiceInput;
+
+console.log("移动端游戏已加载 ✓");
+</script>
+</body>
+</html>

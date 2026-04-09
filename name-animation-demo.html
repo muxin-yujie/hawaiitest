@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌺 姓名输入动画演示 - 纸飞机 ✈️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+            cursor: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ctext y='20' font-size='20'%3E🌺%3C/text%3E%3C/svg%3E") 12 12, auto;
+        }
+
+        /* 环境光效果 - 增强空间感 */
+        .ambient-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(ellipse at center, rgba(255, 105, 180, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            animation: ambientPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes ambientPulse {
+            0%, 100% {
+                opacity: 0.6;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% {
+                opacity: 0.9;
+                transform: translate(-50%, -50%) scale(1.05);
+            }
+        }
+
+        /* 所有元素都使用木槿花光标 */
+        * {
+            cursor: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ctext y='20' font-size='20'%3E🌺%3C/text%3E%3C/svg%3E") 12 12, auto !important;
+        }
+
+        /* ========== 输入界面 ========== */
+        #nameInputPage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff7550 0%, #feb066 35%, #4a8fc8 80%, #4a8fc8 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .input-container {
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .input-container h1 {
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .input-container h1 .title-text {
+            background: linear-gradient(90deg, #ffffff, #f0e68c, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .input-container h1 .flower-emoji {
+            -webkit-text-fill-color: initial;
+        }
+
+        .input-container p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            line-height: 1.6;
+            font-size: 1em;
+        }
+
+        /* ========== 机票样式输入框 ========== */
+        .ticket-input-wrapper {
+            width: 800px; /* 缩小到 80% */
+            margin: 0 auto;
+        }
+
+        /* 机票漂浮包装器 */
+        .boarding-pass-wrapper {
+            animation: float 6s ease-in-out infinite;
+            display: inline-block;
+        }
+        
+        /* 第一步淡出动画 */
+        .fade-out {
+            animation: fadeOut 0.8s ease-out forwards;
+        }
+        
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+        }
+        
+        /* 第二步机票飞入动画 */
+        .fly-in {
+            animation: flyIn 1s ease-out forwards;
+        }
+        
+        @keyframes flyIn {
+            0% {
+                opacity: 0;
+                transform: translateX(100%) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        .boarding-pass-ticket {
+            display: flex;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            /* 1000:436 长宽比，缩小到 80% */
+            width: 800px;
+            height: 348.8px; /* 436 * 0.8 */
+            border-radius: 16px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.12), 
+                0 8px 20px rgba(0, 0, 0, 0.08),
+                inset 0 2px 8px rgba(255, 255, 255, 1),
+                inset 0 -2px 8px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* 机票飞进动画 */
+        @keyframes ticketFlyIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-100vw);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .ticket-hidden {
+            opacity: 0;
+            transform: translateX(-100vw);
+        }
+        
+        .ticket-fly-in {
+            animation: ticketFlyIn 1.5s ease-out 0.2s forwards;
+        }
+
+
+        @keyframes shimmerPulse {
+            0%, 100% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* 反光效果 - 扫过整张机票 */
+        .boarding-pass-ticket::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                rgba(255, 255, 255, 1),
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transform: skewX(-25deg);
+            pointer-events: none;
+            animation: shimmer 3.5s ease-in-out infinite, shimmerPulse 2s ease-in-out infinite;
+            filter: blur(2px);
+            z-index: 9999;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -150%;
+                opacity: 0;
+            }
+            5% {
+                opacity: 1;
+            }
+            95% {
+                opacity: 1;
+            }
+            100% {
+                left: 250%;
+                opacity: 0;
+            }
+        }
+
+        /* 悬空漂浮动效 */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* 鼠标悬停效果 - 飞入动画完成前不暂停 */
+        .boarding-pass-wrapper.animation-complete:hover {
+            animation-play-state: paused;
+            transform: translateY(50px) scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        /* 悬停时飘落的 emoji */
+        .floating-emoji {
+            position: fixed;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 1000;
+            animation: emojiFall 3s ease-in forwards;
+        }
+
+        @keyframes emojiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg) scale(0.5);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(360deg) scale(1);
+            }
+        }
+
+        /* 顶部金黄色横幅 */
+        .ticket-top-banner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: #f5a6cd;
+            display: flex;
+            align-items: center;
+            padding: 0 28px;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        /* 顶部横幅的虚线分割线 */
+        .ticket-top-banner .divider-line {
+            position: absolute;
+            top: 0;
+            right: 199.5px;
+            width: 1px;
+            height: 100%;
+            border-left: 1px dashed #999;
+        }
+
+        .banner-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-left: 0;
+        }
+
+        .banner-airline {
+            font-weight: 700;
+            font-size: 1.3em;
+            color: #8B6508;
+            letter-spacing: 1.2px;
+        }
+
+        .banner-class {
+            font-size: 1.15em;
+            color: #8B6508;
+            font-weight: 600;
+            margin-left: 15px;
+            font-family: 'Georgia', 'Playfair Display', 'Times New Roman', serif;
+            letter-spacing: 2.5px;
+            font-style: italic;
+        }
+
+        /* 左侧主票区 */
+        .ticket-main {
+            flex: 3;
+            padding: 60px 25px 18px 25px;
+            background: transparent;
+            position: relative;
+            border-right: 1px dashed #c9b037;
+        }
+
+        /* 延伸至顶部的虚线 */
+        .ticket-main::after {
+            content: '';
+            position: absolute;
+            top: -56px;
+            right: -1px;
+            width: 1px;
+            height: 56px;
+            border-left: 1px dashed #c9b037;
+            z-index: 11;
+        }
+
+        .passenger-section {
+            margin-bottom: 8px;
+            padding-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-label {
+            font-size: 1em;
+            color: #d1d5db;
+            letter-spacing: 3px;
+            margin-bottom: 0px;
+            padding-bottom: 0px;
+            font-weight: 400;
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        .name-ticket-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 1.5em;
+            font-weight: 500;
+            color: #B8860B;
+            padding: 8px 0;
+            border-bottom: 1px solid #d1d5db;
+            transition: all 0.3s;
+            font-family: 'Source Han Sans CN', 'Noto Sans SC', 'Microsoft YaHei', 'Courier New', 'Courier', monospace, sans-serif;
+            letter-spacing: 2px;
+        }
+
+        .name-ticket-input:focus {
+            outline: none;
+            border-bottom-color: #c9b037;
+            border-bottom-width: 1.5px;
+        }
+
+        .name-ticket-input::placeholder {
+            color: #c0c0c0;
+            font-weight: 300;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+        
+        /* 第二步机票输入框样式 */
+        .passenger-name-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 1.5em;
+            font-weight: 500;
+            color: #B8860B;
+            padding: 8px 0;
+            border-bottom: 1px solid #d1d5db;
+            transition: all 0.3s;
+            font-family: 'Source Han Sans CN', 'Noto Sans SC', 'Microsoft YaHei', 'Courier New', 'Courier', monospace, sans-serif;
+            letter-spacing: 2px;
+        }
+        
+        .passenger-name-input:focus {
+            outline: none;
+            border-bottom-color: #DAA520;
+            border-bottom-width: 1.5px;
+        }
+        
+        .passenger-name-input::placeholder {
+            color: #c0c0c0;
+            font-weight: 300;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        /* 航线信息 */
+        .route-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0 16px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 航线信息下方分隔线 */
+        .route-section::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .route-city {
+            text-align: center;
+            flex: 1;
+        }
+
+        .route-city .city-code {
+            font-size: 1.7em;
+            font-weight: bold;
+            color: #B8860B;
+            display: block;
+        }
+
+        .route-city .city-name {
+            font-size: 0.63em;
+            color: #888;
+            margin-top: 2px;
+            display: block;
+        }
+
+        .route-arrow {
+            font-size: 1.15em;
+            color: #999;
+            margin: 0 28px;
+        }
+
+        /* 航班详情网格 */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 9px;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 9px 7px;
+            background: transparent;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .detail-label {
+            font-size: 0.51em;
+            color: #999;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .detail-value {
+            font-size: 1.05em;
+            font-weight: bold;
+            color: #B8860B;
+        }
+
+        .detail-sub {
+            font-size: 0.58em;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* 右侧副券区 */
+        .ticket-stub {
+            width: 200px;
+            padding: 60px 14px 10px 14px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .stub-section {
+            width: 100%;
+            margin-bottom: 8px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* 副券区条形码 */
+        .barcode-wrapper {
+            width: 100%;
+            margin-top: auto;
+            padding-top: 10px;
+            flex-shrink: 0;
+        }
+
+        .ticket-stub .barcode {
+            width: 100%;
+            height: 40px;
+            background: repeating-linear-gradient(
+                90deg,
+                #000 0px,
+                #000 2px,
+                #fff 2px,
+                #fff 4px,
+                #000 4px,
+                #000 5px,
+                #fff 5px,
+                #fff 8px,
+                #000 8px,
+                #000 9px,
+                #fff 9px,
+                #fff 12px
+            );
+            margin-bottom: 4px;
+            opacity: 0.8;
+        }
+
+        .ticket-stub .barcode-text {
+            font-size: 0.48em;
+            color: #888;
+            letter-spacing: 1.2px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+
+        .stub-label {
+            font-size: 0.51em;
+            color: #999;
+            letter-spacing: 1.5px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .stub-value {
+            font-size: 1.15em;
+            font-weight: bold;
+            color: #B8860B;
+        }
+
+        .gate-display {
+            font-size: 1.15em;
+            font-weight: bold;
+            color: #B8860B;
+            margin: 4px 0;
+        }
+
+        /* 底部提示文字 */
+        .gate-notice {
+            position: absolute;
+            bottom: 8px;
+            left: 25px;
+            font-size: 0.85em;
+            color: #999;
+            font-style: italic;
+            font-family: 'SFMono-Regular', Consolas, 'Courier New', monospace;
+            letter-spacing: 0.5px;
+        }
+
+        /* 提交按钮 */
+        .submit-btn {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #FF1493;
+            border: 3px solid #FF69B4;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(255, 20, 147, 0.5);
+            position: relative;
+            overflow: hidden;
+            font-weight: bold;
+            letter-spacing: 2px;
+            animation: borderGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% {
+                box-shadow: 0 8px 20px rgba(255, 105, 180, 0.5);
+                border-color: #FF69B4;
+            }
+            50% {
+                box-shadow: 0 8px 30px rgba(255, 20, 147, 0.8);
+                border-color: #FF1493;
+            }
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 35px rgba(255, 20, 147, 0.8);
+            background: linear-gradient(135deg, #f0f0f0 0%, #ffffff 100%);
+            border-color: #FF1493;
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* ========== 动画容器 ========== */
+        #animationContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 35%, #87CEEB 80%, #87CEEB 100%);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+        /* 星空背景 */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes rotateStars {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .stars {
+            animation: rotateStars 120s linear infinite !important;
+            transform-origin: center center;
+        }
+
+
+        /* 机票样式 */
+        .ticket-wrapper {
+            position: relative;
+            width: 500px;
+            height: 250px;
+            perspective: 1000px;
+        }
+
+        .ticket {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* 机票星光消散动画 */
+        .ticket.dissolve {
+            animation: starDissolve 1.2s ease-out forwards;
+        }
+
+        @keyframes starDissolve {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.05);
+                opacity: 0;
+            }
+        }
+
+        /* 纸飞机样式 */
+        .paper-plane {
+            position: absolute;
+            font-size: 80px;
+            opacity: 0;
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        /* 自然彩色粒子尾迹 */
+        .natural-trail {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .natural-trail.animate {
+            animation: naturalTrailFloat 0.8s ease-out forwards;
+        }
+
+        @keyframes naturalTrailFloat {
+            0% {
+                opacity: 0.8;
+                transform: translateY(0) translateX(0) scale(1);
+            }
+            50% {
+                opacity: 0.6;
+                transform: translateY(-10px) translateX(-5px) scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px) translateX(-10px) scale(0.4);
+            }
+        }
+
+        /* 纸飞机样式 */
+        .paper-plane {
+            position: absolute;
+            font-size: 80px;
+            opacity: 0;
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        /* 自然彩色粒子尾迹 */
+        .natural-trail {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .natural-trail.animate {
+            animation: naturalTrailFloat 0.8s ease-out forwards;
+        }
+
+        @keyframes naturalTrailFloat {
+            0% {
+                opacity: 0.8;
+                transform: translateY(0) translateX(0) scale(1);
+            }
+            50% {
+                opacity: 0.6;
+                transform: translateY(-10px) translateX(-5px) scale(0.8);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-20px) translateX(-10px) scale(0.4);
+            }
+        }
+
+        .paper-plane.fly {
+            animation: flyAway 8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            animation-delay: 0s;
+        }
+        
+        @keyframes flyAway {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0) rotate(0deg) scale(0.8);
+            }
+            8% {
+                opacity: 1;
+                transform: translate(200px, -150px) rotate(-2deg) scale(0.95);
+            }
+            20% {
+                transform: translate(400px, -280px) rotate(-3deg) scale(1);
+            }
+            40% {
+                transform: translate(650px, -400px) rotate(-5deg) scale(1.05);
+            }
+            65% {
+                transform: translate(850px, -520px) rotate(-6deg) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(1000px, -600px) rotate(-7deg) scale(0.9);
+            }
+        }
+
+        /* 星光粒子 */
+        .star-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #fff 0%, rgba(255, 255, 255, 0.9) 30%, rgba(165, 216, 240, 0.6) 70%, transparent 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8), 0 0 15px rgba(165, 216, 240, 0.5);
+        }
+
+        .star-particle.animate {
+            animation: particleFloat 1.5s ease-out forwards;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                opacity: 1;
+                transform: translateY(0) translateX(0) scale(1);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(-20px) translateX(30px) scale(0.85);
+            }
+            60% {
+                opacity: 0.6;
+                transform: translateY(-30px) translateX(60px) scale(0.6);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px) translateX(100px) scale(0.3);
+            }
+        }
+
+        /* 尾迹效果 */
+        .trail {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .trail.animate {
+            animation: trailFade 0.5s ease-out forwards;
+        }
+
+        @keyframes trailFade {
+            0% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        /* 完成提示 */
+        .complete-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            color: white;
+            text-align: center;
+            opacity: 0;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .complete-message.show {
+            animation: messageAppear 1s ease-out 2.5s forwards;
+        }
+
+        @keyframes messageAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* 重新开始按钮 */
+        .restart-btn {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .restart-btn.show {
+            opacity: 1;
+            animation: btnPulse 2s infinite 3s;
+        }
+
+        .restart-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        @keyframes btnPulse {
+            0%, 100% {
+                transform: translateX(-50%) scale(1);
+            }
+            50% {
+                transform: translateX(-50%) scale(1.05);
+            }
+        }
+
+        /* 图片清晰渲染 */
+        img {
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            image-rendering: high-quality;
+        }
+        
+        /* 飘落 emoji 动画 */
+        .falling-emoji {
+            position: fixed;
+            font-size: 40px;
+            pointer-events: none;
+            z-index: 10;
+            animation: fall 10s linear forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                opacity: 1;
+                transform: translateY(-100px) translateX(0);
+            }
+            25% {
+                transform: translateY(25vh) translateX(30px);
+            }
+            50% {
+                transform: translateY(50vh) translateX(0);
+            }
+            75% {
+                transform: translateY(75vh) translateX(-30px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) translateX(0);
+            }
+        }
+        
+        /* API 选择弹窗滑入动画 */
+        @keyframes modalSlideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* API 选择弹窗背景淡入动画 */
+        @keyframes modalBackdropFadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 第一步：封面页面 -->
+    <div id="step1Page">
+        <!-- 封面背景图 -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('pictures/language tour (14).png') no-repeat center center; background-size: cover; z-index: 2;"></div>
+        
+        <!-- 左下角图片 -->
+        <img src="pictures/language tour (17).png" alt="Bottom Left Decoration" 
+             style="position: absolute; bottom: 0; left: 0; width: 350px; z-index: 10;">
+        
+        <!-- 右上角图片 -->
+        <img src="pictures/language tour (18).png" alt="Top Right Decoration" 
+             style="position: absolute; top: -37px; right: -70px; width: 350px; z-index: 10;">
+        
+        <!-- 右下角图片 -->
+        <img src="pictures/language tour (16).png" alt="Corner Image" 
+             style="position: absolute; bottom: -80px; right: 10px; width: 600px; z-index: 10; cursor: pointer; transition: all 0.2s ease;" 
+             onclick="showAPISelectionFromStep1()"
+             onmouseenter="this.style.transform='scale(1.07) translateY(-10px)'" 
+             onmouseleave="this.style.transform='scale(1) translateY(0)'">
+    </div>
+
+    <!-- 1.5 过渡页：ALOHA 欢迎页面 -->
+    <div id="step1_5Page" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 50;">
+        <!-- 粉色背景 -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #FF69B4; z-index: 1;"></div>
+        
+        <!-- 环境光效果 -->
+        <div class="ambient-glow"></div>
+        
+        <!-- 星空背景（不阻挡点击） -->
+        <div class="stars" id="step1_5Stars" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none;"></div>
+        
+        <!-- 点击区域（整个页面可点击） -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; cursor: pointer;" onclick="goToStep2From1_5()"></div>
+        
+        <!-- 欢迎文字容器 -->
+        <div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 10; text-align: center; color: white; font-family: 'Source Han Sans CN', 'Noto Sans SC', 'Microsoft YaHei', sans-serif; font-weight: bold; font-size: 1.5em; padding: 20px; pointer-events: none; width: 100%;">
+            <div id="welcomeText" style="display: flex; flex-direction: column; gap: 20px; align-items: center;"></div>
+            <div id="clickHint" style="display: none; margin-top: 50px; font-size: 0.6em; opacity: 0.8;">
+                — click anywhere to continue —
+            </div>
+        </div>
+    </div>
+    
+    <!-- API 选择弹窗 -->
+    <div id="apiSelectionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 1000; justify-content: center; align-items: center; animation: modalBackdropFadeIn 0.8s ease-out;">
+        <div style="background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%); border-radius: 20px; padding: 30px 25px; max-width: 450px; width: calc(100% - 40px); box-shadow: 0 20px 60px rgba(255, 105, 180, 0.5); text-align: center; position: relative; animation: modalSlideIn 1s ease-out; max-height: 90vh; overflow-y: auto;">
+            <!-- 顶部装饰 emoji -->
+            <div style="font-size: 2.5em; margin-bottom: 10px;">🌺🌴✈️</div>
+            
+            <h2 style="color: white; margin-bottom: 15px; font-size: 1.8em; font-weight: bold;">Aloha！亲爱的玩家～</h2>
+            
+            <p style="color: rgba(255, 255, 255, 0.95); margin-bottom: 20px; font-size: 0.95em; line-height: 1.7; text-align: left; padding: 0 10px;">
+                欢迎来到《Language Tour · 阳光夏威夷》的奇妙世界！🌺<br><br>
+                在这个游戏中，<strong>AI 将与你一起创造独一无二的夏威夷冒险故事</strong>。无论是与 NPC 的有趣对话，还是旅途中的意外邂逅，都由 AI 实时生成，让每次体验都充满惊喜！
+            </p>
+            
+            <div style="background: rgba(255, 255, 255, 0.2); border-radius: 15px; padding: 12px; margin: 15px 0;">
+                <p style="color: white; margin: 0; font-size: 0.9em; line-height: 1.6;">
+                    <strong style="font-size: 1.05em;">🔑 需要 API Key 才能开始冒险</strong><br>
+                    别担心！你可以选择以下任意一种方式：
+                </p>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
+                <button onclick="selectDeveloperAPI()" style="background: white; color: #FF1493; border: 3px solid #FF69B4; padding: 14px 25px; border-radius: 50px; font-size: 0.95em; cursor: pointer; transition: all 0.3s; font-weight: bold; box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span style="font-size: 1.2em;">🌟</span>
+                    <span>使用开发者的 API（测试用）</span>
+                </button>
+                <button onclick="showCustomAPIInput()" style="background: rgba(255, 255, 255, 0.25); color: white; border: 2px solid white; padding: 14px 25px; border-radius: 50px; font-size: 0.95em; cursor: pointer; transition: all 0.3s; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <span style="font-size: 1.2em;">✏️</span>
+                    <span>输入自己的 API Key</span>
+                </button>
+            </div>
+            
+            <div id="customAPIInput" style="display: none; margin-top: 15px; animation: modalSlideIn 0.5s ease-out;">
+                <input type="text" id="apiKeyInput" placeholder="请输入你的 DeepSeek API Key（格式：sk-xxxxx）" 
+                    style="width: 100%; padding: 12px; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.95); font-size: 0.9em; margin-bottom: 12px; outline: none; text-align: center; box-sizing: border-box;">
+                <button onclick="saveCustomAPI()" style="background: white; color: #FF1493; border: none; padding: 12px 30px; border-radius: 50px; font-size: 0.95em; cursor: pointer; transition: all 0.3s; font-weight: bold; box-shadow: 0 5px 15px rgba(255, 20, 147, 0.3);">
+                    💾 保存并开始冒险
+                </button>
+            </div>
+            
+            <div style="background: rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 10px; margin-top: 15px;">
+                <p style="color: rgba(255, 255, 255, 0.85); font-size: 0.8em; line-height: 1.5; margin: 0; margin-bottom: 10px;">
+                    💡 <strong>小贴士：</strong>测试阶段可以使用开发者的 API 体验游戏～<br>
+                    如果要长期使用，建议输入自己的 API Key 哦！
+                </p>
+            </div>
+            
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed rgba(255, 255, 255, 0.3);">
+                <p style="color: rgba(255, 255, 255, 0.9); font-size: 0.85em; margin-bottom: 8px;">
+                    🤔 <strong>还没有 API Key？没关系！</strong>
+                </p>
+                <a href="https://platform.deepseek.com/" target="_blank" 
+                   style="display: inline-block; background: rgba(255, 255, 255, 0.25); color: white; text-decoration: none; padding: 8px 20px; border-radius: 25px; font-size: 0.85em; transition: all 0.3s; border: 2px solid rgba(255, 255, 255, 0.5);"
+                   onmouseenter="this.style.background='rgba(255, 255, 255, 0.4)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(255, 255, 255, 0.3)';"
+                   onmouseleave="this.style.background='rgba(255, 255, 255, 0.25)'; this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    🔗 前往 DeepSeek 注册
+                </a>
+                <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.75em; margin-top: 10px; line-height: 1.5;">
+                    ✨ <strong>超简单 3 步：</strong>注册 → 验证 → 获取 API Key，只需 2 分钟！
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二步：完整机票显示 -->
+    <div id="step2Page" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;">
+        <!-- 粉色纯色背景容器 -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #FF69B4; z-index: 1;"></div>
+        
+        <!-- 环境光效果 -->
+        <div class="ambient-glow"></div>
+        
+        <!-- 星空背景 -->
+        <div class="stars" id="step2Stars" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"></div>
+        
+        <!-- 居中容器 -->
+        <div style="position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 30px;">
+        
+        <!-- 打字效果提示文字 -->
+        <div id="step2TypingText" style="color: white; font-size: 1.2em; font-weight: bold; font-family: 'Source Han Sans CN', 'Noto Sans SC', 'Microsoft YaHei', sans-serif; white-space: nowrap; min-height: 30px; margin-bottom: 10px;"></div>
+        
+        <!-- 完整机票 -->
+        <div id="step2TicketWrapper">
+            <div class="boarding-pass-ticket">
+                    <!-- 顶部蓝色横幅 -->
+                    <div class="ticket-top-banner">
+                        <div class="banner-left">
+                            <span class="banner-airline">HAWAIIAN AIRLINES</span>
+                            <span class="banner-class">Boarding Pass</span>
+                        </div>
+                        <div class="divider-line"></div>
+                    </div>
+                    
+                    <!-- 左侧主票区 -->
+                    <div class="ticket-main">
+                        <div class="passenger-section">
+                            <div class="section-label">Passenger Name</div>
+                            <input type="text" id="step2NameInput" class="passenger-name-input" placeholder="Please enter your name" autocomplete="off">
+                        </div>
+                        
+                        <!-- 航线信息 -->
+                        <div class="route-section">
+                            <div class="route-city">
+                                <span class="city-code">PVG</span>
+                                <span class="city-name">Shanghai</span>
+                            </div>
+                            <div class="route-arrow">→</div>
+                            <div class="route-city">
+                                <span class="city-code">HNL</span>
+                                <span class="city-name">Honolulu</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 航班详情 -->
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Flight</div>
+                                <div class="detail-value" style="color: #B8860B;">HA001</div>
+                                <div class="detail-sub">Hawaiian Air</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Seat</div>
+                                <div class="detail-value" style="color: #B8860B;">1A</div>
+                                <div class="detail-sub">Business</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Gate</div>
+                                <div class="detail-value" style="color: #B8860B;">8B</div>
+                                <div class="detail-sub">Terminal 1</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 登机提示 -->
+                        <div class="gate-notice">GATE CLOSES 40 MINUTES BEFORE DEPARTURE</div>
+                    </div>
+                    
+                    <!-- 右侧副券区 -->
+                    <div class="ticket-stub">
+                        <div class="stub-section">
+                            <div class="stub-label">Gate</div>
+                            <div class="gate-display">8B</div>
+                        </div>
+                        
+                        <div class="stub-section">
+                            <div class="stub-label">Seat</div>
+                            <div class="stub-value" style="color: #B8860B;">1A</div>
+                        </div>
+                        
+                        <div class="stub-section">
+                            <div class="stub-label">Boarding</div>
+                            <div class="stub-value">2:30 PM</div>
+                        </div>
+                        
+                        <div class="stub-section">
+                            <div class="stub-label">Date</div>
+                            <div class="stub-value">TODAY</div>
+                        </div>
+                        
+                        <!-- 条形码 -->
+                        <div class="barcode-wrapper">
+                            <div class="barcode"></div>
+                            <div class="barcode-text">HA001 PVG-HNL 1A</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 下一步按钮 -->
+                <button class="submit-btn" id="nextStepBtn" onclick="goToStep3()" style="width: 800px; margin-top: 50px;">
+                    🏄 下一步 →
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 第三步：动画容器 -->
+    <div id="step3Page" style="display: none;">
+        <!-- 粉色背景容器 -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #FF69B4; z-index: 1;"></div>
+        
+        <!-- 环境光效果 -->
+        <div class="ambient-glow"></div>
+        
+        <!-- 星空背景 -->
+        <div class="stars" id="step3Stars" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2;"></div>
+        
+        <!-- 第三步动画内容 -->
+        <div id="step3AnimationContent" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 3;">
+        
+        <!-- 机票（用于动画消散效果） -->
+        <div class="ticket-wrapper" id="step3TicketWrapper" style="opacity: 1;">
+            <div class="boarding-pass-wrapper">
+                <div class="boarding-pass-ticket" id="step3Ticket">
+                    <!-- 顶部蓝色横幅 -->
+                    <div class="ticket-top-banner">
+                        <div class="banner-left">
+                            <span class="banner-airline">HAWAIIAN AIRLINES</span>
+                            <span class="banner-class">Boarding Pass</span>
+                        </div>
+                        <div class="divider-line"></div>
+                    </div>
+                    
+                    <!-- 左侧主票区 -->
+                    <div class="ticket-main">
+                        <div class="passenger-section">
+                            <div class="section-label">Passenger Name</div>
+                            <div id="step3TicketName" class="passenger-name"></div>
+                        </div>
+                        
+                        <!-- 航线信息 -->
+                        <div class="route-section">
+                            <div class="route-city">
+                                <span class="city-code">PVG</span>
+                                <span class="city-name">Shanghai</span>
+                            </div>
+                            <div class="route-arrow">→</div>
+                            <div class="route-city">
+                                <span class="city-code">HNL</span>
+                                <span class="city-name">Honolulu</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 航班详情 -->
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Flight</div>
+                                <div class="detail-value" style="color: #B8860B;">HA001</div>
+                                <div class="detail-sub">Hawaiian Air</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Seat</div>
+                                <div class="detail-value" style="color: #B8860B;">1A</div>
+                                <div class="detail-sub">Business</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Gate</div>
+                                <div class="detail-value" style="color: #B8860B;">8B</div>
+                                <div class="detail-sub">Terminal 1</div>
+                            </div>
+                        </div>
+                        
+                        <!-- 登机提示 -->
+                        <div class="gate-notice">GATE CLOSES 40 MINUTES BEFORE DEPARTURE</div>
+                    </div>
+                    
+                    <!-- 右侧副券区 -->
+                    <div class="ticket-stub">
+                        <div class="stub-section">
+                            <div class="stub-label">Gate</div>
+                            <div class="gate-display">8B</div>
+                        </div>
+                        
+                        <div class="stub-section">
+                            <div class="stub-label">Seat</div>
+                            <div class="stub-value" style="color: #B8860B;">1A</div>
+                        </div>
+                        
+                        <div class="stub-section">
+                            <div class="stub-label">Boarding</div>
+                            <div class="stub-value">2:30 PM</div>
+                        </div>
+                        
+                        <div class="stub-section">
+                            <div class="stub-label">Date</div>
+                            <div class="stub-value">TODAY</div>
+                        </div>
+                        
+                        <!-- 条形码 -->
+                        <div class="barcode-wrapper">
+                            <div class="barcode"></div>
+                            <div class="barcode-text">HA001 PVG-HNL 1A</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 纸飞机 -->
+        <div class="paper-plane" id="paperPlane">✈️</div>
+        
+        <!-- 完成提示 -->
+        <div class="complete-message" id="completeMessage">
+            🌺 旅程开始！<br>
+            <span style="font-size: 0.5em;">Bon Voyage!</span>
+        </div>
+        
+        <!-- 重新开始按钮 -->
+        <button class="restart-btn" id="restartBtn" onclick="restart()">🔄 重新演示</button>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        // 生成星空背景
+        function createStars(containerId = 'stars', starCount = 100) {
+            const starsContainer = document.getElementById(containerId);
+            if (!starsContainer) return;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = (Math.random() * 3 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // 创建星光粒子效果
+        function createStarParticles() {
+            const step3Page = document.getElementById('step3Page');
+            const ticket = document.getElementById('step3Ticket');
+            const particleCount = 80;
+            
+            if (!ticket || !step3Page) return;
+            
+            // 获取机票的实际位置和尺寸
+            const ticketRect = ticket.getBoundingClientRect();
+            const containerRect = step3Page.getBoundingClientRect();
+            
+            // 计算机票在动画容器中的相对位置
+            const ticketLeft = ticketRect.left - containerRect.left;
+            const ticketTop = ticketRect.top - containerRect.top;
+            const ticketWidth = ticketRect.width;
+            const ticketHeight = ticketRect.height;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'star-particle';
+                
+                // 在机票区域内随机分布
+                const randomX = Math.random() * ticketWidth + ticketLeft;
+                const randomY = Math.random() * ticketHeight + ticketTop;
+                
+                particle.style.left = randomX + 'px';
+                particle.style.top = randomY + 'px';
+                particle.style.animationDelay = Math.random() * 0.3 + 's';
+                
+                step3Page.appendChild(particle);
+                
+                // 激活动画
+                setTimeout(() => {
+                    particle.classList.add('animate');
+                }, 30);
+            }
+        }
+        
+        // 生成自然彩色粒子尾迹
+        function createNaturalTrail(x, y) {
+            // 使用更鲜艳的彩虹色系
+            const colors = [
+                'rgba(255, 100, 150, 1)',  // 鲜粉
+                'rgba(255, 150, 100, 1)',  // 鲜橙
+                'rgba(255, 200, 100, 1)',  // 鲜黄
+                'rgba(100, 255, 150, 1)',  // 鲜绿
+                'rgba(100, 200, 255, 1)',  // 鲜蓝
+                'rgba(150, 100, 255, 1)',  // 鲜紫
+                'rgba(255, 150, 200, 1)',  // 鲜玫红
+                'rgba(200, 255, 150, 1)'   // 鲜青绿
+            ];
+            
+            const trail = document.createElement('div');
+            trail.className = 'natural-trail';
+            trail.style.left = x + 'px';
+            trail.style.top = y + 'px';
+            trail.style.position = 'fixed';
+            trail.style.pointerEvents = 'none';
+            trail.style.zIndex = '999';
+            
+            // 随机选择鲜艳的颜色
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            trail.style.background = `radial-gradient(circle, ${color} 0%, transparent 40%)`;
+            trail.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+            
+            // 粒子大小
+            const size = 4 + Math.random() * 5;
+            trail.style.width = size + 'px';
+            trail.style.height = size + 'px';
+            trail.style.borderRadius = '50%';
+            
+            document.body.appendChild(trail);
+            
+            setTimeout(() => {
+                trail.classList.add('animate');
+            }, 10);
+            
+            setTimeout(() => {
+                trail.remove();
+            }, 800);
+        }
+
+        // 回车键提交
+        document.getElementById('step2NameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                goToStep3();
+            }
+        });
+        
+        // 方案 D：第三步完成后跳转到 index.html
+        function goToMainGame() {
+            const name = document.getElementById('step2NameInput').value.trim();
+            
+            // 1. 淡出第三步内容
+            const step3Content = document.getElementById('step3AnimationContent');
+            step3Content.style.transition = 'opacity 1s ease-out';
+            step3Content.style.opacity = '0';
+            
+            // 2. 延迟后跳转到 index.html，并传递名字参数
+            setTimeout(() => {
+                // 跳转到 index.html，带上名字参数
+                window.location.href = `index.html?name=${encodeURIComponent(name)}`;
+            }, 1000);
+        }
+    </script>
+    
+    <!-- 三步流程管理 -->
+    <script src="step-flow.js"></script>
+</body>
+</html>

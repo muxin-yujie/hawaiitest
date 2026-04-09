@@ -1,0 +1,1878 @@
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ============================================================================
+// 场景函数
+// ============================================================================
+/**
+ * 启动海关场景（游戏第一个场景）
+ * 描述玩家抵达夏威夷机场的情景，并引入第一个 NPC 对话
+ */
+async function startCustomsScene() {
+    const chatContainer = document.getElementById('chatContainer');
+    chatContainer.innerHTML = '';
+    
+    gameState.currentPrimaryLocation = "airport";
+    gameState.currentSecondaryLocation = "海关";
+    gameState.currentNpc = "海关官员";
+    
+    addPrimaryLocation("檀香山国际机场", "✈️", "夏威夷的主要国际机场，开启美好旅程的第一站。");
+    
+    
+    
+    // 显示顶部 Toast 通知 - 音乐和环境音提示
+    const musicTip = document.createElement('div');
+    musicTip.className = 'toast-notification';
+    musicTip.innerHTML = `
+        <span class="toast-notification-icon">🎵</span>
+        <div class="toast-notification-content">
+            <span class="toast-notification-title">背景音乐已就绪</span>
+            <span class="toast-notification-message">点击下方功能栏的 🎵 Music 按钮享受音乐 + 机场环境音！</span>
+        </div>
+    `;
+    document.body.appendChild(musicTip);
+    
+    setTimeout(() => {
+        musicTip.classList.add('hide');
+        setTimeout(() => {
+            if (musicTip.parentNode) {
+                musicTip.parentNode.removeChild(musicTip);
+            }
+        }, 500);
+    }, 2000);
+    
+    setTimeout(() => {
+        const systemMessage = document.createElement('div');
+        systemMessage.className = 'system-message';
+        systemMessage.innerHTML = `
+            <span style="font-weight: bold; color: #6a1b9a; font-size: 0.95em; line-height: 1.6;">
+                ✈️ 抵达夏威夷 ✈️<br><br>
+                飞机缓缓降落在檀香山国际机场，窗外是湛蓝的天空和连绵的山脉。你透过窗户看到远处的大海在阳光下闪闪发光，内心激动不已。<br><br>
+                走下飞机，你随着人流走向海关检查区。这是你第一次独自出国旅行，既紧张又兴奋。<br><br>
+                "终于到夏威夷了！"你心里默念着，"希望能在这里收获美好的回忆和提升英语口语。"
+            </span>
+        `;
+        chatContainer.appendChild(systemMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        setTimeout(async () => {
+            await window.generateNPCDialogue("海关官员", "作为檀香山国际机场的海关官员，用英语专业但友善地欢迎游客入境，简单询问一些轻松的入境问题（比如来夏威夷的目的），保持专业但温暖的态度。");
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 50);
+    }, 300);
+    
+    gameState.customsStarted = true;
+}
+
+
+// ============================================================================
+// 机场随机事件
+// ============================================================================
+async function triggerAirportRandomEvent() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    console.log("=== 触发机场随机事件 ===");
+    
+    console.log("【测试模式】机场随机事件必定触发！");
+    
+    const isEncounter = Math.random() < 0.5;
+    console.log("随机事件类型:", isEncounter ? "邂逅" : "成就");
+    
+    if (isEncounter) {
+        await window.triggerAirportEncounter();
+    } else {
+        await window.triggerAirportMedalEvent();
+    }
+}
+
+
+// ============================================================================
+// 导游阶段
+// ============================================================================
+async function meetGuide() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    console.log("=== 遇到导游 Lani ===");
+    
+    gameState.storyPhase = "guide";
+    gameState.currentNpc = "导游 Lani";
+    gameState.conversationHistory = [];
+    gameState.conversationCount = 0;
+    
+    const laniCharacter = window.getFixedNpc("导游 Lani");
+    
+    saveFixedNpcToEncounters(laniCharacter);
+    
+    const arrivalText = "你走出机场到达大厅，看到一个美丽的夏威夷女孩举着写有你名字的牌子，脸上洋溢着热情的笑容。她就是你的导游 Lani，穿着传统的夏威夷花裙，脖子上戴着花环。";
+    showSceneNarration("遇到导游 Lani", arrivalText);
+    
+    await generateInnerMonologue("哇，这就是 Lani！好热情好漂亮啊！接下来的旅程一定会很精彩！", "兴奋、期待、开心");
+    
+    const guideDialoguePrompt = window.PROMPTS.GUIDE_FIRST_MEET;
+    await window.generateNPCDialogue("导游 Lani", guideDialoguePrompt);
+    
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+
+// ============================================================================
+// 行程生成
+// ============================================================================
+async function generateLocationsAndItinerary() {
+    const laniEmoji = getNpcEmoji("导游 Lani");
+    displayNPCMessage(`${laniEmoji} 导游 Lani`, 
+        "Aloha! Now let me introduce your wonderful 4-day Hawaii itinerary! We'll visit Waikiki Beach for surfing and shopping, climb Diamond Head for panoramic views, experience Polynesian culture with traditional hula and fire knife dancing, and explore Kualoa Ranch where many Hollywood movies were filmed! I've booked you at the Waikiki Beach Hotel. Are you ready for this amazing adventure?",
+        "Aloha! 现在让我为你介绍这次精彩的夏威夷 4 日游行程！我们会去：威基基海滩冲浪和购物，攀登钻石头山俯瞰全景，在波利尼西亚文化中心体验传统的草裙舞和火刀舞表演，还会去古兰尼牧场探索好莱坞电影的取景地！我已经为你预订了威基基海滩酒店。准备好开启这段美妙的冒险了吗？");
+    
+    setTimeout(async () => {
+        await generateItinerary();
+    }, 500);
+}
+
+async function generateItinerary() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    const itineraryData = ITINERARY_DATA;
+    
+    console.log("固定行程已加载");
+    console.log("第一个一级地点数据:", itineraryData.primaryLocations[0]);
+    
+    gameState.primaryLocationsList = itineraryData.primaryLocations;
+    gameState.secondaryLocationsPerPrimary = itineraryData.secondaryLocationsPerPrimary;
+    gameState.currentPrimaryLocationData = itineraryData.primaryLocations[0];
+    gameState.hotel = itineraryData.hotel;
+    gameState.secondaryLocations = itineraryData.secondaryLocationsPerPrimary[0].map((loc, i) => ({
+        ...loc,
+        type: i === 0 ? "hotel" : "random",
+    }));
+    
+    gameState.currentPrimaryIndex = 0;
+    gameState.currentSecondaryIndex = 0;
+    gameState.conversationCount = 0;
+    
+    let itineraryText = "🗺️ 你的夏威夷之旅 🗺️<br><br>";
+    itineraryData.primaryLocations.forEach((loc, i) => {
+        itineraryText += `${i + 1}. ${loc.emoji} ${loc.name}<br>`;
+    });
+    itineraryText += `<br>📍 第一站：${itineraryData.primaryLocations[0].name}<br><br>`;
+    itineraryText += itineraryData.primaryLocations[0].description + "<br><br>";
+    itineraryText += `🏨 入住酒店：${itineraryData.hotel.name}<br>`;
+    itineraryText += itineraryData.hotel.description + "<br><br>";
+    itineraryText += "接下来我们还会探索附近的其他精彩地点！";
+    
+    const systemMessage = document.createElement('div');
+    systemMessage.className = 'system-message';
+    systemMessage.innerHTML = `<span style="font-weight: bold; color: #6a1b9a;">${itineraryText}</span>`;
+    chatContainer.appendChild(systemMessage);
+    
+    console.log("=== 行程已加载，准备进入第一个一级地点 ===");
+    console.log("第一个一级地点:", itineraryData.primaryLocations[0].name);
+    
+    showOptions([
+        { 
+            text: '🏨 先去酒店办理入住', 
+            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            onClick: async () => {
+                await goToHotel();
+            }
+        },
+        { 
+            text: '🏖️ 先去海滩看看', 
+            gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            onClick: async () => {
+                await goToBeachFirst();
+            }
+        }
+    ]);
+}
+
+
+// ============================================================================
+// 场景选择：酒店或海滩
+// ============================================================================
+async function goToHotel() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    const debugMessage = document.createElement('div');
+    debugMessage.className = 'system-message';
+    debugMessage.style.cssText = 'background: #ffeb3b; color: #000; padding: 10px; border-radius: 8px; margin: 10px 0;';
+    debugMessage.innerHTML = `🔍 调试：goToHotel 已执行 | 一级地点：${gameState.currentPrimaryLocationData?.name || '未知'} | 酒店：${gameState.hotel?.name || '未知'}`;
+    chatContainer.appendChild(debugMessage);
+    
+    console.log("=== goToHotel 开始执行 ===");
+    console.log("gameState.currentPrimaryLocationData:", gameState.currentPrimaryLocationData);
+    console.log("gameState.hotel:", gameState.hotel);
+    
+    const primaryName = gameState.currentPrimaryLocationData.name;
+    const primaryEmoji = gameState.currentPrimaryLocationData.emoji;
+    const primaryDesc = gameState.currentPrimaryLocationData.description;
+    console.log("添加一级地点:", primaryName, primaryEmoji, primaryDesc);
+    addPrimaryLocation(primaryName, primaryEmoji, primaryDesc);
+    
+    const hotel = gameState.hotel;
+    const hotelEmoji = hotel.emoji || getLocationEmoji("酒店");
+    console.log("添加二级地点:", primaryName, "->", hotel.name);
+    addSecondaryLocation(primaryName, hotel.name, hotelEmoji, hotel.description);
+    
+    console.log("gameState.locations:", gameState.locations);
+    
+    const hotelWithEmoji = {
+        ...hotel,
+        emoji: hotelEmoji,
+        type: "hotel"
+    };
+    
+    // 更新场景名称
+    document.querySelector('.scene-name').innerHTML = `
+        <span>${hotelWithEmoji.emoji}</span>
+        <span>${hotelWithEmoji.name}</span>
+        <span>🌸</span>
+    `;
+    
+    setTimeout(() => {
+        const systemMessage = document.createElement('div');
+        systemMessage.className = 'system-message';
+        systemMessage.innerHTML = `
+            <span style="font-weight: bold; color: #6a1b9a; font-size: 0.95em; line-height: 1.6;">
+                🏨 到达 ${hotelWithEmoji.name} 🏨<br><br>
+                离开檀香山国际机场，沿着卡拉卡瓦大道行驶，繁华的威基基街区逐渐映入眼帘。高大的棕榈树在街道两旁摇曳，时尚的商店和餐厅林立。当你抵达酒店大堂时，清新的海风从敞开的窗户吹进来，带着淡淡的热带花香。前台工作人员微笑着迎接你，准备为你办理入住手续。
+            </span>
+        `;
+        chatContainer.appendChild(systemMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }, 100);
+    
+    window.generateNPCDialogue("导游 Lani", `作为导游 Lani，用英语兴奋地告诉游客我们现在就去酒店办理入住。说酒店已经准备好了，办理完入住后可以好好休息一下，然后开始探索${gameState.currentPrimaryLocationData.name}。保持热情和期待的语气！`);
+    
+    setTimeout(async () => {
+        await startHotelCheckIn();
+    }, 500);
+}
+
+async function goToBeachFirst() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    addPrimaryLocation(gameState.currentPrimaryLocationData.name, gameState.currentPrimaryLocationData.emoji, gameState.currentPrimaryLocationData.description);
+    
+    const beachLocation = gameState.secondaryLocationsPerPrimary[0][1];
+    const beachEmoji = beachLocation.emoji || getLocationEmoji("海滩");
+    addSecondaryLocation(
+        gameState.currentPrimaryLocationData.name,
+        beachLocation.name,
+        beachEmoji,
+        beachLocation.description
+    );
+    
+    document.querySelector('.scene-name').innerHTML = `
+        <span>${beachEmoji}</span>
+        <span>${beachLocation.name}</span>
+        <span>🌸</span>
+    `;
+    
+    setTimeout(() => {
+        const systemMessage = document.createElement('div');
+        systemMessage.className = 'system-message';
+        systemMessage.innerHTML = `
+            <span style="font-weight: bold; color: #6a1b9a; font-size: 0.95em; line-height: 1.6;">
+                🏖️ 到达威基基海滩 🏖️<br><br>
+                离开檀香山国际机场，沿着卡拉卡瓦大道行驶，蔚蓝的太平洋逐渐映入眼帘。当你踏上威基基海滩时，金色的阳光洒在细腻的白沙上，椰子树在微风中轻轻摇曳。远处，冲浪者在碧波荡漾的海面上乘风破浪，空气中弥漫着淡淡的海盐和鸡蛋花香。
+            </span>
+        `;
+        chatContainer.appendChild(systemMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }, 100);
+    
+    window.generateNPCDialogue("导游 Lani", `作为导游 Lani，用英语惊喜地说游客真会选，${gameState.currentPrimaryLocationData.name}现在确实很美。说可以先去海滩逛逛，然后再去酒店办理入住。保持兴奋和理解的语气！`);
+    
+    setTimeout(async () => {
+        await enterRandomBeachLocation();
+    }, 500);
+}
+
+/**
+ * 随机进入海滩的三级地点之一（去海滩时的 3 个选项）
+ */
+async function enterRandomBeachLocation() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    const beachData = gameState.secondaryLocationsPerPrimary[0][1];
+    const allTertiaryLocations = beachData.tertiaryLocations || [];
+    
+    const beachLocations = allTertiaryLocations.filter(loc => 
+        loc.name !== "彩虹刨冰店" && loc.name !== "阿罗哈烤虾车"
+    );
+    
+    if (beachLocations.length === 0) {
+        console.error("错误：没有海滩地点数据");
+        return;
+    }
+    
+    const selectedLocation = beachLocations[Math.floor(Math.random() * beachLocations.length)];
+    
+    console.log("随机到的海滩地点:", selectedLocation.name);
+    
+    addTertiaryLocation(
+        beachData.name,
+        selectedLocation.name,
+        selectedLocation.emoji,
+        selectedLocation.description
+    );
+    
+    // 设置状态
+    gameState.currentTertiaryLocation = selectedLocation.name;
+    gameState.currentNpc = selectedLocation.npc;
+    gameState.storyPhase = selectedLocation.hasStory ? "surfShop" : "tertiary_visit";
+    gameState.conversationCount = 0;
+    
+    // 显示场景描写
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            ${selectedLocation.emoji} ${selectedLocation.name} ${selectedLocation.emoji}<br><br>
+            你在海滩边漫步，发现了这家${selectedLocation.name}。<br>
+            ${selectedLocation.description}。<br>
+            你决定进去看看...
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    const npcCharacter = window.getFixedNpc(selectedLocation.npc);
+    
+    saveFixedNpcToEncounters(npcCharacter);
+    
+    if (selectedLocation.name === "冲浪店") {
+        setTimeout(async () => {
+            await enterSurfShop();
+        }, 500);
+    } else {
+        setTimeout(async () => {
+            const prompt = `作为${selectedLocation.npcTitle} ${selectedLocation.npc}，用英语热情欢迎这位独自来到${selectedLocation.name}的游客。
+            介绍一下你的${selectedLocation.name}，然后询问游客想体验什么。
+            语气要${selectedLocation.name === "热带花环编织店" ? "温柔、有艺术气质" : "阳光、幽默"}。`;
+            
+            await window.generateNPCDialogue(selectedLocation.npc, prompt);
+        }, 500);
+    }
+}
+
+/**
+ * 处理花环店/音乐教室对话结束，触发 Koa 邂逅
+ */
+async function handleTertiaryVisitEnd() {
+    console.log("=== 三级地点访问结束，触发 Koa 邂逅 ===");
+    
+    if (gameState.koaEncounterTriggered) {
+        console.log("Koa 邂逅已触发，跳过");
+        return;
+    }
+    gameState.koaEncounterTriggered = true;
+    
+    if (window.generateSurfShopRomance) {
+        await window.generateSurfShopRomance({ name: "威基基海滩" });
+    }
+}
+
+/**
+ * 显示海边酒吧邀请选项（使用 showOptions 样式）
+ */
+function showBeachBarInvitationOptions() {
+    showOptions([
+        { 
+            text: '✨ 好啊，听起来很有趣！', 
+            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            onClick: async () => {
+                await acceptBeachBarInvitation();
+            }
+        },
+        { 
+            text: '🌊 谢谢，不过我还有别的安排', 
+            gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            boxShadow: '0 3px 8px rgba(168, 237, 234, 0.3)',
+            hoverBoxShadow: '0 5px 15px rgba(168, 237, 234, 0.4)',
+            onClick: async () => {
+                await declineBeachBarInvitation();
+            }
+        }
+    ]);
+}
+
+/**
+ * 接受海边酒吧邀请
+ */
+async function acceptBeachBarInvitation() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    // 恢复输入框
+    const userInputEl = document.getElementById('userInput');
+    const sendButton = document.querySelector('.send-btn');
+    if (userInputEl) {
+        userInputEl.disabled = false;
+        userInputEl.placeholder = "输入消息...";
+    }
+    if (sendButton) {
+        sendButton.disabled = false;
+        sendButton.style.opacity = "1";
+        sendButton.style.cursor = "pointer";
+    }
+    
+    // 显示接受后的场景
+    const acceptMessage = document.createElement('div');
+    acceptMessage.className = 'system-message';
+    acceptMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            🍹 Duke's Waikiki 🍹<br><br>
+            "Awesome!" Koa 的眼睛亮了起来，露出灿烂的笑容。<br><br>
+            他掏出手机，"Let me text you the address. It's right on the beach, you can't miss it."<br><br>
+            收到他的短信后，你看了看时间，准备稍后前往。<br><br>
+            <em style="color: #888;">（前往 Duke's Waikiki 海边酒吧）</em>
+        </span>
+    `;
+    chatContainer.appendChild(acceptMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 进入 Duke's Waikiki 约会
+    setTimeout(async () => {
+        await dukesWaikikiDate();
+    }, 1500);
+}
+
+/**
+ * 拒绝海边酒吧邀请
+ */
+async function declineBeachBarInvitation() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    // 恢复输入框
+    const userInputEl = document.getElementById('userInput');
+    const sendButton = document.querySelector('.send-btn');
+    if (userInputEl) {
+        userInputEl.disabled = false;
+        userInputEl.placeholder = "输入消息...";
+    }
+    if (sendButton) {
+        sendButton.disabled = false;
+        sendButton.style.opacity = "1";
+        sendButton.style.cursor = "pointer";
+    }
+    
+    // 显示拒绝后的场景
+    const declineMessage = document.createElement('div');
+    declineMessage.className = 'system-message';
+    declineMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            🌺 婉拒邀请 🌺<br><br>
+            "No worries! Maybe another time." Koa 依然保持着友好的笑容，<br>
+            虽然眼中闪过一丝不易察觉的失落。<br><br>
+            他挥挥手，"Enjoy the rest of your day!"<br><br>
+            你微笑着告别，继续在威基基海滩漫步...<br><br>
+            <em style="color: #888;">（继续海滩探索）</em>
+        </span>
+    `;
+    chatContainer.appendChild(declineMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 进入其他三级地点（刨冰店/烤虾车）
+    setTimeout(async () => {
+        await enterRandomLocation();
+    }, 1500);
+}
+
+/**
+ * Duke's Waikiki 海边酒吧约会
+ */
+async function dukesWaikikiDate() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    console.log("=== Duke's Waikiki 海边酒吧约会 ===");
+    
+    // 设置状态
+    gameState.currentTertiaryLocation = "Duke's Waikiki";
+    gameState.currentNpc = "Koa";
+    gameState.storyPhase = "Duke's Waikiki";
+    gameState.dateConversationCount = 0;
+    
+    // 显示场景描写
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            🍹 Duke's Waikiki 🍹<br><br>
+            傍晚时分，你来到了位于威基基海滩的 Duke's Waikiki。<br>
+            夕阳将海面染成金红色，海风轻拂，棕榈树在微风中摇曳。<br><br>
+            酒吧里已经热闹非凡，现场乐队演奏着轻松的夏威夷音乐，<br>
+            空气中弥漫着热带鸡尾酒和烤海鲜的香气。<br><br>
+            你一眼就看到了站在露台上的 Koa，<br>
+            他穿着休闲的夏威夷衬衫，手里拿着两杯色彩缤纷的饮料，<br>
+            看到你到来，他的脸上绽放出灿烂的笑容...<br><br>
+            <em style="color: #888;">一场浪漫的海边约会即将开始</em>
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // Koa 开始对话
+    setTimeout(async () => {
+        await window.generateNPCDialogue("Koa", `作为 Koa，看到主角如约而至，用英语兴奋地打招呼。说你很高兴对方能来，递上一杯蓝色的夏威夷鸡尾酒，说这是你最喜欢的饮料。然后邀请对方到露台上欣赏日落。语气要开心、热情、真诚。`);
+    }, 1000);
+}
+
+/**
+ * 进入邀约地点（三级地点）
+ */
+async function enterInvitationLocation(invitationData) {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    console.log("=== 进入邀约地点 ===");
+    console.log("地点:", invitationData.scene);
+    console.log("活动:", invitationData.activity);
+    
+    // 设置状态
+    gameState.currentTertiaryLocation = invitationData.scene;
+    gameState.currentNpc = gameState.encounters.find(e => e.hasInvitation && e.invitationStatus === 'accepted')?.name || null;
+    gameState.storyPhase = "Duke's Waikiki";
+    gameState.dateConversationCount = 0;
+    
+    // 显示场景描写
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            📍 ${invitationData.scene} 📍<br><br>
+            你来到了${invitationData.scene}，这里${invitationData.activity === '海边酒吧派对' ? '热闹非凡，音乐声和欢笑声交织在一起，空气中弥漫着热带鸡尾酒的香气' : '充满了夏威夷的独特魅力'}。<br>
+            ${invitationData.time === '待会' ? '派对即将开始，人们陆续到场，气氛越来越热烈' : '时间慢慢接近约定时间'}，你开始期待即将到来的约会...
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // NPC 出现并开始对话
+    if (gameState.currentNpc) {
+        const npcEmoji = getNpcEmoji(gameState.currentNpc);
+        setTimeout(async () => {
+            await window.generateNPCDialogue(gameState.currentNpc, `作为${gameState.currentNpc}，看到主角如约而至，用英语兴奋地打招呼。说你很高兴对方能来，然后开始今天的${invitationData.activity}。语气要开心、热情、充满期待。`);
+        }, 500);
+    }
+}
+
+/**
+ * 拒绝邀约逻辑
+ */
+window.declineSMSInvitation = function(npcName) {
+    const encounter = gameState.encounters.find(e => e.name === npcName);
+    if (encounter && encounter.hasInvitation) {
+        encounter.invitationStatus = 'rejected';
+        console.log("❌ 拒绝短信邀约:", encounter.chineseName);
+        
+        const chatContainer = document.getElementById('chatContainer');
+        const declineMessage = document.createElement('div');
+        declineMessage.className = 'system-message';
+        declineMessage.style.background = 'linear-gradient(135deg, #ffc3d9 0%, #a8e6ff 100%)';
+        declineMessage.style.borderLeft = '4px solid #90a4ae';
+        declineMessage.innerHTML = `
+            <span style="font-weight: bold; color: #546e7a;">
+                已婉拒 ${encounter.chineseName} 的邀约。继续探索夏威夷吧！
+            </span>
+        `;
+        chatContainer.appendChild(declineMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        // 拒绝后随机去一个其他地方
+        setTimeout(async () => {
+            await enterRandomLocation();
+        }, 1000);
+    }
+};
+
+/**
+ * 进入随机地点（拒绝 Koa 邀约后的备选方案）
+ */
+async function enterRandomLocation() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    // 拒绝邀约后的 2 个美食地点
+    const foodLocations = [
+        {
+            name: "彩虹刨冰店",
+            emoji: "🍧",
+            description: "传统夏威夷刨冰店，色彩缤纷的彩虹刨冰是招牌，老板是位和蔼的老奶奶",
+            npc: "Tutu",
+            npcTitle: "图图老奶奶"
+        },
+        {
+            name: "阿罗哈烤虾车",
+            emoji: "🍤",
+            description: "路边特色餐车，蒜香黄油烤虾香气四溢，老板是热情的夏威夷大叔",
+            npc: "Uncle Kimo",
+            npcTitle: "基莫大叔"
+        }
+    ];
+    
+    // 随机选择一个地点
+    const selectedLocation = foodLocations[Math.floor(Math.random() * foodLocations.length)];
+    
+    console.log("拒绝邀约后随机地点:", selectedLocation.name);
+    
+    // 设置状态
+    gameState.currentTertiaryLocation = selectedLocation.name;
+    gameState.currentNpc = selectedLocation.npc;
+    // 美食地点使用专门的 Medal 阶段
+    gameState.storyPhase = selectedLocation.name === "彩虹刨冰店" ? "shave_ice" : "foodTruckMedal";
+    gameState.conversationCount = 0;
+    
+    // 显示场景描写
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            ${selectedLocation.emoji} ${selectedLocation.name} ${selectedLocation.emoji}<br><br>
+            你决定去${selectedLocation.name}看看。<br>
+            ${selectedLocation.description}。<br>
+            虽然没有接受邀约，但品尝当地美食也是不错的体验！
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 从固定 NPC 库读取 NPC 信息
+    const npcCharacter = window.getFixedNpc(selectedLocation.npc);
+    
+    saveFixedNpcToEncounters(npcCharacter);
+    
+    // 生成 NPC 欢迎对话
+    setTimeout(async () => {
+        const prompt = `作为${selectedLocation.npcTitle} ${selectedLocation.npc}，用英语热情欢迎这位独自来到${selectedLocation.name}的游客。
+        介绍一下你的${selectedLocation.name}和招牌产品，然后询问游客想尝试什么。
+        语气要${selectedLocation.name === "彩虹刨冰店" ? "温柔、慈祥、像奶奶一样" : "热情、幽默、像大叔一样"}。`;
+        
+        await window.generateNPCDialogue(selectedLocation.npc, prompt);
+        
+        // Medal 事件将在 checkStoryProgress() 中检测对话轮数后触发（对话 2 轮后）
+    }, 500);
+}
+
+/**
+ * 进入烤虾车并触发 Medal 事件（拒绝 Koa 邀请后的分支）
+ */
+async function enterFoodTruckMedal(foodTruckData) {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    console.log("=== 进入烤虾车 ===");
+    console.log("餐车:", foodTruckData.name);
+    console.log("老板:", foodTruckData.npc);
+    
+    // 设置状态
+    gameState.currentNpc = foodTruckData.npc;
+    gameState.storyPhase = "foodTruckMedal";
+    gameState.conversationCount = 0;
+    
+    // 显示餐车场景描写
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            ${foodTruckData.emoji} ${foodTruckData.name} ${foodTruckData.emoji}<br><br>
+            一辆色彩鲜艳的餐车停在路边，车身上画着可爱的虾子图案。<br>
+            烤虾的香气在空气中弥漫，让人垂涎欲滴。<br>
+            几个当地人正围在餐车旁，边吃边聊，笑声不断。<br><br>
+            一位穿着花衬衫、皮肤黝黑的大叔正在忙碌着。<br>
+            他看到你来了，露出灿烂的笑容，露出一口洁白的牙齿。<br>
+            "Aloha! Welcome to my shrimp truck!"
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 老板出现并对话
+    setTimeout(async () => {
+        await window.generateNPCDialogue(foodTruckData.npc, `作为夏威夷烤虾车老板 Uncle Kimo，用英语热情欢迎这位独自来用餐的客人。说你的烤虾是用最新鲜的本地虾和最祖传的蒜香黄油配方制作的，想要请 TA 品尝最美味的夏威夷街头美食。语气要热情、幽默、像老朋友一样。`);
+    }, 500);
+}
+
+/**
+ * 进入冲浪店（三级地点）
+ */
+async function enterSurfShop() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    console.log("=== 进入冲浪店 ===");
+    
+    // 设置当前状态
+    gameState.currentSecondaryLocation = "冲浪店";
+    gameState.currentNpc = "Maya";
+    gameState.conversationHistory = [];
+    gameState.storyPhase = "surfShop";
+    gameState.conversationCount = 0;
+    
+    // 显示冲浪店场景描写
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            🏄‍♀️ 冲浪店 🏄‍♀️<br><br>
+            你走进海滩边的一家小冲浪店，店里摆满了各式各样的冲浪板。<br>
+            空气中弥漫着海洋的气息和蜡的味道。<br>
+            阳光透过玻璃窗洒进来，墙上挂着冲浪比赛的照片。<br><br>
+            柜台后面，一个年轻女孩正在整理冲浪装备。<br>
+            她抬起头，露出阳光般的笑容。
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    
+    // 设置 Maya 人设
+    const mayaCharacter = {
+        name: "Maya",
+        chineseName: "玛雅",
+        nationality: "American",
+        age: 20,
+        occupation: "Surf Shop Assistant",
+        emoji: "🏄‍♀️",
+        personality: "随和友好，热爱冲浪，阳光开朗",
+        scene: "冲浪店",
+        description: "冲浪店打工女孩，对冲浪很有研究"
+    };
+    
+    // 保存固定 NPC
+    saveFixedNpcToEncounters(mayaCharacter);
+    
+    // 显示 Maya 的欢迎对话
+    await window.generateNPCDialogue("Maya", `作为冲浪店的打工女孩 Maya，用英语随意友好地欢迎这位游客。说你在这里工作，对冲浪和冲浪装备都很在行。如果有任何问题都可以问你。语气要随和、阳光、像朋友一样。`);
+    
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+/**
+ * 回酒店房间，结束一天
+ */
+async function returnToHotelRoom() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    console.log("=== 回酒店房间，结束一天 ===");
+    
+    // 显示回酒店场景描写
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    sceneMessage.style.color = 'white';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; font-size: 1.1em; line-height: 1.8;">
+            🌙 回到酒店房间 🌙<br><br>
+            夜幕降临，你回到了威基基海滩酒店。<br>
+            躺在床上，回想着今天的经历：<br>
+            ${gameState.storyPhase === "Duke's Waikiki" ? '和 Koa 在海边酒吧派对的欢乐时光，音乐、舞蹈、美食，还有那美丽的日落...' : '品尝夏威夷地道美食的美好体验，无论是彩虹刨冰还是蒜香烤虾，都让人回味无穷...'}<br><br>
+            海风从窗外吹进来，带着淡淡的海盐味。<br>
+            你闭上眼睛，期待着明天的冒险...<br><br>
+            <span style="font-size: 1.3em;">🌺 Day 1 结束 🌺</span>
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 设置游戏状态
+    gameState.storyPhase = "hotelRoom";
+    gameState.currentDay = 1;
+    
+    // 禁用输入框
+    const userInputEl = document.getElementById('userInput');
+    const sendButton = document.querySelector('.send-btn');
+    if (userInputEl) {
+        userInputEl.disabled = true;
+        userInputEl.placeholder = "第一天结束，敬请期待后续...";
+    }
+    if (sendButton) {
+        sendButton.disabled = true;
+        sendButton.style.opacity = "0.3";
+        sendButton.style.cursor = "not-allowed";
+    }
+    
+    // 移除加载动画
+    const loadingEl = document.getElementById('transitionLoading');
+    if (loadingEl) {
+        loadingEl.remove();
+    }
+}
+
+
+// ============================================================================
+// 酒店入住流程
+// ============================================================================
+async function startHotelCheckIn() {
+    const chatContainer = document.getElementById('chatContainer');
+    gameState.currentSecondaryLocation = gameState.secondaryLocations[0];
+    gameState.currentNpc = gameState.hotel.npc;
+    gameState.conversationHistory = [];
+    gameState.storyPhase = "hotelCheckIn";
+    
+    // 删除重复的场景描写，因为 goToHotel() 已经显示过了
+    
+    await generateInnerMonologue("终于到酒店了，看起来真不错！期待接下来的冒险！", "开心、期待、有点累但兴奋");
+    
+    // 从 FIXED_NPCS 读取前台接待员的 rolePrompt
+    const receptionist = window.getFixedNpc("前台接待员");
+    const hotelDialoguePrompt = receptionist.rolePrompt.replace('Waikiki Beach Hotel', gameState.hotel.name);
+    await window.generateNPCDialogue(gameState.hotel.npc, hotelDialoguePrompt);
+    
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+
+// ============================================================================
+// 卢奥晚宴邀约
+// ============================================================================
+async function showLuauInvitation() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    const receptionistEmoji = getNpcEmoji("前台接待员");
+    displayNPCMessage(`${receptionistEmoji} 前台接待员`,
+        "Aloha! By the way, we have a traditional Hawaiian Luau tonight! It starts at 6 PM on the beachfront lawn. You'll experience authentic Hawaiian culture - we roast a whole Kalua pig in the traditional underground imu oven, and you can enjoy poi, lomi lomi salmon, and haupia. There will be live Hawaiian music and hula dancing performances too! Many guests say it's the highlight of their trip. Would you like to join us? It's $89 per person, includes the full dinner feast and entertainment.",
+        "Aloha！对了，我们今晚有传统的夏威夷卢奥晚宴！晚上 6 点在海滨草坪举办。您将体验地道的夏威夷文化——我们用传统的地下烤炉（imu）烤制整只卡鲁瓦猪，还可以享用芋头泥（poi）、罗密罗密三文鱼（lomi lomi salmon）和椰子布丁（haupia）。现场还有夏威夷音乐和草裙舞（hula）表演！很多客人都说这是他们旅行的亮点。您想参加吗？每位 89 美元，包含完整的晚宴和娱乐表演。");
+    
+    showLuauOptions();
+}
+
+function showLuauOptions() {
+    showOptions([
+        { 
+            text: '🌺 留下来参加卢奥晚宴', 
+            gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            onClick: async () => {
+                await acceptLuauInvitation();
+            }
+        },
+        { 
+            text: '🏖️ 去海滩逛逛', 
+            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            onClick: async () => {
+                await declineLuauInvitation();
+            }
+        }
+    ]);
+}
+
+async function acceptLuauInvitation() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    // 记录分支
+    if (!gameState.branches) {
+        gameState.branches = [];
+    }
+    gameState.branches.push({
+        title: "夏威夷卢奥晚宴",
+        description: "在卢奥晚宴上遇到了一位神秘高贵的男人，度过了一个难忘的夜晚",
+        status: "active",
+        startTime: new Date().toLocaleString('zh-CN'),
+        location: "酒店海滨草坪"
+    });
+    
+    // 设置故事阶段为卢奥晚宴邂逅
+    gameState.storyPhase = "luau_encounter";
+    
+    // 显示场景描写
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            🌺 卢奥晚宴 🌺<br><br>
+            夜幕降临，你来到了酒店的海滨草坪。<br>
+            篝火熊熊燃烧，空气中弥漫着烤猪的香气和热带花朵的芬芳。<br>
+            草裙舞者随着夏威夷音乐翩翩起舞，火刀舞表演即将开始。<br><br>
+            在人群中，你注意到一个气质非凡的男人独自坐着。<br>
+            他穿着考究，眼神深邃，举手投足间散发着神秘高贵的气息。<br>
+            似乎感受到了你的目光，他微微抬头，与你四目相对...<br><br>
+            <em style="color: #888;">一场神秘的邂逅即将开始...</em>
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 延迟 1 秒后触发邂逅
+    setTimeout(async () => {
+        if (window.triggerLuauMysteryEncounter) {
+            await window.triggerLuauMysteryEncounter();
+        }
+    }, 1000);
+}
+
+async function declineLuauInvitation() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    const receptionistEmoji2 = getNpcEmoji("前台接待员");
+    displayNPCMessage(`${receptionistEmoji2} 前台接待员`,
+        "No problem! The beach is just a short walk from here. Enjoy your time at Waikiki Beach! If you change your mind about the Luau, it's still going on until 9 PM.",
+        "没问题！海滩离这里很近。祝你在威基基海滩玩得开心！如果你改变主意参加卢奥晚宴，它会一直持续到晚上 9 点。");
+    
+    setTimeout(async () => {
+        // 添加威基基海滩到二级地点
+        const beachLocation = gameState.secondaryLocationsPerPrimary[0][1];
+        if (beachLocation) {
+            const beachEmoji = beachLocation.emoji || getLocationEmoji("海滩");
+            addSecondaryLocation(
+                gameState.currentPrimaryLocationData.name,
+                beachLocation.name,
+                beachEmoji,
+                beachLocation.description
+            );
+            
+            // 更新场景名称为威基基海滩
+            document.querySelector('.scene-name').innerHTML = `
+                <span>${beachEmoji}</span>
+                <span>${beachLocation.name}</span>
+                <span>🌸</span>
+            `;
+            
+            // 显示到达海滩的旁白
+            const arrivalMessage = document.createElement('div');
+            arrivalMessage.className = 'system-message';
+            arrivalMessage.innerHTML = `
+                <span style="font-weight: bold; color: #6a1b9a; font-size: 0.95em; line-height: 1.6;">
+                    🏖️ 威基基海滩 🏖️<br><br>
+                    你从酒店出来，沿着卡拉卡瓦大道步行几分钟，蔚蓝的太平洋逐渐映入眼帘。金色的阳光洒在细腻的白沙上，椰子树在微风中轻轻摇曳。远处，冲浪者在碧波荡漾的海面上乘风破浪，空气中弥漫着淡淡的海盐和鸡蛋花香。<br><br>
+                    你在海滩边漫步，享受着温暖的海风和美丽的景色...
+                </span>
+            `;
+            chatContainer.appendChild(arrivalMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // 直接在海边遇到 Koa（跳过冲浪店和 Maya）
+        // 防止重复触发 Koa 邂逅
+        if (gameState.koaEncounterTriggered) {
+            console.log("Koa 邂逅已触发，跳过");
+            return;
+        }
+        gameState.koaEncounterTriggered = true;
+        
+        // 使用 encounter.js 中的 generateSurfShopRomance 函数
+        if (window.generateSurfShopRomance) {
+            await window.generateSurfShopRomance({ name: "威基基海滩" });
+        }
+    }, 500);
+    
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// 删除 meetKoaAtBeach 函数，统一使用 generateSurfShopRomance()
+
+
+// ============================================================================
+// 二级地点探索
+// ============================================================================
+async function enterSecondaryLocation(index) {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    if (!gameState.secondaryLocations || !gameState.secondaryLocations[index]) {
+        console.error("错误：secondaryLocations 不存在或索引超出范围");
+        console.log("gameState.secondaryLocations:", gameState.secondaryLocations);
+        console.log("index:", index);
+        
+        const errorMessage = document.createElement('div');
+        errorMessage.className = 'system-message';
+        errorMessage.innerHTML = `
+            <span style="font-weight: bold; color: red;">
+                ⚠️ 错误：无法进入该地点<br><br>
+                请刷新页面重试，或联系开发者。
+            </span>
+        `;
+        chatContainer.appendChild(errorMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        return;
+    }
+    
+    const location = gameState.secondaryLocations[index];
+    const prevLocation = gameState.secondaryLocations[gameState.currentSecondaryIndex];
+    
+    console.log("进入二级地点:", location.name);
+    console.log("location:", location);
+    
+    gameState.currentSecondaryIndex = index;
+    gameState.currentSecondaryLocation = location;
+    gameState.currentNpc = location.npc;
+    gameState.conversationHistory = [];
+    gameState.encounterProbability = location.encounterProb;
+    gameState.medalProbability = location.medalProb;
+    gameState.storyPhase = "secondaryLocation";
+    
+    const isSurfShop = location.name.includes('冲浪') || location.npc.toLowerCase().includes('surfer');
+    
+    console.log("=== 进入二级地点调试信息 ===");
+    console.log("地点名称:", location.name);
+    console.log("NPC 名称:", location.npc);
+    console.log("是否冲浪店:", isSurfShop);
+    console.log("storyPhase:", gameState.storyPhase);
+    
+    if (gameState.currentPrimaryLocationData) {
+        addSecondaryLocation(
+            gameState.currentPrimaryLocationData.name, 
+            location.name, 
+            location.emoji, 
+            `${location.name}，可以和${location.npc}交流互动的好地方。`
+        );
+    }
+    
+    const systemMessage = document.createElement('div');
+    systemMessage.className = 'system-message';
+    systemMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            ${location.emoji} ${location.name} ${location.emoji}<br><br>
+            你来到了${location.name}，这里充满了夏威夷的独特魅力！
+        </span>
+    `;
+    chatContainer.appendChild(systemMessage);
+    
+    await generateInnerMonologue(`来到了${location.name}，感觉这里好棒！不知道会遇到什么有趣的事情呢？`, "好奇、兴奋、期待");
+    
+    // 进入二级地点后，触发 Medal 事件
+    if (Math.random() < gameState.medalProbability) {
+        await triggerLocationMedal(location);
+    }
+    
+    // 生成 NPC 欢迎对话
+    await window.generateNPCDialogue(location.npc, `作为${location.name}的${location.npc}，用英语热情欢迎游客来到这里。介绍一下这个地方，然后询问游客想做什么或想看什么。保持友好、热情的态度。最后，可以自然地提到附近还有其他好玩的地方可以探索。`);
+    
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+
+// ============================================================================
+// 邀约系统（已移至 aigenerate/invitation.js）
+// ============================================================================
+
+
+// ============================================================================
+// 剧情进度检查
+// ============================================================================
+async function checkStoryProgress(userInput, npcResponse) {
+    if (gameState.storyPhase === "invitation_date") {
+        gameState.dateConversationCount++;
+        console.log("约会阶段 - 对话计数:", gameState.dateConversationCount);
+        
+        if (gameState.dateConversationCount >= 3) {
+            const shouldEnd = gameState.dateConversationCount >= 5 || 
+                             (gameState.dateConversationCount >= 3 && Math.random() < 0.5);
+            
+            if (shouldEnd) {
+                console.log("约会结束");
+                setTimeout(async () => {
+                    await completeDate();
+                }, 1000);
+            }
+        }
+        return;
+    }
+    
+    if (gameState.storyPhase === "guide") {
+        console.log("导游阶段 - 对话计数:", gameState.conversationCount);
+        
+        if (gameState.conversationCount >= 2) {
+            console.log("导游对话达到 2 轮，准备生成行程");
+            setTimeout(async () => {
+                await generateLocationsAndItinerary();
+            }, 1000);
+        } else {
+            console.log("继续导游对话... (count:", gameState.conversationCount, ")");
+        }
+        return;
+    }
+    
+    if (gameState.storyPhase === "hotelCheckIn") {
+        console.log("酒店入住阶段 - 对话计数:", gameState.conversationCount);
+        
+        if (gameState.conversationCount >= 2 && !gameState.luauInvitationShown) {
+            console.log("酒店入住对话达到 2 轮，准备介绍卢奥晚宴");
+            gameState.luauInvitationShown = true;
+            setTimeout(async () => {
+                if (!gameState.secondaryLocations || gameState.secondaryLocations.length === 0) {
+                    const itineraryData = ITINERARY_DATA;
+                    
+                    console.log("使用固定行程数据，第一个一级地点:", itineraryData.primaryLocations[0]);
+                    
+                    gameState.primaryLocationsList = itineraryData.primaryLocations;
+                    gameState.secondaryLocationsPerPrimary = itineraryData.secondaryLocationsPerPrimary;
+                    gameState.currentPrimaryLocationData = itineraryData.primaryLocations[0];
+                    gameState.hotel = itineraryData.hotel;
+                    gameState.secondaryLocations = itineraryData.secondaryLocationsPerPrimary[0].map((loc, i) => ({
+                        ...loc,
+                        type: i === 0 ? "hotel" : "random",
+                        encounterProb: i === 0 ? 1.0 : (i === 1 ? 1.0 : 0),
+                        medalProb: i === 0 ? 0 : (i === 1 ? 0.7 : 1.0)
+                    }));
+                    
+                    if (!gameState.currentPrimaryLocationData || !gameState.currentPrimaryLocationData.name) {
+                        console.error("fallback 时 currentPrimaryLocationData 设置失败！", gameState.currentPrimaryLocationData);
+                        gameState.currentPrimaryLocationData = { name: "威基基海滩", emoji: "🏖️", description: "世界著名的海滩，冲浪和日光浴的天堂" };
+                    }
+                }
+                
+                await showLuauInvitation();
+            }, 1000);
+        } else {
+            console.log("继续酒店入住对话... (count:", gameState.conversationCount, ")");
+        }
+        return;
+    }
+    
+    if (gameState.storyPhase === "surfShop") {
+        console.log("冲浪店阶段 - 对话计数:", gameState.conversationCount);
+        if (gameState.conversationCount >= 2 && !gameState.medalTriggered) {
+            console.log("冲浪店对话达到 2 轮，触发 Medal 事件");
+            gameState.medalTriggered = true;
+            setTimeout(async () => {
+                await window.triggerWaikikiMedalEvent("冲浪店");
+            }, 500);
+        }
+        return;
+    }
+    
+    if (gameState.storyPhase === "tertiary_visit") {
+        console.log("三级地点访问阶段 - 对话计数:", gameState.conversationCount);
+        
+        if (gameState.conversationCount >= 2 && !gameState.medalTriggered) {
+            console.log("三级地点对话达到 2 轮，触发 Medal 事件");
+            gameState.medalTriggered = true;
+            setTimeout(async () => {
+                await window.triggerWaikikiMedalEvent(gameState.currentTertiaryLocation);
+            }, 500);
+            return;
+        }
+        
+        if (gameState.currentTertiaryLocation === "彩虹刨冰店" || 
+            gameState.currentTertiaryLocation === "阿罗哈烤虾车") {
+            return;
+        }
+        
+        // Medal 事件结束后，根据地点类型决定下一步
+        const endCheck = window.shouldEndConversation(npcResponse, userInput, {
+            currentTurns: gameState.conversationCount,
+            minTurns: 2,
+            maxTurns: 8,
+            requireFarewell: false
+        });
+        
+        if (endCheck.shouldEnd) {
+            // 美食地点（刨冰店/烤虾车）：Medal 结束后直接回酒店，不触发 Koa
+            if (gameState.currentTertiaryLocation === "彩虹刨冰店" || 
+                gameState.currentTertiaryLocation === "阿罗哈烤虾车") {
+                console.log("美食地点 Medal 结束，回酒店房间");
+                
+                // 禁用输入框
+                const userInputEl = document.getElementById('userInput');
+                const sendButton = document.querySelector('.send-btn');
+                if (userInputEl) {
+                    userInputEl.disabled = true;
+                    userInputEl.placeholder = "";
+                }
+                if (sendButton) {
+                    sendButton.disabled = true;
+                    sendButton.style.opacity = "0.5";
+                    sendButton.style.cursor = "not-allowed";
+                }
+                
+                // 显示加载动画
+                const chatContainer = document.getElementById('chatContainer');
+                const loadingMessage = document.createElement('div');
+                loadingMessage.className = 'system-message';
+                loadingMessage.id = 'transitionLoading';
+                loadingMessage.innerHTML = `
+                    <div style="display: inline-block; width: 24px; height: 24px; border: 3px solid #e0e0e0; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                `;
+                chatContainer.appendChild(loadingMessage);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                setTimeout(async () => {
+                    gameState.currentNpc = null;
+                    console.log("美食地点体验结束，回酒店房间");
+                    await returnToHotelRoom();
+                }, 500);
+                return;
+            }
+            
+            // 其他地点（冲浪店/花环店/音乐教室）：触发 Koa 邂逅
+            console.log("三级地点访问结束，触发 Koa 邂逅");
+            setTimeout(async () => {
+                await handleTertiaryVisitEnd();
+            }, 1000);
+        }
+        return;
+    }
+    
+    if (isQuestion(npcResponse)) {
+        return;
+    }
+    
+   const endCheck = window.shouldEndConversation(npcResponse, userInput, {
+        currentTurns: gameState.conversationCount,
+        minTurns: 0,
+        maxTurns: 12,
+        requireFarewell: false
+    });
+    
+    console.log("全局对话结束检测:", endCheck);
+    
+    if (gameState.storyPhase === "customs") {
+        if (endCheck.shouldEnd) {
+            const chatContainer = document.getElementById('chatContainer');
+            
+            setTimeout(async () => {
+                const innerThought = document.createElement('div');
+                innerThought.className = 'system-message';
+                innerThought.innerHTML = `
+                    <span style="font-weight: bold; color: #6a1b9a; font-size: 0.95em; line-height: 1.6;">
+                        💭 内心独白 💭<br><br>
+                        "呼～终于通过海关了！"你松了一口气，脸上露出开心的笑容。<br><br>
+                        环顾四周，现代化的机场大厅宽敞明亮，透过巨大的落地窗可以看到远处碧蓝的太平洋和翠绿的钻石山。<br><br>
+                        "这里的机场好漂亮啊！"你拿出手机，"得给机场拍张照留个纪念！"<br><br>
+                        <em style="color: #888;">（你举起手机，对准机场大厅拍了一张照片）</em>
+                    </span>
+                `;
+                chatContainer.appendChild(innerThought);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                setTimeout(() => {
+                    const flash = document.createElement('div');
+                    flash.className = 'camera-flash';
+                    document.body.appendChild(flash);
+                    
+                    const shutterText = document.createElement('div');
+                    shutterText.className = 'camera-shutter-text';
+                    shutterText.textContent = '📸 咔嚓！';
+                    document.body.appendChild(shutterText);
+                    
+                    setTimeout(() => {
+                        if (flash.parentNode) flash.parentNode.removeChild(flash);
+                        if (shutterText.parentNode) shutterText.parentNode.removeChild(shutterText);
+                        
+                        const overlay = document.createElement('div');
+                        overlay.className = 'photo-modal-overlay';
+                        overlay.onclick = () => {
+                            overlay.remove();
+                        };
+                        
+                        const newPhoto = {
+                            src: 'pictures/檀香山机场.png',
+                            name: '檀香山国际机场',
+                            emoji: '✈️',
+                            date: new Date().toLocaleDateString('zh-CN'),
+                            location: '海关',
+                            description: '抵达夏威夷的第一张照片'
+                        };
+                        
+                        if (!gameState.photos) {
+                            gameState.photos = [];
+                        }
+                        
+                        if (!gameState.photos.some(p => p.src === newPhoto.src)) {
+                            gameState.photos.push(newPhoto);
+                            console.log('📸 照片已保存:', newPhoto.name);
+                        }
+                        
+                        const modal = document.createElement('div');
+                        modal.className = 'photo-modal';
+                        modal.innerHTML = `
+                            <button class="photo-close-btn" onclick="this.closest('.photo-modal-overlay').remove(); setTimeout(() => {
+                                if (!gameState.airportEventTriggered) {
+                                    gameState.airportEventTriggered = true;
+                                    triggerAirportRandomEvent();
+                                }
+                            }, 100);">×</button>
+                            <div class="photo-modal-header">
+                                <h3>📸 Photo!</h3>
+                            </div>
+                            <div class="photo-modal-image">
+                                <img src="pictures/檀香山机场.png" alt="檀香山机场">
+                            </div>
+                            <div class="photo-modal-caption">
+                                <span>🌺</span>
+                                <span>Honolulu International Airport</span>
+                                <span>🌺</span>
+                            </div>
+                        `;
+                        
+                        overlay.appendChild(modal);
+                        document.body.appendChild(overlay);
+                    }, 300);
+                }, 1000);
+            }, 500);
+        }
+    } else if (gameState.storyPhase === "guide") {
+        console.log("导游阶段 - 对话计数:", gameState.conversationCount);
+        if (gameState.conversationCount >= 3) {
+            console.log("对话达到 3 轮，准备生成行程");
+            setTimeout(async () => {
+                console.log("开始生成行程...");
+                await generateItinerary();
+            }, 500);
+        }
+    } else if (gameState.storyPhase === "luau_encounter") {
+        console.log("=== 卢奥晚宴邂逅对话 ===");
+        console.log("当前对话轮数:", gameState.conversationCount);
+        console.log("当前 NPC:", gameState.currentNpc);
+        
+        if (gameState.conversationCount === 2 && !gameState.luauFireDanceEvent) {
+            gameState.luauFireDanceEvent = true;
+            setTimeout(async () => {
+                await triggerLuauFireDanceEvent();
+            }, 1000);
+            return;
+        }
+        
+        if (gameState.conversationCount === 4 && !gameState.luauBeachWalkEvent) {
+            gameState.luauBeachWalkEvent = true;
+            setTimeout(async () => {
+                await triggerLuauBeachWalkEvent();
+            }, 1000);
+            return;
+        }
+        
+        if (gameState.conversationCount === 6 && !gameState.luauGiftEvent) {
+            gameState.luauGiftEvent = true;
+            setTimeout(async () => {
+                await triggerLuauGiftEvent();
+            }, 1000);
+            return;
+        }
+        
+        if (gameState.conversationCount < 1) {
+            console.log("对话轮数不足，继续对话");
+            return;
+        }
+        
+        const endCheck = window.shouldEndConversation(npcResponse, userInput, {
+            currentTurns: gameState.conversationCount,
+            minTurns: 1,
+            maxTurns: 8,
+            requireFarewell: true
+        });
+        
+        console.log("卢奥晚宴对话检测:", endCheck);
+        
+        if (endCheck.shouldEnd) {
+            console.log("检测到告别，准备结束卢奥晚宴邂逅");
+            console.log("结束原因:", endCheck.reason);
+            
+            const userInputEl = document.getElementById('userInput');
+            const sendButton = document.querySelector('.send-btn');
+            if (userInputEl) {
+                userInputEl.disabled = true;
+                userInputEl.placeholder = "";
+            }
+            if (sendButton) {
+                sendButton.disabled = true;
+                sendButton.style.opacity = "0.5";
+                sendButton.style.cursor = "not-allowed";
+            }
+            
+            const chatContainer = document.getElementById('chatContainer');
+            
+            setTimeout(async () => {
+                gameState.currentNpc = null;
+                gameState.storyPhase = "hotelRoom";
+                
+                const farewellMessage = document.createElement('div');
+                farewellMessage.className = 'system-message';
+                farewellMessage.innerHTML = `
+                    <span style="font-weight: bold; color: #6a1b9a;">
+                        🌙 神秘的夜晚 🌙<br><br>
+                        夜深了，晚宴接近尾声。<br>
+                        他站起身，优雅地整理了一下衣领，微笑着看向你。<br><br>
+                        "Tonight was special. Thank you." 他的声音低沉而有磁性。<br>
+                        他从口袋里拿出一个小物件，轻轻放在你手中——是一个精致的贝壳，上面刻着夏威夷的图腾。<br><br>
+                        "Aloha." 他轻声说道，然后转身消失在夜色中。<br><br>
+                        你握紧手中的贝壳，心中涌起一股莫名的感动。<br>
+                        这个夜晚，注定难忘。<br><br>
+                        ---<br><br>
+                        🏨 回到酒店房间<br><br>
+                        你拖着疲惫但满足的身体回到酒店房间。<br>
+                        躺在床上，回想着今晚的邂逅，嘴角不自觉地上扬。<br>
+                        手中的贝壳在月光下泛着温柔的光泽。<br><br>
+                        海风从窗外吹进来，带着淡淡的海盐味。<br>
+                        你闭上眼睛，期待着明天的冒险...<br><br>
+                        <span style="font-size: 1.3em;">🌺 Day 1 结束 🌺</span>
+                    </span>
+                `;
+                chatContainer.appendChild(farewellMessage);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                
+                if (userInputEl) {
+                    userInputEl.disabled = false;
+                    userInputEl.placeholder = "第一天结束，敬请期待后续...";
+                }
+                
+                if (gameState.branches && gameState.branches.length > 0) {
+                    const lastBranch = gameState.branches[gameState.branches.length - 1];
+                    if (lastBranch.title === "夏威夷卢奥晚宴") {
+                        lastBranch.status = "completed";
+                    }
+                }
+            }, 1000);
+            
+            return;
+        }
+        
+        console.log("继续卢奥晚宴对话...");
+        console.log("继续卢奥晚宴对话...");
+    if (gameState.storyPhase === "Duke's Waikiki") {
+        console.log("Duke's Waikiki 约会阶段 - 对话计数:", gameState.dateConversationCount);
+        
+        if (gameState.dateConversationCount < 1) {
+            console.log("对话轮数不足，继续对话");
+            return;
+        }
+        
+        const endCheck = window.shouldEndConversation(npcResponse, userInput, {
+            currentTurns: gameState.dateConversationCount,
+            minTurns: 1,
+            maxTurns: 8,
+            requireFarewell: true
+        });
+        
+        if (endCheck.shouldEnd) {
+            console.log("Duke's Waikiki 约会结束");
+            
+            const userInputEl = document.getElementById('userInput');
+            const sendButton = document.querySelector('.send-btn');
+            if (userInputEl) {
+                userInputEl.disabled = true;
+                userInputEl.placeholder = "";
+            }
+            if (sendButton) {
+                sendButton.disabled = true;
+                sendButton.style.opacity = "0.5";
+                sendButton.style.cursor = "not-allowed";
+            }
+            
+            const chatContainer = document.getElementById('chatContainer');
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'system-message';
+            loadingMessage.id = 'transitionLoading';
+            loadingMessage.innerHTML = `
+                <div style="display: inline-block; width: 24px; height: 24px; border: 3px solid #e0e0e0; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            `;
+            chatContainer.appendChild(loadingMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            setTimeout(async () => {
+                gameState.currentNpc = null;
+                
+                console.log("Duke's Waikiki 约会结束，回酒店房间");
+                
+                await returnToHotelRoom();
+            }, 1000);
+        }
+        return;
+    }
+    
+    if ((gameState.storyPhase === "foodTruckMedal" || gameState.storyPhase === "shave_ice") && 
+        (gameState.currentTertiaryLocation === "彩虹刨冰店" || 
+         gameState.currentTertiaryLocation === "阿罗哈烤虾车")) {
+        
+        console.log("✅ 进入美食地点 Medal 阶段");
+        console.log("美食地点 Medal 阶段 - 对话计数:", gameState.conversationCount);
+        
+        if (gameState.conversationCount >= 2 && !gameState.medalTriggered) {
+            console.log("=== 美食地点 Medal 触发 ===");
+            console.log("当前地点:", gameState.currentTertiaryLocation);
+            console.log("当前阶段:", gameState.storyPhase);
+            console.log("medalTriggered:", gameState.medalTriggered);
+            gameState.medalTriggered = true;
+            setTimeout(async () => {
+                console.log("准备触发 Medal 事件...");
+                await window.triggerWaikikiMedalEvent(gameState.currentTertiaryLocation);
+            }, 500);
+            return;
+        }
+        
+        if (gameState.conversationCount < 1) {
+            console.log("对话轮数不足，继续对话");
+            return;
+        }
+        
+        const endCheck = window.shouldEndConversation(npcResponse, userInput, {
+            currentTurns: gameState.conversationCount,
+            minTurns: 3,
+            maxTurns: 8,
+            requireFarewell: false
+        });
+        
+        if (endCheck.shouldEnd) {
+            console.log("美食地点 Medal 结束，回酒店房间");
+            
+            const userInputEl = document.getElementById('userInput');
+            const sendButton = document.querySelector('.send-btn');
+            if (userInputEl) {
+                userInputEl.disabled = true;
+                userInputEl.placeholder = "";
+            }
+            if (sendButton) {
+                sendButton.disabled = true;
+                sendButton.style.opacity = "0.5";
+                sendButton.style.cursor = "not-allowed";
+            }
+            
+            const chatContainer = document.getElementById('chatContainer');
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'system-message';
+            loadingMessage.id = 'transitionLoading';
+            loadingMessage.innerHTML = `
+                <div style="display: inline-block; width: 24px; height: 24px; border: 3px solid #e0e0e0; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            `;
+            chatContainer.appendChild(loadingMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            setTimeout(async () => {
+                gameState.currentNpc = null;
+                
+                console.log("美食地点体验结束，回酒店房间");
+                
+                await returnToHotelRoom();
+            }, 500);
+        }
+    }
+    
+    // ========== 处理邂逅/成就事件阶段 ==========
+    if (gameState.storyPhase === "encounter" || gameState.storyPhase === "medal") {
+        // 邂逅/成就事件对话：统一处理
+        const phaseName = gameState.storyPhase === "encounter" ? "邂逅" : "成就事件";
+        console.log(`=== ${phaseName}对话阶段 ===`);
+        console.log("当前对话轮数:", gameState.conversationCount);
+        console.log("当前 NPC:", gameState.currentNpc);
+        
+        // 使用邂逅检测配置（需要告别词）
+        // 正常检测告别，检测结束后再判断是否触发 Koa 邀请
+        const endCheck = window.shouldEndConversation(npcResponse, userInput, {
+            currentTurns: gameState.conversationCount,
+            minTurns: 1,
+            maxTurns: gameState.storyPhase === "encounter" ? 6 : 12,  // 邂逅 6 轮，成就 12 轮
+            requireFarewell: true
+        });
+        
+        console.log(`${phaseName}对话检测:`, endCheck);
+        
+        // 检测到告别，结束对话
+        if (endCheck.shouldEnd) {
+            console.log(`检测到告别，准备结束${phaseName}`);
+            console.log("结束原因:", endCheck.reason);
+            
+            // 禁用输入框
+            const userInputEl = document.getElementById('userInput');
+            const sendButton = document.querySelector('.send-btn');
+            if (userInputEl) {
+                userInputEl.disabled = true;
+                userInputEl.placeholder = "";
+            }
+            if (sendButton) {
+                sendButton.disabled = true;
+                sendButton.style.opacity = "0.5";
+                sendButton.style.cursor = "not-allowed";
+            }
+            
+            // 显示加载动画
+            const chatContainer = document.getElementById('chatContainer');
+            const loadingMessage = document.createElement('div');
+            loadingMessage.className = 'system-message';
+            loadingMessage.id = 'transitionLoading';
+            loadingMessage.style.cssText = `
+                background: transparent;
+                border: none;
+                box-shadow: none;
+                padding: 10px 0;
+                text-align: center;
+            `;
+            loadingMessage.innerHTML = `
+                <div style="display: inline-block; width: 24px; height: 24px; border: 3px solid #e0e0e0; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            `;
+            chatContainer.appendChild(loadingMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            setTimeout(async () => {
+                console.log(`${phaseName}结束`);
+                
+                // 先检查是否是 Koa 的邂逅（在清空 currentNpc 之前！）
+                const isKoaEncounter = gameState.storyPhase === "encounter" && 
+                                       !gameState.koaInvitationShown && 
+                                       gameState.currentNpc === "Koa";
+                
+                if (isKoaEncounter) {
+                    console.log("Koa 邂逅结束，触发酒吧邀请");
+                    gameState.koaInvitationShown = true;
+                    
+                    // 先显示 Koa 的固定邀请对话
+                    setTimeout(async () => {
+                        const chatContainer = document.getElementById('chatContainer');
+                        
+                        const invitationMessage = document.createElement('div');
+                        invitationMessage.className = 'system-message';
+                        invitationMessage.innerHTML = `
+                            <span style="font-weight: bold; color: #6a1b9a;">
+                                🏄‍♂️ Koa 真诚地看着你 🏄‍️<br><br>
+                                "You know what? I have to say... you're absolutely stunning."<br><br>
+                                他的眼神温柔而真诚，海风吹起他的发丝，露出俊朗的侧脸。<br><br>
+                                "I was wondering... would you do me the honor of joining our beach party tonight?"<br>
+                                他有些紧张地搓了搓手，露出期待的笑容。<br><br>
+                                "It's at Duke Beach. We've got music, bonfire, and the best sunset view on the island."<br>
+                                他的声音带着一丝期待，"I'd really love to see you there."<br><br>
+                                <em style="color: #888;">（Koa 邀请你参加今晚在 Duke Beach 的海滩派对）</em>
+                            </span>
+                        `;
+                        chatContainer.appendChild(invitationMessage);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        
+                        // 立即弹出选项（不要延迟）
+                        showBeachBarInvitationOptions();
+                    }, 500);
+                    
+                    return;
+                }
+                
+                // 其他情况：清空 NPC，进入随机地点
+                gameState.currentNpc = null;
+                
+                // 恢复输入框
+                if (userInputEl) {
+                    userInputEl.disabled = false;
+                    userInputEl.placeholder = "输入消息...";
+                    userInputEl.focus();
+                }
+                if (sendButton) {
+                    sendButton.disabled = false;
+                    sendButton.style.opacity = "1";
+                    sendButton.style.cursor = "pointer";
+                }
+                
+                // 移除加载动画
+                const loadingEl = document.getElementById('transitionLoading');
+                if (loadingEl) {
+                    loadingEl.remove();
+                }
+                
+                // 进入三级地点（刨冰店/烤虾车）
+                await enterRandomLocation();
+            }, 1000);
+            
+            return;
+        }
+        
+        // 继续正常对话
+        console.log(`继续${phaseName}对话...`);
+    } else if (gameState.storyPhase === "toHotel") {
+        if (endCheck.shouldEnd) {
+            setTimeout(async () => {
+                await startHotelCheckIn();
+            }, 1000);
+        }
+    } else if (gameState.storyPhase === "hotelCheckIn") {
+        if (endCheck.shouldEnd && gameState.conversationCount >= 3) {
+            setTimeout(async () => {
+                const nextLocation = gameState.secondaryLocations[1];
+                await enterSecondaryLocation(1);
+            }, 100);
+        }
+    } else if (gameState.storyPhase === "secondaryLocation") {
+        // 使用全局检测，配置：最小 4 轮，最大 12 轮
+        const locationEndCheck = window.shouldEndConversation(npcResponse, userInput, {
+            currentTurns: gameState.conversationCount,
+            minTurns: 4,
+            maxTurns: 12,  // 增加到 12 轮，让玩家可以聊得更久
+            requireFarewell: false
+        });
+        
+        if (locationEndCheck.shouldEnd) {
+            console.log("二级地点对话结束检测:", locationEndCheck);
+            const nextSecondaryIndex = gameState.currentSecondaryIndex + 1;
+            if (nextSecondaryIndex < gameState.secondaryLocations.length) {
+                setTimeout(async () => {
+                    await enterSecondaryLocation(nextSecondaryIndex);
+                }, 100);
+            } else {
+                console.log("所有二级地点探索完毕，旅程结束");
+                const endMessage = document.createElement('div');
+                endMessage.className = 'system-message';
+                endMessage.innerHTML = `
+                    <span style="font-weight: bold; color: #6a1b9a;">
+                        🌺 旅程结束 🌺<br><br>
+                        你的夏威夷之旅已经圆满完成！你探索了美丽的景点，遇到了有趣的人，收获了珍贵的回忆。<br><br>
+                        希望这次旅行不仅让你提升了英语口语能力，也让你感受到了夏威夷的独特魅力。期待你下次再来！
+                    </span>
+                `;
+                document.getElementById('chatContainer').appendChild(endMessage);
+                document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
+            }
+        }
+    }
+}
+
+// ============================================================================
+// 测试功能
+// ============================================================================
+/**
+ * 测试：直接去威基基海滩
+ */
+async function testGoToBeach() {
+    console.log("=== 测试：直接去威基基海滩 ===");
+    
+    // 初始化行程数据
+    const itineraryData = window.ITINERARY_DATA;
+    if (!itineraryData) {
+        console.error("错误：无法获取行程数据 ITINERARY_DATA");
+        return;
+    }
+    
+    // 设置游戏状态
+    window.gameState.currentPrimaryLocation = 0; // 威基基区域
+    window.gameState.currentPrimaryIndex = 0;
+    window.gameState.currentSecondaryLocation = "威基基海滩";
+    window.gameState.currentSecondaryIndex = 1;
+    window.gameState.storyPhase = "beach";
+    
+    // 初始化行程数据到 gameState
+    window.gameState.primaryLocationsList = itineraryData.primaryLocations;
+    window.gameState.secondaryLocationsPerPrimary = itineraryData.secondaryLocationsPerPrimary;
+    window.gameState.currentPrimaryLocationData = itineraryData.primaryLocations[0];
+    window.gameState.hotel = itineraryData.hotel;
+    
+    // 清空聊天容器
+    const chatContainer = document.getElementById('chatContainer');
+    chatContainer.innerHTML = '';
+    
+    // 显示场景消息
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            🏖️ 威基基海滩 🏖️<br><br>
+            阳光明媚的早晨，你来到了美丽的威基基海滩。<br><br>
+            细软的白沙在阳光下闪闪发光，<br>
+            碧蓝的海水轻柔地拍打着海岸，<br>
+            远处有几个冲浪者在海浪中穿梭。<br><br>
+            海风带着咸咸的味道，<br>
+            椰子树在微风中轻轻摇曳。<br><br>
+            你在海滩边漫步，发现了几家有趣的小店...<br><br>
+            <em style="color: #888;">请选择你想探索的地方：</em>
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 添加到地点记录
+    if (!window.gameState.locations.some(loc => loc.name === "威基基海滩")) {
+        window.gameState.locations.push({
+            type: "primary",
+            name: "威基基海滩",
+            emoji: "🏖️",
+            description: "世界著名的海滩",
+            visited: true
+        });
+    }
+    
+    // 显示选项，引导玩家选择
+    setTimeout(() => {
+        showOptions([
+            { 
+                text: '🏄‍♀️ 去冲浪店看看', 
+                gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                onClick: async () => {
+                    await visitBeachLocation("冲浪店");
+                }
+            },
+            { 
+                text: '🌺 去花环编织店逛逛', 
+                gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                onClick: async () => {
+                    await visitBeachLocation("热带花环编织店");
+                }
+            },
+            { 
+                text: '🎵 去尤克里里音乐教室', 
+                gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                onClick: async () => {
+                    await visitBeachLocation("尤克里里音乐教室");
+                }
+            }
+        ]);
+    }, 500);
+    
+    console.log("已到达威基基海滩，等待玩家选择");
+}
+
+/**
+ * 访问海滩的三级地点
+ * @param {string} locationName - 地点名称
+ */
+async function visitBeachLocation(locationName) {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    // 检查并初始化 secondaryLocationsPerPrimary
+    if (!gameState.secondaryLocationsPerPrimary || !gameState.secondaryLocationsPerPrimary[0]) {
+        // 使用 ITINERARY_DATA 初始化
+        const itineraryData = window.ITINERARY_DATA;
+        if (itineraryData) {
+            gameState.secondaryLocationsPerPrimary = itineraryData.secondaryLocationsPerPrimary;
+        } else {
+            console.error("错误：无法获取行程数据");
+            return;
+        }
+    }
+    
+    // 从 itinerary 获取三级地点数据
+    const beachData = gameState.secondaryLocationsPerPrimary[0][1]; // 威基基海滩
+    const allTertiaryLocations = beachData?.tertiaryLocations || [];
+    
+    // 找到选中的地点
+    const selectedLocation = allTertiaryLocations.find(loc => loc.name === locationName);
+    
+    if (!selectedLocation) {
+        console.error("错误：未找到地点", locationName);
+        return;
+    }
+    
+    console.log("选择的海滩地点:", selectedLocation.name);
+    
+    // 添加三级地点到 showLocation
+    addTertiaryLocation(
+        beachData.name,  // 所属二级地点
+        selectedLocation.name,
+        selectedLocation.emoji,
+        selectedLocation.description
+    );
+    
+    // 设置状态
+    gameState.currentTertiaryLocation = selectedLocation.name;
+    gameState.currentNpc = selectedLocation.npc;
+    gameState.storyPhase = selectedLocation.hasStory ? "surfShop" : "tertiary_visit";
+    gameState.conversationCount = 0;
+    
+    // 显示场景描写
+    const sceneMessage = document.createElement('div');
+    sceneMessage.className = 'system-message';
+    sceneMessage.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            ${selectedLocation.emoji} ${selectedLocation.name} ${selectedLocation.emoji}<br><br>
+            你走进了这家${selectedLocation.name}。<br>
+            ${selectedLocation.description}。<br>
+            你决定进去看看...
+        </span>
+    `;
+    chatContainer.appendChild(sceneMessage);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 从固定 NPC 库读取 NPC 信息
+    const npcCharacter = window.getFixedNpc(selectedLocation.npc);
+    
+    saveFixedNpcToEncounters(npcCharacter);
+    
+    // 如果是冲浪店，进入冲浪店剧情
+    if (selectedLocation.name === "冲浪店") {
+        setTimeout(async () => {
+            await enterSurfShop();
+        }, 500);
+    } else {
+        // 花环店或音乐教室：生成 NPC 欢迎对话
+        setTimeout(async () => {
+            const prompt = `作为${selectedLocation.npcTitle} ${selectedLocation.npc}，用英语热情欢迎这位独自来到${selectedLocation.name}的游客。
+            介绍一下你的${selectedLocation.name}，然后询问游客想体验什么。
+            语气要${selectedLocation.name === "热带花环编织店" ? "温柔、有艺术气质" : "阳光、幽默"}。`;
+            
+            await window.generateNPCDialogue(selectedLocation.npc, prompt);
+        }, 500);
+    }
+}
+}
+
+console.log("Game module loaded ✓");

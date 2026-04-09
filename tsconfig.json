@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "allowJs": true,
+    "checkJs": false,
+    "outDir": "./dist",
+    "rootDir": "./js",
+    "strict": true,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["js/*"],
+      "@core/*": ["js/core/*"],
+      "@modules/*": ["js/modules/*"],
+      "@data/*": ["js/data/*"],
+      "@prompts/*": ["js/prompts/*"],
+      "@aigenerate/*": ["js/aigenerate/*"],
+      "@utils/*": ["js/utils/*"],
+      "@config/*": ["js/config/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "./js/types"]
+  },
+  "include": [
+    "js/**/*",
+    "js/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.backup",
+    "**/*.zip"
+  ]
+}

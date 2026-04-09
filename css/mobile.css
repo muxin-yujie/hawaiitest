@@ -1,0 +1,845 @@
+/* ========================================
+   🌺 阳光夏威夷 - 移动端专属样式
+   ======================================== */
+
+/* ========== 基础样式 ========== */
+
+/* 移动端容器 */
+.container.mobile {
+    width: 100%;
+    height: 100vh;
+    max-width: 100%;
+    border-radius: 0;
+    /* 安全区域适配（iPhone X+） */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ========== 头部区域 - 柔和精致设计 ========== */
+
+/* 移动端头部 - 鲜艳的芭乐粉 */
+.scene-header.mobile {
+    padding: 10px 16px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background: #FF6B9D;  /* 鲜艳的芭乐粉 */
+    position: relative;
+    min-height: 44px;
+}
+
+/* 场景名称 - 浏览器网址框效果（超扁） */
+.scene-header.mobile .scene-name {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 4px 20px;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-radius: 25px !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    min-width: auto;
+    max-width: 80%;
+}
+
+.scene-header.mobile .scene-name span:first-child {
+    font-size: 1em;
+}
+
+.scene-header.mobile .scene-name span:nth-child(2) {
+    font-size: 0.85em;
+    font-weight: 500;
+    color: white;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+/* 音乐按钮 - 绝对定位到右边，白色 */
+.scene-header.mobile .music-toggle {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scene-header.mobile .music-toggle svg {
+    width: 26px;
+    height: 26px;
+}
+
+.scene-header.mobile .music-toggle:hover {
+    transform: scale(1.2);
+    opacity: 0.8;
+}
+
+.scene-header.mobile .music-toggle:active {
+    transform: scale(1);
+}
+
+.scene-header.mobile .music-toggle.active {
+    animation: musicPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes musicPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0.7;
+    }
+}
+
+/* 右侧用户菜单 */
+.user-menu.mobile {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.user-menu-btn.mobile {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+}
+
+.user-menu-btn.mobile span {
+    font-size: 1.1em;
+}
+
+.user-menu-btn.mobile:hover {
+    background: rgba(255, 255, 255, 0.35) !important;
+    transform: scale(1.05);
+}
+
+.user-menu-btn.mobile:active {
+    transform: scale(0.95);
+}
+
+.user-menu-btn.mobile:hover {
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.08);
+}
+
+.user-menu-btn.mobile:active {
+    transform: scale(0.95);
+}
+
+/* 用户菜单下拉内容 */
+.user-menu-content.mobile {
+    top: 100%;
+    right: 0;
+    width: 280px;
+    max-width: calc(100vw - 20px);
+    margin-top: 8px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(255, 105, 180, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    animation: mobileMenuSlide 0.3s ease-out;
+}
+
+@keyframes mobileMenuSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* 用户信息卡片 */
+.user-info-card {
+    background: linear-gradient(135deg, #FFB6C1 0%, #FFC2D1 100%);
+    padding: 12px;
+    color: white;
+    text-align: center;
+    border-radius: 15px 15px 0 0;
+}
+
+/* 功能列表 */
+.function-list {
+    padding: 8px 0;
+    background: white;
+}
+
+.function-list-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.function-list-item:last-child {
+    border-bottom: none;
+}
+
+.function-list-item:hover {
+    background: linear-gradient(90deg, #fff5f8 0%, rgba(255, 255, 255, 0) 100%);
+    transform: translateX(5px);
+}
+
+.function-icon {
+    font-size: 1.3em;
+}
+
+.function-list-item span:last-child {
+    font-size: 0.9em;
+    font-weight: 500;
+    color: #333;
+}
+
+/* 帮助提示 */
+.help-tip {
+    padding: 8px 12px;
+    background: #fff8e1;
+    border-top: 1px dashed #ffe0b2;
+    font-size: 0.75em;
+    color: #f57f17;
+    text-align: center;
+}
+
+/* ========== 聊天区域 ========== */
+
+/* 移动端聊天容器 */
+.chat-container.mobile {
+    flex: 1;
+    padding: 10px;
+    background: #f8f5ff;
+    background-image: 
+        radial-gradient(circle at 20px 20px, rgba(138, 43, 226, 0.03) 1.5px, transparent 0);
+    background-size: 40px 40px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* iOS 平滑滚动 */
+}
+
+/* 移动端隐藏滚动条 */
+.chat-container.mobile::-webkit-scrollbar {
+    display: none;
+}
+
+.chat-container.mobile {
+    -ms-overflow-style: none;  /* IE/Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* 移动端消息气泡 */
+.chat-container.mobile .message {
+    max-width: 75%;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* 玩家消息 */
+.chat-container.mobile .player-message {
+    margin-left: auto;
+    margin-right: 10px;
+    background: linear-gradient(135deg, #FF69B4 0%, #FFB6C1 100%);
+    color: white;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 2px 8px rgba(255, 105, 180, 0.25);
+}
+
+/* NPC 消息 */
+.chat-container.mobile .npc-message {
+    margin-right: auto;
+    margin-left: 10px;
+    background: white;
+    color: #333;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* 系统消息（文化小贴士 + 紫色旁白） */
+.chat-container.mobile .system-message {
+    max-width: 75%;
+    margin: 12px 0;
+    margin-left: 10px;
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left !important;
+    box-shadow: 0 2px 6px rgba(138, 43, 226, 0.15);
+}
+
+/* 文化小贴士特殊样式 */
+.chat-container.mobile .culture-tip {
+    max-width: 75%;
+    margin: 12px 0;
+    margin-left: 10px;
+    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    text-align: left !important;
+    box-shadow: 0 2px 6px rgba(138, 43, 226, 0.15);
+}
+
+.culture-tip-header {
+    font-size: 14px !important;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #6a1b9a;
+}
+
+.culture-tip div:last-child {
+    font-size: 13px !important;
+}
+
+/* 小屏幕适配系统消息宽度 */
+@media (max-width: 375px) {
+    .chat-container.mobile .system-message {
+        max-width: 90%;
+    }
+}
+
+/* ========== 底部功能栏 ========== */
+
+/* 移动端功能栏 */
+.function-bar.mobile {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 6px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    background: white;
+    border-top: 1px solid #f5f5f5;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+    /* 防止按钮文字换行 */
+    flex-wrap: nowrap;
+}
+
+/* 移动端功能按钮 */
+.function-btn.mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 4px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 48px;
+    /* 禁止文字换行 */
+    white-space: nowrap;
+}
+
+.function-btn.mobile span {
+    font-size: 20px !important;
+    line-height: 1;
+    display: block;
+    transition: all 0.2s ease;
+}
+
+/* 移动端功能按钮点击反馈增强 */
+.function-btn.mobile:active {
+    transform: scale(0.92);
+}
+
+.function-btn.mobile:hover span {
+    transform: scale(1.15);
+    filter: drop-shadow(0 2px 6px rgba(255, 105, 180, 0.4));
+}
+
+/* ========== 输入区域 ========== */
+
+/* 移动端输入容器 */
+.input-container.mobile {
+    background: #FF6B9D;
+    border-top: none;
+    padding: 10px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 12px rgba(255, 107, 157, 0.3);
+}
+
+/* 移动端输入区域 */
+.input-area.mobile {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.input-area.mobile:focus-within {
+    background: white;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
+}
+
+/* 移动端输入框 - 完全平面 */
+.input-area.mobile input {
+    flex: 1;
+    border: none;
+    background: #ffffff;
+    padding: 8px 12px;
+    font-size: 15px;
+    outline: none !important;
+    min-width: 0;
+    border-radius: 20px;
+}
+
+.input-area.mobile input:focus {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 图标按钮（语音、发送） - 圆形突出效果 */
+body .input-area.mobile .icon-btn,
+body .input-area.mobile #voiceInputBtn {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    border: none !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #FF85C2 0%, #FF6B9D 50%, #FF5A8F 100%) !important;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    padding: 0 !important;
+    box-shadow: 
+        0 6px 16px rgba(255, 107, 157, 0.4),
+        0 2px 6px rgba(0, 0, 0, 0.15),
+        inset 0 2px 3px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.1) !important;
+    position: relative !important;
+}
+
+body .input-area.mobile .icon-btn svg,
+body .input-area.mobile #voiceInputBtn svg {
+    width: 20px !important;
+    height: 20px !important;
+    fill: white !important;
+}
+
+body .input-area.mobile .icon-btn:hover,
+body .input-area.mobile #voiceInputBtn:hover {
+    background: linear-gradient(135deg, #FF9FD4 0%, #FF85C2 50%, #FF6B9D 100%) !important;
+    transform: translateY(-3px) scale(1.08);
+    box-shadow: 
+        0 10px 24px rgba(255, 107, 157, 0.5),
+        0 4px 10px rgba(0, 0, 0, 0.2),
+        inset 0 2px 3px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+body .input-area.mobile .icon-btn:active {
+    transform: translateY(2px) scale(0.92);
+    box-shadow: 
+        0 2px 6px rgba(255, 107, 157, 0.3),
+        0 1px 3px rgba(0, 0, 0, 0.1),
+        inset 0 2px 5px rgba(0, 0, 0, 0.15),
+        inset 0 -1px 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+body .input-area.mobile .icon-btn.listening,
+body .input-area.mobile #voiceInputBtn.listening {
+    background: #FF6B9D !important;
+    animation: pulse 1.5s infinite;
+}
+
+/* 发送按钮 - 参考微信设计 */
+.send-btn {
+    padding: 5px 14px;
+    border: none;
+    border-radius: 14px;
+    background: #FF6B9D;  /* 跟顶部一致的芭乐粉 */
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.send-btn:hover {
+    background: #FF5A8F;
+    transform: translateY(-1px);
+}
+
+.send-btn:active {
+    transform: translateY(0) scale(0.95);
+}
+
+/* 输入框禁用状态 */
+.input-area.mobile input:disabled {
+    background: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+/* 错误消息样式 */
+.chat-container.mobile .error-message {
+    max-width: 85%;
+    margin: 12px auto;
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    color: #c62828;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(244, 67, 54, 0.2);
+    border: 1px solid #ef9a9a;
+}
+
+/* ========== 语音输入状态 ========== */
+
+/* 正在输入指示器 */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 0;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8FBC 100%);
+    border-radius: 50%;
+    display: inline-block;
+    animation: typing 1.2s infinite ease-in-out;
+    opacity: 0.7;
+    box-shadow: 0 2px 4px rgba(255, 107, 157, 0.3);
+}
+
+.typing-indicator span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.7;
+    }
+    30% {
+        transform: translateY(-6px) scale(1.1);
+        opacity: 1;
+        box-shadow: 0 4px 8px rgba(255, 107, 157, 0.5);
+    }
+}
+
+.voice-input-status {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 13px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 0.3s ease;
+}
+
+.voice-input-status.hide {
+    animation: fadeOutDown 0.3s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes fadeOutDown {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+}
+
+/* ========== 模态框（移动端优化） ========== */
+
+.modal-content {
+    max-width: 95%;
+    max-height: 80vh;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* ========== Toast 提示（移动端适配） ========== */
+
+.toast-notification {
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-150px);
+    
+    /* 粉色渐变背景 */
+    background: linear-gradient(135deg, #ffc3d9 0%, #c3e6ff 100%);
+    
+    color: #c2185b;
+    padding: 12px 16px;
+    border-radius: 20px;
+    
+    /* 粉色阴影 */
+    box-shadow: 0 4px 20px rgba(255, 105, 180, 0.25);
+    
+    border: 1px solid #ffd6e6;
+    font-size: 0.9em;
+    font-weight: 500;
+    z-index: 10000;
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    
+    /* 移动端布局 */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 90%;
+    min-width: auto;
+    backdrop-filter: blur(10px);
+}
+
+.toast-notification.hide {
+    animation: slideUp 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.toast-notification:hover {
+    box-shadow: 0 6px 24px rgba(255, 105, 180, 0.3);
+}
+
+/* Toast 图标 */
+.toast-notification-icon {
+    font-size: 1.3em;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+/* Toast 内容 */
+.toast-notification-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.toast-notification-message {
+    font-weight: 400;
+    font-size: 1em;
+    line-height: 1.4;
+    color: #880e4f;
+}
+
+/* ========== 响应式调整 ========== */
+
+/* 小屏手机 */
+@media (max-width: 375px) {
+    .scene-name.mobile span:nth-child(2) {
+        font-size: 0.85em;
+    }
+    
+    .function-btn.mobile {
+        min-width: 45px;
+        padding: 6px 10px;
+    }
+    
+    .function-btn.mobile span {
+        font-size: 1.3em;
+    }
+    
+    .send-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+/* ========== 动画效果 ========== */
+
+/* 消息入场动画 */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 107, 157, 0.7);
+    }
+    70% {
+        transform: scale(1.1);
+        box-shadow: 0 0 0 10px rgba(255, 107, 157, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 107, 157, 0);
+    }
+}
+
+/* ========== 其他通用样式 ========== */
+
+/* 禁止移动端双击缩放 */
+* {
+    touch-action: manipulation;
+}
+
+/* 移除点击高亮 */
+a, button, input {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 平滑滚动 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 防止选中文本 */
+body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* 允许输入框选中 */
+input, textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
+/* ========== 性能优化 ========== */
+
+/* 硬件加速 */
+.container.mobile,
+.chat-container.mobile,
+.user-menu-content.mobile {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* 减少重绘 */
+.function-btn.mobile,
+.icon-btn,
+.send-btn {
+    will-change: transform;
+}
+
+/* ========== 深色模式支持（可选） ========== */
+@media (prefers-color-scheme: dark) {
+    .chat-container.mobile {
+        background: #1a1a2e;
+        background-image: 
+            radial-gradient(circle at 20px 20px, rgba(138, 43, 226, 0.08) 1.5px, transparent 0);
+    }
+    
+    .chat-container.mobile .npc-message {
+        background: #2d2d44;
+        color: #e0e0e0;
+    }
+    
+    .input-container.mobile {
+        background: #1a1a2e;
+        border-top-color: #2d2d44;
+    }
+    
+    .input-area.mobile {
+        background: #2d2d44;
+        border-color: #3d3d5c;
+    }
+    
+    .input-area.mobile input {
+        color: #e0e0e0;
+    }
+    
+    .function-bar.mobile {
+        background: #1a1a2e;
+        border-top-color: #2d2d44;
+    }
+}
