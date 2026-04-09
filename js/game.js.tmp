@@ -1,7 +1,0 @@
-// 关闭鸡尾酒弹窗
-window.closeCocktailPopup = function() {
-    if (window.currentCocktailPopup && window.currentCocktailPopup.storyDiv) {
-        window.currentCocktailPopup.storyDiv.remove();
-        window.currentCocktailPopup = null;
-    }
-};
