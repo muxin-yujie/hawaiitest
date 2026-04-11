@@ -289,6 +289,143 @@ window.testKoaInvitation = async function() {
     console.log("Koa 邀请测试已启动！");
 }
 
+// 测试卢奥晚宴邂逅
+window.testLuauEncounter = async function() {
+    console.log("=== 开始测试卢奥晚宴邂逅 ===");
+    
+    // 初始化游戏状态
+    gameState.currentNpc = null;
+    gameState.conversationHistory = [];
+    gameState.conversationCount = 0;
+    gameState.storyPhase = "luau_encounter";
+    gameState.encounters = [];
+    
+    // 初始化 branches 和 photoGallery
+    if (!gameState.branches) {
+        gameState.branches = [];
+    }
+    if (!gameState.photoGallery) {
+        gameState.photoGallery = [];
+    }
+    
+    const chatContainer = document.getElementById('chatContainer');
+    chatContainer.innerHTML = '';
+    
+    // 显示测试标题
+    const testTitle = document.createElement('div');
+    testTitle.className = 'system-message';
+    testTitle.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            🧪 测试模式 - 卢奥晚宴邂逅 🧪<br><br>
+            正在初始化卢奥晚宴场景...
+        </span>
+    `;
+    chatContainer.appendChild(testTitle);
+    
+    // 添加 Location
+    if (!gameState.primaryLocations) {
+        gameState.primaryLocations = [];
+    }
+    gameState.primaryLocations.push({
+        name: "卢奥晚宴现场",
+        emoji: "🌺",
+        description: "传统的夏威夷卢奥晚宴，有美食、音乐和草裙舞表演"
+    });
+    
+    // 显示卢奥晚宴场景（包含照片和 branch 记录）
+    setTimeout(async () => {
+        // 记录 branch
+        gameState.branches.push({
+            title: "夏威夷卢奥晚宴（测试）",
+            description: "在卢奥晚宴上遇到了一位神秘高贵的男人，度过了一个难忘的夜晚",
+            status: "active",
+            startTime: new Date().toLocaleString('zh-CN'),
+            location: "酒店海滨草坪",
+            image: "pictures/luauencounter.png"
+        });
+        console.log("✅ Branch 已记录");
+        
+        紫色场景切换 (
+            '🌺',
+            '卢奥晚宴',
+            '夜幕降临，你来到了酒店的海滨草坪。<br>篝火熊熊燃烧，空气中弥漫着烤猪的香气和热带花朵的芬芳。<br>草裙舞者随着夏威夷音乐翩翩起舞，火刀舞表演即将开始。<br><br>在人群中，你注意到一个气质非凡的男人独自坐着。<br>他穿着考究，眼神深邃，举手投足间散发着神秘高贵的气息。<br>似乎感受到了你的目光，他微微抬头，与你四目相对...<br><br><em style="color: #888;">一场神秘的邂逅即将开始...</em><br><br><strong style="color: #f093fb;">✨ 已开启新支线：夏威夷卢奥晚宴</strong>'
+        );
+        
+        // 显示照片
+        setTimeout(() => {
+            const photoDiv = document.createElement('div');
+            photoDiv.className = 'system-message';
+            photoDiv.style.cssText = 'text-align: center; margin: 15px 0;';
+            photoDiv.innerHTML = `
+                <div style="
+                    display: inline-block;
+                    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                    padding: 3px;
+                    border-radius: 15px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                ">
+                    <img src="pictures/luauencounter.png" style="
+                        max-width: 100%;
+                        width: 400px;
+                        height: auto;
+                        border-radius: 12px;
+                        display: block;
+                    " alt="卢奥晚宴邂逅" onerror="console.error('照片加载失败：', this.src)">
+                    <div style="
+                        color: white;
+                        font-weight: bold;
+                        padding: 10px;
+                        font-size: 0.9em;
+                        text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    ">🌺 卢奥晚宴邂逅</div>
+                </div>
+            `;
+            chatContainer.appendChild(photoDiv);
+            console.log("✅ 照片已显示");
+            
+            // 添加到照片墙（使用 gameState.photos）
+            if (!gameState.photos) {
+                gameState.photos = [];
+            }
+            gameState.photos.push({
+                name: "卢奥晚宴邂逅（测试）",
+                src: "pictures/luauencounter.png",
+                emoji: "🌺",
+                date: new Date().toLocaleString('zh-CN'),
+                location: "酒店海滨草坪"
+            });
+            console.log("✅ 照片已添加到照片墙");
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 500);
+        
+        // 显示卢奥文化指南菜单
+        setTimeout(() => {
+            if (window.showLuauMenu) {
+                window.showLuauMenu();
+                console.log("✅ 卢奥文化指南菜单已显示");
+            }
+        }, 1500);
+        
+        // 触发邂逅
+        setTimeout(async () => {
+            console.log("正在触发卢奥晚宴邂逅...");
+            if (window.triggerLuauMysteryEncounter) {
+                await window.triggerLuauMysteryEncounter();
+                console.log("✅ 卢奥晚宴邂逅测试已启动，现在可以正常对话了！");
+            } else {
+                console.error("triggerLuauMysteryEncounter 函数未定义");
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'system-message';
+                errorMsg.innerHTML = `<span style="color: red;">❌ 错误：triggerLuauMysteryEncounter 函数未定义，请先加载 encounter.js</span>`;
+                chatContainer.appendChild(errorMsg);
+            }
+        }, 2500);
+    }, 500);
+    
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+};
+
 // ========== 键盘快捷键监听 ==========
 
 // 按 T 键打开测试菜单
@@ -332,6 +469,9 @@ function showTestMenu() {
             </button>
             <button onclick="window.testGuideFunc()" style="padding: 15px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; border-radius: 15px; color: #01579b; font-size: 1em; font-weight: bold; cursor: pointer; transition: transform 0.2s;">
                 🌺 测试导游 Lani
+            </button>
+            <button onclick="window.testLuauEncounterFunc()" style="padding: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none; border-radius: 15px; color: white; font-size: 1em; font-weight: bold; cursor: pointer; transition: transform 0.2s;">
+                🌺 测试卢奥晚宴邂逅
             </button>
             <button onclick="window.testKoaInvitationFunc()" style="padding: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none; border-radius: 15px; color: white; font-size: 1em; font-weight: bold; cursor: pointer; transition: transform 0.2s;">
                 🏄‍️ 测试 Koa 邀请（byebye）
@@ -387,6 +527,11 @@ window.testGuideFunc = async function() {
 window.testKoaInvitationFunc = async function() {
     closeModal();
     setTimeout(async () => await testKoaInvitation(), 100);
+};
+
+window.testLuauEncounterFunc = async function() {
+    closeModal();
+    setTimeout(async () => await testLuauEncounter(), 100);
 };
 
 console.log("游戏测试模块已加载 ✓");

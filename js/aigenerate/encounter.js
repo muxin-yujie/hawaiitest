@@ -324,7 +324,7 @@ async function triggerLuauMysteryEncounter() {
             }
         }
         
-        // ========== 第三步：显示他的第一句话（带浪漫开场白） ==========
+        // ========== 第三步：生成 NPC 的第一句话（带 OOC 提示词） ==========
         // 先显示他走向你的动作
         const approachMessage = document.createElement('div');
         approachMessage.className = 'system-message';
@@ -337,25 +337,149 @@ async function triggerLuauMysteryEncounter() {
         `;
         chatContainer.appendChild(approachMessage);
         
-        // 然后显示 NPC 的第一句话
-        const npcMessage = document.createElement('div');
-        npcMessage.className = 'message npc-message';
+        // 生成 NPC 的第一句话（带 OOC 提示词）
+        const oocPrompt = `[OOC Note: This is your FIRST line when approaching the player at the Luau. You're at a romantic Hawaiian Luau (bonfire, traditional food, hula dancing). You're mysterious, elegant, and confident. Don't reveal too much about yourself yet. Start with a smooth, intriguing opening line that shows curiosity about her. Keep it short (1-2 sentences), natural, and slightly mysterious. No actions in parentheses!]`;
         
-        // 清理中文动作词（防御性处理）
-        const firstLine = window.cleanNpcDialogue ? window.cleanNpcDialogue(encounterData.firstLine) : encounterData.firstLine;
-        const translation = await window.translateToChinese(firstLine);
-        
-        npcMessage.innerHTML = `
-            <div class="message-sender">${encounterData.emoji} ${encounterData.name}</div>
-            <div>${firstLine}</div>
-            <div class="translation">${translation}</div>
-        `;
-        chatContainer.appendChild(npcMessage);
-        
-        // 添加到对话历史
-        window.gameState.conversationHistory.push({ role: "assistant", content: firstLine });
-        
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        const firstLinePrompt = `${oocPrompt}
+
+【NPC 设定】
+- 姓名：${encounterData.name} (${encounterData.chineseName})
+- 年龄：${encounterData.age}岁
+- 职业：${encounterData.occupation}
+- 性格：${encounterData.personality}
+- 背景：${encounterData.background}
+
+【场景】
+夏威夷卢奥晚宴，篝火、烤猪香气、草裙舞表演，浪漫神秘的氛围
+
+【要求】
+1. 用英语回复（1-2 句话）
+2. 优雅、神秘、自信的开场白
+3. 表达对她的好奇和兴趣
+4. 不要暴露太多个人信息
+5. 不要有动作描写（如*smile*）
+
+请生成 NPC 的第一句话：`;
+
+        try {
+            const apiKey = "sk-a0e31c0e743847eea76c53ba20fa985f";
+            const apiUrl = "https://api.deepseek.com/v1/chat/completions";
+            
+            // 完整的卢奥晚宴场景 prompt
+            const scenePrompt = `【场景设定：卢奥晚宴邂逅】
+
+🌺 **环境氛围**
+- 地点：酒店海滨草坪，传统夏威夷卢奥晚宴
+- 时间：夜晚，篝火点燃，星光点点
+- 氛围：浪漫、神秘、充满夏威夷文化气息
+
+🔥 **场景细节**
+- 地下烤炉（imu）正在烤制整只卡鲁瓦猪，香气四溢
+- 草裙舞者在舞台上表演，裙摆摇曳
+- 火刀舞表演震撼人心，火星四溅
+- 人们围坐在装饰着热带花卉的餐桌旁
+- 海风轻拂，椰树摇曳，远处海浪声隐约可闻
+- 现场播放着轻柔的夏威夷音乐
+
+💫 **当前情境**
+你注意到一个中国女孩（玩家）独自走进晚宴现场，她看起来既好奇又有些迷茫。她的目光在人群中搜寻，最后与你对视。你决定起身走向她...
+
+【你的角色】
+- 姓名：${encounterData.name} (${encounterData.chineseName})
+- 年龄：${encounterData.age}岁
+- 国籍：${encounterData.nationality}
+- 职业：${encounterData.occupation}
+- 性格：${encounterData.personality}
+- 背景：${encounterData.background}
+- 气质：神秘、高贵、优雅、自信、有教养
+
+【你的身份】
+你也是卢奥晚宴的**宾客**，不是工作人员或导游！
+你是一位见多识广、有品味的上流社会人士，来夏威夷参加慈善活动/寻找灵感/度假。
+你对夏威夷文化有欣赏和了解，但不会像导游一样讲解，而是以个人视角分享感受。
+
+【对话要求】
+1. 使用英语（1-2 句话）
+2. 第一句话要自然、优雅，能引起她的兴趣
+3. 可以提及周围的场景（篝火、舞蹈、美食、音乐等），但要以宾客的视角
+4. 展现你的教养和见识，但不要卖弄知识
+5. 保持神秘感，说话有分寸和深度
+6. 表达友善和好奇，像老朋友一样自然
+7. 不要有动作描写（如*smile*、*walk over*等）
+
+【示例开场白】（符合宾客身份）
+- "Good evening. The sunset tonight is quite remarkable, isn't it? I've attended galas around the world, but there's something uniquely captivating about a Hawaiian Luau."
+- "The fire dancers remind me of ancient Polynesian legends... Is this your first time experiencing traditional Hawaiian culture?"
+- "The ocean breeze tonight carries a certain magic, doesn't it? I noticed you taking in all the sights and sounds - you have the look of someone discovering Hawaii for the first time."
+- "Listen to the rhythm of the waves mixed with the drums... it's like nature's own symphony. Beautiful, isn't it?"`;
+            
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: "deepseek-chat",
+                    messages: [
+                        {
+                            role: "system",
+                            content: scenePrompt
+                        },
+                        {
+                            role: "user",
+                            content: `你是${encounterData.name}，现在请生成你走向她时说的第一句话。记住：优雅、神秘、自然，符合卢奥晚宴的浪漫氛围。`
+                        }
+                    ],
+                    max_tokens: 100,
+                    temperature: 0.85
+                })
+            });
+            
+            let firstLine;
+            if (response.ok) {
+                const data = await response.json();
+                firstLine = data.choices[0].message.content.trim();
+                // 清理可能的动作描写
+                firstLine = window.cleanNpcDialogue ? window.cleanNpcDialogue(firstLine) : firstLine;
+            } else {
+                // API 失败时使用预设台词
+                console.warn("AI 生成失败，使用预设台词");
+                firstLine = encounterData.firstLine;
+            }
+            
+            // 显示 NPC 的第一句话
+            const npcMessage = document.createElement('div');
+            npcMessage.className = 'message npc-message';
+            
+            const translation = await window.translateToChinese(firstLine);
+            
+            npcMessage.innerHTML = `
+                <div class="message-sender">${encounterData.emoji} ${encounterData.name}</div>
+                <div>${firstLine}</div>
+                <div class="translation">${translation}</div>
+            `;
+            chatContainer.appendChild(npcMessage);
+            
+            // 添加到对话历史
+            window.gameState.conversationHistory.push({ role: "assistant", content: firstLine });
+            
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        } catch (error) {
+            console.error("生成 NPC 第一句话失败:", error);
+            // 使用预设台词
+            const npcMessage = document.createElement('div');
+            npcMessage.className = 'message npc-message';
+            const firstLine = encounterData.firstLine;
+            const translation = await window.translateToChinese(firstLine);
+            npcMessage.innerHTML = `
+                <div class="message-sender">${encounterData.emoji} ${encounterData.name}</div>
+                <div>${firstLine}</div>
+                <div class="translation">${translation}</div>
+            `;
+            chatContainer.appendChild(npcMessage);
+            window.gameState.conversationHistory.push({ role: "assistant", content: firstLine });
+        }
         
         // ========== 第四步：设置邂逅后的状态 ==========
         window.gameState.currentNpc = encounterData.name;
@@ -501,3 +625,5 @@ console.log("window.triggerLuauMysteryEncounter:", typeof window.triggerLuauMyst
 console.log("window.triggerLuauFireDanceEvent:", typeof window.triggerLuauFireDanceEvent);
 console.log("window.triggerLuauBeachWalkEvent:", typeof window.triggerLuauBeachWalkEvent);
 console.log("window.triggerLuauGiftEvent:", typeof window.triggerLuauGiftEvent);
+console.log("window.triggerLuauPoolPartyTransition:", typeof window.triggerLuauPoolPartyTransition);
+console.log("window.controlPoolParty:", typeof window.controlPoolParty);

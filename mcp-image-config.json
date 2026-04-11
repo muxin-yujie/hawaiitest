@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "multi-image-generator": {
+      "command": "npx",
+      "args": ["-y", "multi-provider-imagegen-mcp", "--providers", "openai", "stability"],
+      "env": {
+        "OPENAI_API_KEY": "你的 OpenAI API 密钥（可选）",
+        "STABILITY_API_KEY": "你的 Stability AI API 密钥（可选）"
+      }
+    }
+  }
+}

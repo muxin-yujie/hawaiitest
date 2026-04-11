@@ -225,6 +225,11 @@ const GameCore = {
         // 翻译到中文
         async translateToChinese(text) {
             try {
+                // 如果已经是中文，直接返回
+                if (/[\u4e00-\u9fa5]/.test(text) && text.length > 10) {
+                    return text;
+                }
+                
                 const response = await fetch(GameCore.config.apiUrl, {
                     method: "POST",
                     headers: {
@@ -237,17 +242,30 @@ const GameCore = {
                             { role: "system", content: "你是一个专业的翻译助手。请将输入的文字翻译成中文。如果输入已经是中文，直接返回原文。" },
                             { role: "user", content: `请翻译：\n\n${text}` }
                         ],
-                        max_tokens: 300,
+                        max_tokens: 500,
                         temperature: 0.3
                     })
                 });
                 
-                if (!response.ok) throw new Error("API 请求失败");
+                if (!response.ok) {
+                    console.warn(`翻译 API 返回状态码：${response.status}`);
+                    return text; // 返回原文
+                }
+                
                 const data = await response.json();
-                return data.choices[0].message.content.trim();
+                const translation = data.choices[0].message.content.trim();
+                
+                // 如果翻译结果包含"翻译失败"或为空，返回原文
+                if (!translation || translation.includes("翻译失败") || translation.includes("无法翻译")) {
+                    console.warn("翻译结果为空或包含错误，返回原文");
+                    return text;
+                }
+                
+                return translation;
             } catch (error) {
-                console.error("翻译失败:", error);
-                return "[翻译失败]";
+                console.warn("翻译失败，返回原文:", error.message);
+                // 不显示错误，直接返回原文
+                return text;
             }
         },
 

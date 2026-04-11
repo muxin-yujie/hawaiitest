@@ -115,6 +115,12 @@ async function handleInput() {
     // 对话计数 +1
     gameState.conversationCount = (gameState.conversationCount || 0) + 1;
     
+    // Duke's Waikiki 约会计数
+    if (gameState.storyPhase === "Duke's Waikiki") {
+        gameState.dateConversationCount = (gameState.dateConversationCount || 0) + 1;
+        console.log("Duke's Waikiki 对话轮数:", gameState.dateConversationCount);
+    }
+    
     // 对话达到 2 轮后，显示结束对话按钮（仅在机场邂逅场景）
     if (gameState.conversationCount >= 2 && gameState.storyPhase === "encounter") {
         const endBtn = document.getElementById('endConversationBtn');

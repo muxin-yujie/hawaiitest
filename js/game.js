@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
 
 // 启动海关场景（游戏第一个场景）
 async function startCustomsScene() {
@@ -50,7 +50,7 @@ async function meetGuide() {
     console.log("=== 遇到导游 Lani ===");
     
     // 设置游戏状态
-    设置状态({
+    设置状态 ({
         storyPhase: "guide",
         currentNpc: "导游 Lani"
     });
@@ -64,9 +64,47 @@ async function meetGuide() {
     
     await generateInnerMonologue("哇，这就是 Lani！好热情好漂亮啊！接下来的旅程一定会很精彩！", "兴奋、期待、开心");
     
+    // 显示欧胡岛地图（使用统一的图片显示方式）
+    显示照片 ("pictures/oahumap.png", "🗺️ 欧胡岛地图", "Lani 微笑着递给你一张欧胡岛地图：\"This is Oahu! Let me show you around!\"");
+    
     const guideDialoguePrompt = window.PROMPTS.GUIDE_FIRST_MEET;
     await window.generateNPCDialogue("导游 Lani", guideDialoguePrompt);
 }
+
+/**
+ * 统一图片显示函数
+ * @param {string} imageUrl - 图片路径
+ * @param {string} title - 图片标题
+ * @param {string} description - 图片描述
+ */
+function 显示照片 (imageUrl, title = '', description = '') {
+    const chatContainer = getChatContainer();
+    const photoDiv = document.createElement('div');
+    photoDiv.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        ">
+            ${title ? `<h3 style="color: #333; margin-bottom: 15px;">${title}</h3>` : ''}
+            <img src="${imageUrl}" alt="${title}" style="
+                width: 100%;
+                max-width: 600px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            ">
+            ${description ? `<p style="color: #666; margin-top: 15px; font-size: 14px;">${description}</p>` : ''}
+        </div>
+    `;
+    chatContainer.appendChild(photoDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+// 导出到全局
+window.显示照片 = 显示照片;
 
 
 // 生成行程
@@ -512,19 +550,9 @@ async function enterSurfShop() {
     await window.generateNPCDialogue("Maya", `作为冲浪店的打工女孩 Maya，用英语随意友好地欢迎这位游客。说你在这里工作，对冲浪和冲浪装备都很在行。如果有任何问题都可以问你。语气要随和、阳光、像朋友一样。`);
 }
 
-// 回酒店房间，结束一天
+// 回酒店房间，结束一天 - 合并为一张卡片，白色文字提高对比度
 async function returnToHotelRoom() {
     console.log("=== 回酒店房间，结束一天 ===");
-    
-    // 显示回酒店场景描写（特殊样式：渐变背景）
-    紫色场景切换(
-        '🌙',
-        '回到酒店房间',
-        `夜幕降临，你回到了威基基海滩酒店。<br>躺在床上，回想着今天的经历：<br>${gameState.storyPhase === "Duke's Waikiki" ? '和 Koa 在海边酒吧派对的欢乐时光，音乐、舞蹈、美食，还有那美丽的日落...' : '品尝夏威夷地道美食的美好体验，无论是彩虹刨冰还是蒜香烤虾，都让人回味无穷...'}<br><br>海风从窗外吹进来，带着淡淡的海盐味。<br>你闭上眼睛，期待着明天的冒险...<br><br><span style="font-size: 1.3em;">🌺 Day 1 结束 🌺</span>`,
-        {
-            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-        }
-    );
     
     // 设置游戏状态
     gameState.storyPhase = "hotelRoom";
@@ -548,6 +576,133 @@ async function returnToHotelRoom() {
     if (loadingEl) {
         loadingEl.remove();
     }
+    
+    // 延迟 1 秒后显示合并的卡片
+    setTimeout(() => {
+        // 收集地点信息
+        const visitedLocations = gameState.locations || [];
+        const primaryLocations = visitedLocations.filter(loc => loc.type === "primary");
+        const secondaryLocations = visitedLocations.filter(loc => loc.type === "secondary");
+        const tertiaryLocations = visitedLocations.filter(loc => loc.type === "tertiary");
+        
+        // 构建今日足迹内容
+        let locationContent = '';
+        if (primaryLocations.length > 0) {
+            const locationNames = primaryLocations.map(loc => `${loc.emoji} ${loc.name}`).join(' → ');
+            locationContent += `<div style="margin-bottom: 15px;"><span style="font-size: 1.1em; font-weight: bold; color: #ffd700;">🚩 主要行程</span><br><span style="font-size: 1em; color: rgba(255,255,255,0.95);">${locationNames}</span></div>`;
+        }
+        if (secondaryLocations.length > 0) {
+            const secondaryNames = secondaryLocations.map(loc => `${loc.emoji} ${loc.name}`).join('、');
+            locationContent += `<div style="margin-bottom: 15px;"><span style="font-size: 1.1em; font-weight: bold; color: #ffd700;">✨ 探索地点</span><br><span style="font-size: 1em; color: rgba(255,255,255,0.95);">${secondaryNames}</span></div>`;
+        }
+        if (tertiaryLocations.length > 0) {
+            const tertiaryNames = tertiaryLocations.map(loc => `${loc.emoji} ${loc.name}`).join('、');
+            locationContent += `<div style="margin-bottom: 15px;"><span style="font-size: 1.1em; font-weight: bold; color: #ffd700;">� 小店探访</span><br><span style="font-size: 1em; color: rgba(255,255,255,0.95);">${tertiaryNames}</span></div>`;
+        }
+        if (!locationContent) {
+            locationContent = '<div style="margin-bottom: 15px;"><span style="font-size: 1em; color: rgba(255,255,255,0.95);">你在酒店附近悠闲地度过了第一天</span></div>';
+        }
+        
+        // 显示合并的卡片
+        const chatContainer = document.getElementById('chatContainer');
+        const mergedCard = document.createElement('div');
+        mergedCard.className = 'system-message';
+        mergedCard.style.cssText = `
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            border: 2px solid rgba(255,255,255,0.2);
+        `;
+        
+        mergedCard.innerHTML = `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span style="font-size: 2em;">🌙</span>
+                <h3 style="margin: 10px 0; font-size: 1.4em; color: #ffd700; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">回到酒店房间</h3>
+            </div>
+            
+            <div style="color: rgba(255,255,255,0.95); line-height: 1.8; margin-bottom: 20px; font-size: 1em;">
+                夜幕降临，你回到了威基基海滩酒店。<br>
+                躺在床上，回想着今天的经历...<br><br>
+                海风从窗外吹进来，带着淡淡的海盐味。<br>
+                你闭上眼睛，今天的画面在脑海中浮现...
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <span style="font-size: 1.3em; font-weight: bold; color: #ffd700;">📍 今日足迹</span>
+                </div>
+                ${locationContent}
+            </div>
+            
+            <div style="text-align: center; margin-top: 25px; padding-top: 20px; border-top: 2px solid rgba(255,255,255,0.3);">
+                <h4 style="font-size: 1.3em; color: #ffd700; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Day 1 结束</h4>
+                <p style="color: rgba(255,255,255,0.95); line-height: 1.6; margin-bottom: 15px;">
+                    感谢你今天的陪伴与探索。<br>
+                    好好休息，养精蓄锐，<br>
+                    明天会有新的冒险等着你...
+                </p>
+                <p style="font-size: 1.2em; color: rgba(255,255,255,0.95); margin-top: 15px;">
+                    晚安，好梦 🌙
+                </p>
+            </div>
+        `;
+        
+        chatContainer.appendChild(mergedCard);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        // 显示睡觉按钮
+        setTimeout(() => {
+            const sleepButtonContainer = document.createElement('div');
+            sleepButtonContainer.className = 'options-container';
+            sleepButtonContainer.style.cssText = `
+                display: flex;
+                justify-content: center;
+                margin: 20px 0;
+                padding: 15px;
+            `;
+            
+            const sleepButton = document.createElement('div');
+            sleepButton.className = 'option-button';
+            sleepButton.style.cssText = `
+                padding: 15px 40px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 25px;
+                cursor: pointer;
+                text-align: center;
+                font-weight: bold;
+                font-size: 1.1em;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                border: 2px solid rgba(255,255,255,0.2);
+            `;
+            sleepButton.innerHTML = '💤 睡觉，进入 Day 2';
+            
+            sleepButton.onmouseover = () => {
+                sleepButton.style.transform = 'translateY(-3px)';
+                sleepButton.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)';
+            };
+            
+            sleepButton.onmouseout = () => {
+                sleepButton.style.transform = 'translateY(0)';
+                sleepButton.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
+            };
+            
+            sleepButton.onclick = async () => {
+                sleepButtonContainer.remove();
+                if (window.startDay2) {
+                    await window.startDay2();
+                }
+            };
+            
+            sleepButtonContainer.appendChild(sleepButton);
+            chatContainer.appendChild(sleepButtonContainer);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }, 500);
+    }, 1000);
 }
 
 // ========== 6. 酒店相关 ==========

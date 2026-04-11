@@ -1,0 +1,143 @@
+# 酒店屋顶泳池派对场景 - AI 绘画 Prompt
+
+## 英文 Prompt（推荐用于 Midjourney / Stable Diffusion / DALL-E 3）
+
+```
+A romantic rooftop infinity pool party at night in Waikiki, Hawaii. 
+A luxurious hotel rooftop with a sparkling swimming pool overlooking the ocean. 
+Moonlight reflecting on the water surface, creating a magical silver pathway. 
+In the background, the dark Pacific Ocean with Diamond Head mountain silhouette against the starry sky.
+
+Warm candlelight around the pool edge, colorful cocktails on a small table. 
+Soft jazz atmosphere, string lights hanging above. 
+A few elegant guests in cocktail dresses and suits, blurred in the background.
+
+The scene captures an intimate moment between a mysterious handsome man (30s, mixed race, 
+wearing a white linen shirt, sophisticated) and a young Chinese woman (20s, student, 
+elegant summer dress, long dark hair). They are standing close by the pool railing, 
+looking at each other with chemistry and romance in the air.
+
+Cinematic lighting, warm golden tones mixed with cool moonlight blue. 
+Dreamy atmosphere, bokeh effect from the city lights and candles. 
+Photorealistic, highly detailed, 8K resolution, shot on 35mm lens, f/1.8 aperture.
+
+Color palette: Deep navy blue, warm gold, soft pink, silver moonlight, 
+tropical night vibes.
+
+Style: Romantic, luxurious, intimate, cinematic, Hawaiian elegance.
+--ar 16:9 --v 6.0 --style raw --q 2
+```
+
+---
+
+## 中文 Prompt（用于国内 AI 绘画工具）
+
+```
+夏威夷威基基海滩酒店屋顶无边泳池派对的浪漫夜景。
+豪华的酒店屋顶，闪闪发光的游泳池俯瞰着太平洋。
+月光洒在水面上，形成一条神奇的银色光带。
+背景是黑暗的太平洋，钻石头山的剪影映衬着星空。
+
+泳池边缘点缀着温暖的烛光，小桌上摆放着色彩缤纷的鸡尾酒。
+柔和的爵士乐氛围，头顶悬挂着串灯。
+几位优雅的宾客穿着鸡尾酒裙和西装，在背景中虚化。
+
+画面捕捉一位神秘英俊的男人（30 岁左右，混血，穿着白色亚麻衬衫，气质高雅）
+和一位年轻中国女孩（20 岁，大学生，优雅的夏日连衣裙，黑色长发）
+之间的亲密时刻。他们站在泳池栏杆旁，彼此凝视，空气中弥漫着浪漫和暧昧。
+
+电影级灯光，温暖的金黄色调与冷色月光蓝交织。
+梦幻般的氛围，城市灯光和烛光形成散景效果。
+照片级真实感，高度细节，8K 分辨率，35mm 镜头拍摄，f/1.8 光圈。
+
+色彩搭配：深海军蓝、温暖金色、柔和粉色、银色月光、热带夜晚氛围。
+
+风格：浪漫、奢华、亲密、电影感、夏威夷优雅。
+```
+
+---
+
+## 简化版 Prompt（快速生成）
+
+```
+Romantic rooftop pool party at night, Waikiki Hawaii. 
+Infinity pool with moonlight on water, Diamond Head in background. 
+Candlelight, cocktails, string lights, jazz atmosphere. 
+Mysterious handsome man and young Chinese woman having intimate conversation. 
+Cinematic lighting, warm gold and cool blue tones, dreamy bokeh. 
+Photorealistic, 8K, luxurious Hawaiian elegance. --ar 16:9
+```
+
+---
+
+## 使用建议
+
+### **推荐工具**：
+- **Midjourney v6** - 效果最佳，使用完整英文 prompt
+- **Stable Diffusion XL** - 使用英文 prompt，可添加 negative prompt
+- **DALL-E 3** - 使用英文 prompt，描述更自然
+- **文心一格/通义万相** - 使用中文 prompt
+
+### **Negative Prompt（SD 使用）**：
+```
+ugly, deformed, noisy, blurry, distorted, out of focus, 
+bad anatomy, extra limbs, poorly drawn hands, poorly drawn face, 
+mutation, mutated, extra fingers, bad proportions, 
+disconnected limbs, ugly background, amateur, low quality, worst quality
+```
+
+### **参数建议**：
+- **宽高比**: 16:9（电影感）或 2.35:1（超宽屏）
+- **风格**: Cinematic / Photorealistic / Romantic
+- **灯光**: Night / Moonlight / Candlelight / Warm tones
+- **镜头**: 35mm 或 50mm, f/1.8（浅景深）
+
+---
+
+## 变体 Prompt
+
+### **版本 1：更注重场景**
+```
+Luxury hotel rooftop infinity pool at night, Waikiki. 
+Sparkling blue water meets the dark Pacific Ocean horizon. 
+Diamond Head crater silhouetted against starry sky. 
+Pool deck with white lounge chairs, tropical plants in pots. 
+Warm amber lighting from tiki torches and fairy lights. 
+Cocktail bar setup with champagne bottles and glasses. 
+Elegant party guests mingling, soft focus background. 
+Cinematic composition, wide angle, establishing shot. --ar 21:9
+```
+
+### **版本 2：更注重人物**
+```
+Close-up portrait of a mysterious handsome man and young Chinese woman 
+at a rooftop pool party. They are standing very close, 
+almost touching foreheads, intense eye contact. 
+He has a slight mysterious smile, she looks captivated. 
+Moonlight illuminates their faces, warm candlelight from below. 
+Pool water sparkles in the background, bokeh from string lights. 
+Intimate, romantic tension, chemistry between them. 
+Shot on 85mm lens, f/1.4, shallow depth of field. --ar 4:5
+```
+
+### **版本 3：俯瞰全景**
+```
+Aerial drone view of a luxury hotel rooftop pool at night. 
+The rectangular infinity pool glows with underwater LED lights. 
+Small groups of people scattered around the deck. 
+Waikiki Beach and ocean in the distance, city lights twinkling. 
+Diamond Head visible on the right side. 
+The couple stands at the pool's edge, tiny figures against the vast view. 
+Cinematic aerial photography, dramatic perspective. --ar 16:9
+```
+
+---
+
+## 生成后的用途
+
+1. **游戏背景图** - 用作泳池派对场景的视觉背景
+2. **剧情插图** - 插入到转场或关键剧情点
+3. **宣传素材** - 游戏预告图或封面
+4. **氛围参考** - 帮助玩家想象场景
+
+祝生成顺利！🎨✨

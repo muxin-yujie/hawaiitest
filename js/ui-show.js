@@ -184,13 +184,32 @@ function showLocation() {
                 content += '<p>还没有记录任何笔记</p>';
             } else {
                 // 倒序遍历，最新的笔记显示在最上面
-                [...gameState.notebook].reverse().forEach(note => {
-                    const gradient = 'linear-gradient(135deg, #ffc3d9 0%, #a8e6ff 100%)';
+                [...gameState.notebook].reverse().forEach((note, index) => {
+                    const isCocktail = note.title.includes('鸡尾酒');
+                    const isLuau = note.title.includes('卢奥');
+                    let gradient, textColor, isClickable, clickAction;
+                    
+                    if (isCocktail) {
+                        gradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                        textColor = 'white';
+                        isClickable = true;
+                        clickAction = 'window.showCocktailStory(null, 0)';
+                    } else if (isLuau) {
+                        gradient = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+                        textColor = 'white';
+                        isClickable = true;
+                        clickAction = 'window.showLuauCultureGuide()';
+                    } else {
+                        gradient = 'linear-gradient(135deg, #ffc3d9 0%, #a8e6ff 100%)';
+                        textColor = '#6a1b9a';
+                        isClickable = false;
+                        clickAction = '';
+                    }
                     
                     content += `
-                        <div style="margin-bottom: 15px; padding: 15px; background: ${gradient}; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
-                            <div style="font-weight: bold; font-size: 1.1em; color: #6a1b9a; margin-bottom: 8px;">${note.title}</div>
-                            <div style="font-size: 0.95em; color: #6a1b9a; line-height: 1.6; background: rgba(255,255,255,0.5); padding: 10px; border-radius: 10px;">${note.content}</div>
+                        <div style="margin-bottom: 15px; padding: 15px; background: ${gradient}; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease; ${isClickable ? 'cursor: pointer;' : ''}" ${isClickable ? `onclick="${clickAction}"` : ''} onmouseover="${isClickable ? 'this.style.transform=\'scale(1.02)\'; this.style.boxShadow=\'0 6px 20px rgba(0,0,0,0.15)\';' : ''}" onmouseout="${isClickable ? 'this.style.transform=\'scale(1)\'; this.style.boxShadow=\'0 4px 15px rgba(0,0,0,0.1)\';' : ''}">
+                            <div style="font-weight: bold; font-size: 1.1em; color: ${textColor}; margin-bottom: 8px;">${note.title}</div>
+                            <div style="font-size: 0.95em; color: ${textColor}; line-height: 1.6; ${isLuau || isCocktail ? '' : 'background: rgba(255,255,255,0.5); padding: 10px; border-radius: 10px;'}">${note.content}</div>
                         </div>
                     `;
                 });
@@ -231,12 +250,46 @@ function showLocation() {
             
             let content = '<h3>📸 照片收集</h3>';
             
+            // 始终显示欧胡岛地图和檀香山机场照片（作为初始收集品）
+            content += `
+                <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                    <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">🗺️ 欧胡岛地图</h4>
+                    <img src="pictures/oahumap.png" alt="欧胡岛地图" style="
+                        width: 100%;
+                        max-width: 500px;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        display: block;
+                        margin: 0 auto;
+                    ">
+                    <p style="text-align: center; color: #666; margin: 12px 0 0 0; font-size: 0.9em;">
+                        Lani 给你的欧胡岛地图，开启你的夏威夷冒险！
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+                    <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">✈️ 檀香山国际机场</h4>
+                    <img src="pictures/檀香山机场.png" alt="檀香山机场" style="
+                        width: 100%;
+                        max-width: 500px;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        display: block;
+                        margin: 0 auto;
+                    ">
+                    <p style="text-align: center; color: #666; margin: 12px 0 0 0; font-size: 0.9em;">
+                        抵达美丽的夏威夷檀香山国际机场，旅程的开始！
+                    </p>
+                </div>
+            `;
+            
             // 检查 gameState.photos 是否存在
             if (!gameState.photos || gameState.photos.length === 0) {
-                content += '<p>还没有拍摄任何照片</p>';
+                content += '<p style="color: #999; text-align: center; padding: 20px;">还没有拍摄其他照片</p>';
             } else {
                 // 照片墙布局
                 content += `
+                    <h4 style="color: #333; margin: 20px 0 15px 0; font-size: 1em;">📷 旅途照片</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 10px;">
                 `;
                 
@@ -277,17 +330,44 @@ function showLocation() {
             if (gameState.branches.length === 0) {
                 content += '<p>还没有触发任何剧情分支</p>';
             } else {
+                content += `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; padding: 10px;">
+                `;
+                
                 gameState.branches.forEach(branch => {
+                    const gradient = branch.image ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #ffc3d9 0%, #a8e6ff 100%)';
+                    
                     content += `
-                        <div style="margin-bottom: 15px; padding: 10px; background: rgba(255,255,255,0.3); border-radius: 10px;">
-                            <div style="font-weight: bold;">${branch.title}</div>
-                            <div style="margin-top: 5px; font-size: 0.9em; color: #555;">${branch.description}</div>
-                            <div style="margin-top: 5px; font-size: 0.8em; color: #6a1b9a;">
-                                地点: ${branch.location}
+                        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.3s ease; border: 3px solid #f093fb; display: flex; flex-direction: column;" 
+                             onmouseover="this.style.transform='scale(1.05)'" 
+                             onmouseout="this.style.transform='scale(1)'">
+                            ${branch.image ? `
+                            <div style="position: relative; width: 100%;">
+                                <img src="${branch.image}" alt="${branch.title}" 
+                                     style="width: 100%; height: 180px; object-fit: cover; display: block;">
+                            </div>
+                            ` : ''}
+                            <div style="padding: 12px 15px; background: ${gradient}; border-top: 1px solid rgba(255,255,255,0.5);">
+                                <div style="text-align: center; font-weight: 600; font-size: 0.95em; color: white; margin-bottom: 8px;">
+                                    🌺 ${branch.title}
+                                </div>
+                                <div style="font-size: 0.85em; color: white; line-height: 1.5; margin-bottom: 8px;">
+                                    ${branch.description}
+                                </div>
+                                <div style="font-size: 0.8em; color: white; opacity: 0.9;">
+                                    📍 地点：${branch.location}
+                                </div>
+                                ${branch.startTime ? `
+                                <div style="font-size: 0.75em; color: white; opacity: 0.8; margin-top: 5px;">
+                                    ⏰ ${branch.startTime}
+                                </div>
+                                ` : ''}
                             </div>
                         </div>
                     `;
                 });
+                
+                content += `</div>`;
             }
             
             modalContent.innerHTML = content;

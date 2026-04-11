@@ -215,10 +215,10 @@ window.showCocktailStory = function(cocktailId, currentIndex = 0) {
     `;
     
     storyDiv.innerHTML = `
-        <div style="position: relative; width: 100%; height: 220px; background: ${story.gradient}; overflow: hidden;">
-            <img src="${imageUrl}" onerror="this.style.display='none'" style="position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center;" alt="${story.name}">
-            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);"></div>
-            <button onclick="window.closeCocktailPopup()" style="position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.25); border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; color: white; font-size: 1.4em; transition: all 0.2s; backdrop-filter: blur(10px); z-index: 10;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.25)'">✕</button>
+        <div style="position: relative; width: 100%; height: 260px; background: white; overflow: hidden;">
+            <img src="${imageUrl}" onerror="this.style.display='none'" style="position: absolute; width: 100%; height: 100%; object-fit: contain; object-position: center; padding: 20px;" alt="${story.name}">
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to top, rgba(0,0,0,0.75), transparent);"></div>
+            <button onclick="window.closeCocktailPopup()" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.15); border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; color: #333; font-size: 1.4em; transition: all 0.2s; backdrop-filter: blur(10px); z-index: 10;" onmouseover="this.style.background='rgba(0,0,0,0.25)'; this.style.color='#000';" onmouseout="this.style.background='rgba(0,0,0,0.15)'; this.style.color='#333';">✕</button>
             <div style="position: absolute; bottom: 14px; left: 18px; right: 18px; color: white; z-index: 5;">
                 <h3 style="margin: 0; font-size: 1.5em; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.4);">${story.emoji} ${story.name}</h3>
                 <div style="font-size: 0.72em; opacity: 0.95; margin-top: 5px; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">${story.origin}</div>
@@ -331,6 +331,170 @@ window.showCocktailMenu = function() {
     
     chatContainer.appendChild(menuDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 保存到 notebook - 只保存简洁条目
+    const cocktailsNotebook = {
+        title: "🍹 夏威夷鸡尾酒指南",
+        content: `探索夏威夷最具代表性的三款经典鸡尾酒，每一杯都承载着独特的历史与文化`,
+        date: new Date().toLocaleString('zh-CN')
+    };
+    
+    gameState.notebook.push(cocktailsNotebook);
+    console.log("鸡尾酒指南已保存到 notebook ✓");
 };
 
 console.log("鸡尾酒模块已加载 ✓");
+
+// ============================================================================
+// 卢奥晚宴文化指南功能
+// ============================================================================
+
+window.showLuauCultureGuide = function() {
+    if (window.currentLuauPopup) {
+        window.currentLuauPopup.storyDiv.remove();
+    }
+    
+    const luauData = {
+        title: "卢奥晚宴",
+        emoji: "🌺",
+        image: "pictures/luau-feast.png",
+        gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+        accent: "#ff9a9e",
+        subtitle: "夏威夷传统盛宴 · 古老文化的传承",
+        introduction: "卢奥（Luau）是夏威夷最盛大的传统宴会，起源于古代夏威夷的皇家祭祀仪式。如今，它已成为家人朋友欢聚、庆祝重要时刻的文化象征。",
+        elements: [
+            {
+                icon: "🔥",
+                title: "地下烤炉（Imu）",
+                description: "传统的夏威夷烹饪方式，在地下挖坑，放入烧热的火山石，将整只猪包裹在香蕉叶中慢烤 6-8 小时，肉质鲜嫩多汁，带有独特的烟熏香气。"
+            },
+            {
+                icon: "🐷",
+                title: "卡鲁瓦猪（Kalua Pig）",
+                description: "卢奥晚宴的主角，用海盐涂抹整只猪，放入 imu 中慢烤。烹饪过程本身就是一种仪式，象征着夏威夷人的热情好客。"
+            },
+            {
+                icon: "🍠",
+                title: "波伊（Poi）",
+                description: "由芋头（kalo）捣碎制成的传统主食，呈紫色糊状。夏威夷人相信 kalo 是他们的祖先，因此 poi 在文化中具有神圣地位。口感独特，初尝者可能需要适应。"
+            },
+            {
+                icon: "💃",
+                title: "草裙舞（Hula）",
+                description: "古老的波利尼西亚舞蹈，每个动作都讲述着夏威夷的神话、历史和传说。舞者通过手势、眼神和身体语言，传承着祖先的智慧和故事。"
+            },
+            {
+                icon: "🔥",
+                title: "火刀舞（Fire Knife Dance）",
+                description: "萨摩亚传统舞蹈的现代演变，舞者手持燃烧的火刀，在鼓点中旋转跳跃，火星四溅，展现勇气与技巧，是卢奥晚宴最震撼的表演。"
+            },
+            {
+                icon: "🥥",
+                title: "豪皮亚（Haupia）",
+                description: "传统的椰子布丁甜点，用椰奶、糖和玉米淀粉制成，口感滑嫩，清凉解腻，为丰盛的卢奥晚宴画上完美的句号。"
+            }
+        ],
+        culture: "卢奥晚宴不仅是美食盛宴，更是夏威夷文化传承的载体。从 imu 的烹饪仪式到 hula 的古老舞步，从 ohana（家庭）的团聚到 aloha（爱）的传递，每一道菜、每一个表演都承载着夏威夷人的信仰、历史和价值观。",
+        romantic: "在篝火摇曳的夜晚，与重要的人共享卢奥盛宴，品尝的是千年文化的味道，聆听的是岛屿传承的故事，感受的是 aloha 精神的永恒温暖。"
+    };
+    
+    const storyDiv = document.createElement('div');
+    storyDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border-radius: 20px;
+        padding: 0;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        z-index: 10000;
+        animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    `;
+    
+    const imageUrl = luauData.image.replace(/ /g, '%20');
+    
+    storyDiv.innerHTML = `
+        <div style="position: relative; width: 100%; height: 280px; background: white; overflow: hidden;">
+            <img src="${imageUrl}" onerror="this.style.display='none'" style="position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center; padding: 0;" alt="${luauData.title}">
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 140px; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"></div>
+            <button onclick="window.closeLuauCultureGuide()" style="position: absolute; top: 15px; right: 15px; background: rgba(255,255,255,0.9); border: 2px solid rgba(0,0,0,0.2); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; color: #333; font-size: 1.6em; font-weight: bold; transition: all 0.2s; backdrop-filter: blur(10px); z-index: 100; display: flex; align-items: center; justify-content: center; line-height: 1;" onmouseover="this.style.background='rgba(255,255,255,1)'; this.style.transform='scale(1.1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.2)';" onmouseout="this.style.background='rgba(255,255,255,0.9)'; this.style.transform='scale(1)'; this.style.boxShadow='none';">✕</button>
+            <div style="position: absolute; bottom: 14px; left: 18px; right: 18px; color: white; z-index: 5;">
+                <h3 style="margin: 0; font-size: 1.6em; font-weight: 700; text-shadow: 0 2px 8px rgba(0,0,0,0.4);">${luauData.emoji} ${luauData.title}</h3>
+                <div style="font-size: 0.75em; opacity: 0.95; margin-top: 5px; text-shadow: 0 1px 3px rgba(0,0,0,0.3);">${luauData.subtitle}</div>
+            </div>
+        </div>
+        
+        <div style="padding: 20px 22px 18px 22px; background: white;">
+            <div style="font-size: 0.9em; line-height: 1.7; color: #555; margin-bottom: 18px; padding: 14px 16px; background: linear-gradient(135deg, rgba(240, 147, 251, 0.08), rgba(245, 87, 108, 0.08)); border-left: 4px solid #f093fb; border-radius: 10px;">
+                ${luauData.introduction}
+            </div>
+            
+            <div style="margin-bottom: 18px;">
+                <div style="font-size: 0.85em; font-weight: 600; color: #666; margin-bottom: 12px; letter-spacing: 1px; display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 1.2em;">🌺</span> 卢奥盛宴元素
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                    ${luauData.elements.map(elem => `
+                        <div style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.05), rgba(245, 87, 108, 0.05)); border: 1px solid rgba(240, 147, 251, 0.15); border-radius: 12px; padding: 14px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.08)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                            <div style="font-size: 2em; margin-bottom: 8px;">${elem.icon}</div>
+                            <div style="font-size: 0.85em; font-weight: 600; color: #f093fb; margin-bottom: 6px;">${elem.title}</div>
+                            <div style="font-size: 0.78em; line-height: 1.5; color: #666;">${elem.description}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            
+            <div style="background: ${luauData.gradient}; border-radius: 14px; padding: 16px 18px; margin-bottom: 14px; font-size: 0.85em; line-height: 1.7; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.15);">
+                <span style="font-weight: 600; margin-right: 6px; font-size: 1.1em;">📚</span>${luauData.culture}
+            </div>
+            
+            <div style="background: linear-gradient(135deg, rgba(240, 147, 251, 0.06), rgba(245, 87, 108, 0.06)); border-left: 4px solid ${luauData.accent}; border-radius: 0 12px 12px 0; padding: 14px 16px; font-style: italic; font-size: 0.85em; line-height: 1.7; color: #666;">
+                <span style="margin-right: 6px; font-size: 1.1em;">💭</span>${luauData.romantic}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(storyDiv);
+    window.currentLuauPopup = { storyDiv };
+    
+    const style = document.createElement('style');
+    style.textContent = `@keyframes slideIn {from {opacity: 0; transform: translate(-50%, -60%); box-shadow: 0 10px 30px rgba(0,0,0,0.1);} to {opacity: 1; transform: translate(-50%, -50%); box-shadow: 0 20px 60px rgba(0,0,0,0.25);}}`;
+    document.head.appendChild(style);
+};
+
+window.closeLuauCultureGuide = function() {
+    if (window.currentLuauPopup) {
+        window.currentLuauPopup.storyDiv.remove();
+        window.currentLuauPopup = null;
+    }
+};
+
+window.showLuauMenu = function() {
+    const chatContainer = document.getElementById('chatContainer');
+    
+    const menuDiv = document.createElement('div');
+    menuDiv.className = 'system-message';
+    menuDiv.innerHTML = '<div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; padding: 12px 15px; margin: 10px 0; box-shadow: 0 3px 10px rgba(0,0,0,0.2); display: inline-block;"><div style="display: flex; gap: 8px; align-items: center;"><span style="color: white; font-weight: bold; font-size: 0.9em;">🌺 卢奥文化指南:</span><button onclick="window.showLuauCultureGuide()" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: white; font-size: 0.85em; font-weight: bold; transition: transform 0.2s;" onmouseover="this.style.transform=\'scale(1.08)\'" onmouseout="this.style.transform=\'scale(1)\'">🌺 探索卢奥文化</button></div></div>';
+    
+    chatContainer.appendChild(menuDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 保存到 notebook - 只保存简洁条目
+    const luauNotebook = {
+        title: "🌺 卢奥晚宴文化指南",
+        content: "探索夏威夷最盛大的传统宴会，从地下烤炉到草裙舞，从卡鲁瓦猪到火刀舞，每一道菜、每一个表演都承载着千年的文化传承",
+        date: new Date().toLocaleString('zh-CN')
+    };
+    
+    gameState.notebook.push(luauNotebook);
+    console.log("卢奥晚宴指南已保存到 notebook ✓");
+};
+
+console.log("卢奥晚宴文化模块已加载 ✓");
+console.log("🌺 卢奥文化指南功能已就绪：window.showLuauCultureGuide()");
+console.log("🌺 卢奥菜单功能已就绪：window.showLuauMenu()");

@@ -94,7 +94,7 @@ window.showCocktailStory = function(cocktailId, currentIndex = 0) {
     `;
     
     storyDiv.innerHTML = `
-        <div style="position: relative; width: 100%; height: 220px; background: ${story.gradient}; overflow: hidden;">
+        <div style="position: relative; width: 100%; height: 320px; background: ${story.gradient}; overflow: hidden;">
             <img src="${imageUrl}" onerror="this.style.display='none'" style="position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: center;" alt="${story.name}">
             <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);"></div>
             <button onclick="closeCocktailPopup()" style="position: absolute; top: 12px; right: 12px; background: rgba(255,255,255,0.25); border: none; border-radius: 50%; width: 34px; height: 34px; cursor: pointer; color: white; font-size: 1.4em; transition: all 0.2s; backdrop-filter: blur(10px); z-index: 10;" onmouseover="this.style.background='rgba(255,255,255,0.35)'" onmouseout="this.style.background='rgba(255,255,255,0.25)'">✕</button>

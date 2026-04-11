@@ -263,12 +263,23 @@ async function checkCustomsProgress(userInput, npcResponse) {
                         sendButton.style.opacity = "1";
                         sendButton.style.cursor = "pointer";
                     }
-                    // 照片关闭后：触发机场随机事件（邂逅或 Medal）
+                    // 照片关闭后：在聊天中显示檀香山机场照片（和欧胡岛地图一样的方式）
                     setTimeout(() => {
-                        console.log("照片关闭，触发机场随机事件");
-                        if (window.triggerAirportRandomEvent) {
-                            window.triggerAirportRandomEvent();
+                        console.log("照片关闭，在聊天中显示檀香山机场照片");
+                        if (window.显示照片) {
+                            window.显示照片 (
+                                "pictures/檀香山机场.png",
+                                "✈️ Honolulu International Airport",
+                                "抵达夏威夷的第一张照片，记录下这美好的开始！"
+                            );
                         }
+                        // 触发机场随机事件（邂逅或 Medal）
+                        setTimeout(() => {
+                            console.log("触发机场随机事件");
+                            if (window.triggerAirportRandomEvent) {
+                                window.triggerAirportRandomEvent();
+                            }
+                        }, 500);
                     }, 100);
                 };
                 closeBtn.onmouseover = function() {
@@ -315,6 +326,59 @@ async function checkDukesDateProgress(userInput, npcResponse) {
 }
 
 /**
+ * 检查卢奥晚宴邂逅阶段的进度
+ */
+async function checkLuauEncounterProgress(userInput, npcResponse) {
+    // 使用 controlLuauEncounter 函数处理卢奥晚宴对话
+    if (window.controlLuauEncounter) {
+        await window.controlLuauEncounter(userInput, npcResponse);
+    }
+    
+    // 检测 NPC 是否发出了泳池派对邀请，然后触发转场
+    // 这样可以确保转场是对话的自然延续，而不是机械地数轮数
+    if (!gameState.poolPartyTriggered && gameState.conversationCount >= 3) {
+        // 检测 NPC 的回复中是否包含泳池派对邀请的关键词
+        const invitationKeywords = [
+            'pool party',
+            'rooftop',
+            'private party',
+            'upstairs',
+            'night isn\'t over',
+            'come with me',
+            'want to come',
+            'more exclusive',
+            'quieter spot'
+        ];
+        
+        const hasInvitation = invitationKeywords.some(keyword => 
+            npcResponse.toLowerCase().includes(keyword)
+        );
+        
+        if (hasInvitation) {
+            console.log("检测到泳池派对邀请，准备触发转场");
+            gameState.poolPartyTriggered = true;
+            
+            // 等待 NPC 说完邀请后，延迟触发转场
+            setTimeout(async () => {
+                if (window.triggerLuauPoolPartyTransition) {
+                    await window.triggerLuauPoolPartyTransition();
+                }
+            }, 1500);
+        }
+    }
+}
+
+/**
+ * 检查泳池派对阶段的进度
+ */
+async function checkPoolPartyProgress(userInput, npcResponse) {
+    // 使用 controlPoolParty 函数处理泳池派对对话
+    if (window.controlPoolParty) {
+        await window.controlPoolParty(userInput, npcResponse);
+    }
+}
+
+/**
  * 剧情进度检查主函数
  * 根据当前剧情阶段调用对应的处理器函数
  */
@@ -327,7 +391,9 @@ async function checkStoryProgress(userInput, npcResponse) {
         hotelCheckIn: checkHotelCheckInProgress,
         surfShop: checkSurfShopProgress,
         tertiary_visit: checkTertiaryVisitProgress,
-        "Duke's Waikiki": checkDukesDateProgress
+        "Duke's Waikiki": checkDukesDateProgress,
+        "luau_encounter": checkLuauEncounterProgress,
+        "pool_party": checkPoolPartyProgress
     };
     
     const handler = handlers[gameState.storyPhase];

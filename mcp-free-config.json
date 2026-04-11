@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "d:/hawaii_modular"],
+      "description": "本地文件操作 - 完全免费"
+    },
+    "web-search": {
+      "command": "npx",
+      "args": ["-y", "open-websearch@latest"],
+      "env": {
+        "DEFAULT_SEARCH_ENGINE": "bing"
+      },
+      "description": "免费网络搜索 - 无需 API Key"
+    },
+    "time": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-time"],
+      "description": "时间服务 - 获取夏威夷时间"
+    }
+  }
+}
