@@ -250,51 +250,34 @@ function showLocation() {
             
             let content = '<h3>📸 照片收集</h3>';
             
-            // 始终显示欧胡岛地图和檀香山机场照片（作为初始收集品）
+            // 检查 gameState.photos 是否存在（只有到达对应场景才会收录照片）
+            const photoCount = gameState.photos ? gameState.photos.length : 0;
+            
+            // 显示照片收集进度
             content += `
-                <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
-                    <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">🗺️ 欧胡岛地图</h4>
-                    <img src="pictures/oahumap.png" alt="欧胡岛地图" style="
-                        width: 100%;
-                        max-width: 500px;
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                        display: block;
-                        margin: 0 auto;
-                    ">
-                    <p style="text-align: center; color: #666; margin: 12px 0 0 0; font-size: 0.9em;">
-                        Lani 给你的欧胡岛地图，开启你的夏威夷冒险！
-                    </p>
-                </div>
-                
-                <div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
-                    <h4 style="margin: 0 0 15px 0; color: #333; font-size: 1.1em;">✈️ 檀香山国际机场</h4>
-                    <img src="pictures/檀香山机场.png" alt="檀香山机场" style="
-                        width: 100%;
-                        max-width: 500px;
-                        border-radius: 10px;
-                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                        display: block;
-                        margin: 0 auto;
-                    ">
-                    <p style="text-align: center; color: #666; margin: 12px 0 0 0; font-size: 0.9em;">
-                        抵达美丽的夏威夷檀香山国际机场，旅程的开始！
-                    </p>
+                <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); border-radius: 12px;">
+                    <div style="font-size: 1.1em; color: #333; font-weight: bold;">
+                        📸 已收集照片：<span style="color: #FF69B4; font-size: 1.3em;">${photoCount}</span> 张
+                    </div>
+                    <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                        探索更多场景，收集更多美好回忆！
+                    </div>
                 </div>
             `;
             
-            // 检查 gameState.photos 是否存在
-            if (!gameState.photos || gameState.photos.length === 0) {
-                content += '<p style="color: #999; text-align: center; padding: 20px;">还没有拍摄其他照片</p>';
+            if (photoCount === 0) {
+                content += '<p style="color: #999; text-align: center; padding: 40px 20px; font-size: 1.1em;">📷 还没有收集任何照片<br><br>继续探索夏威夷，在场景触发时会自动收录照片哦！✨</p>';
             } else {
                 // 照片墙布局
                 content += `
-                    <h4 style="color: #333; margin: 20px 0 15px 0; font-size: 1em;">📷 旅途照片</h4>
+                    <h4 style="color: #333; margin: 20px 0 15px 0; font-size: 1.1em;">📷 旅途照片</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 10px;">
                 `;
                 
                 gameState.photos.forEach((photo, index) => {
-                    const gradient = 'linear-gradient(135deg, #ffc3d9 0%, #a8e6ff 100%)';
+                    const gradient = photo.location === '欧胡岛地图' ? 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)' : 
+                                    photo.location === '海关' ? 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' :
+                                    'linear-gradient(135deg, #ffc3d9 0%, #a8e6ff 100%)';
                     
                     content += `
                         <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.3s ease; border: 3px solid #FF69B4; display: flex; flex-direction: column;" 
@@ -305,10 +288,15 @@ function showLocation() {
                                      style="width: 100%; height: auto; display: block;"
                                      onload="this.parentElement.style.aspectRatio = this.naturalWidth / this.naturalHeight">
                             </div>
-                            <div style="padding: 8px 12px; background: ${gradient}; border-top: 1px solid rgba(255,255,255,0.5);">
-                                <div style="text-align: center; font-weight: 600; font-size: 0.9em; color: #6a1b9a;">
-                                    ${photo.emoji || '📸'} ${photo.name}
+                            <div style="padding: 10px 12px; background: ${gradient}; border-top: 1px solid rgba(255,255,255,0.5);">
+                                <div style="text-align: center; font-weight: 600; font-size: 0.95em; color: #6a1b9a; margin-bottom: 5px;">
+                                    ${photo.emoji || '📸'} ${photo.name || photo.nameChinese || '照片'}
                                 </div>
+                                ${photo.location ? `
+                                <div style="text-align: center; font-size: 0.8em; color: #666;">
+                                    📍 ${photo.location}
+                                </div>
+                                ` : ''}
                             </div>
                         </div>
                     `;

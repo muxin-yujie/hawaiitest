@@ -580,12 +580,24 @@ window.恢复输入框 = 恢复输入框;
  */
 function 显示照片 (photoSrc, photoName, photoNameChinese, emoji, description, onClose) {
     // 1. 保存照片到收集系统
+    // 根据当前场景自动设置 location
+    let currentLocation = '夏威夷';
+    if (gameState.storyPhase === 'customs') {
+        currentLocation = '海关';
+    } else if (gameState.storyPhase === 'guide') {
+        currentLocation = '到达大厅';
+    } else if (gameState.currentSecondaryLocation) {
+        currentLocation = gameState.currentSecondaryLocation;
+    } else if (gameState.currentPrimaryLocation) {
+        currentLocation = gameState.currentPrimaryLocation;
+    }
+    
     const newPhoto = {
         src: photoSrc,
         name: photoName,
         nameChinese: photoNameChinese,
         emoji: emoji,
-        location: '海关',
+        location: currentLocation,
         description: description
     };
     
@@ -595,7 +607,7 @@ function 显示照片 (photoSrc, photoName, photoNameChinese, emoji, description
     
     if (!gameState.photos.some(p => p.src === newPhoto.src)) {
         gameState.photos.push(newPhoto);
-        console.log('📸 照片已保存:', newPhoto.name);
+        console.log('📸 照片已收录:', newPhoto.name, '| 地点:', newPhoto.location);
     }
     
     // 2. 创建照片弹窗
