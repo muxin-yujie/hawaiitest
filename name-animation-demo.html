@@ -1434,11 +1434,11 @@
             }
         });
         
-        // 方案 D：第三步完成后跳转到 index.html
+        // 方案 D：第三步完成后跳转到 game.html
         function goToMainGame() {
             const name = document.getElementById('step2NameInput').value.trim();
             
-            console.log('准备跳转到 index.html，玩家名字:', name);
+            console.log('准备跳转到 game.html，玩家名字:', name);
             
             // 1. 淡出第三步内容
             const step3Content = document.getElementById('step3AnimationContent');
@@ -1447,10 +1447,10 @@
                 step3Content.style.opacity = '0';
             }
             
-            // 2. 延迟后跳转到 index.html，并传递名字参数
+            // 2. 延迟后跳转到 game.html，并传递名字参数
             setTimeout(() => {
-                // 跳转到 index.html，带上名字参数
-                const targetUrl = `index.html?name=${encodeURIComponent(name)}`;
+                // 跳转到 game.html，带上名字参数
+                const targetUrl = `game.html?name=${encodeURIComponent(name)}`;
                 console.log('跳转到:', targetUrl);
                 window.location.href = targetUrl;
             }, 1000);
