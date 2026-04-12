@@ -1438,15 +1438,21 @@
         function goToMainGame() {
             const name = document.getElementById('step2NameInput').value.trim();
             
+            console.log('准备跳转到 index.html，玩家名字:', name);
+            
             // 1. 淡出第三步内容
             const step3Content = document.getElementById('step3AnimationContent');
-            step3Content.style.transition = 'opacity 1s ease-out';
-            step3Content.style.opacity = '0';
+            if (step3Content) {
+                step3Content.style.transition = 'opacity 1s ease-out';
+                step3Content.style.opacity = '0';
+            }
             
             // 2. 延迟后跳转到 index.html，并传递名字参数
             setTimeout(() => {
                 // 跳转到 index.html，带上名字参数
-                window.location.href = `index.html?name=${encodeURIComponent(name)}`;
+                const targetUrl = `index.html?name=${encodeURIComponent(name)}`;
+                console.log('跳转到:', targetUrl);
+                window.location.href = targetUrl;
             }, 1000);
         }
     </script>
