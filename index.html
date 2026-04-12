@@ -8,28 +8,28 @@
 </head>
 <body>
     <!-- 背景音乐 -->
-    <audio id="bgMusic1">
-        <source src="music/wave.flac" type="audio/flac">
+    <audio id="bgMusic1" preload="auto">
+        <source src="music/wave.mp3" type="audio/mpeg">
     </audio>
-    <audio id="bgMusic2">
-        <source src="music/Antonio Carlos Jobim - The Girl from Ipanema.flac" type="audio/flac">
+    <audio id="bgMusic2" preload="auto">
+        <source src="music/ipanema.mp3" type="audio/mpeg">
     </audio>
-    <audio id="bgMusic3">
-        <source src="music/Antonio Carlos Jobim - The Red Blouse.mp3" type="audio/mpeg">
+    <audio id="bgMusic3" preload="auto">
+        <source src="music/red-blouse.mp3" type="audio/mpeg">
     </audio>
     
     <!-- 环境音效 -->
-    <audio id="ambientOcean" loop>
-        <source src="music/ocean-ambient.mp3?v=2" type="audio/mpeg">
+    <audio id="ambientOcean" loop preload="auto">
+        <source src="music/ocean-ambient.mp3" type="audio/mpeg">
     </audio>
-    <audio id="ambientAirport" loop>
-        <source src="music/airport-ambient.mp3?v=2" type="audio/mpeg">
+    <audio id="ambientAirport" loop preload="auto">
+        <source src="music/airport-ambient.mp3" type="audio/mpeg">
     </audio>
-    <audio id="ambientHotel" loop>
-        <source src="music/hotel-ambient.mp3?v=2" type="audio/mpeg">
+    <audio id="ambientHotel" loop preload="auto">
+        <source src="music/hotel-ambient.mp3" type="audio/mpeg">
     </audio>
-    <audio id="ambientNature" loop>
-        <source src="music/nature-ambient.mp3?v=2" type="audio/mpeg">
+    <audio id="ambientNature" loop preload="auto">
+        <source src="music/nature-ambient.mp3" type="audio/mpeg">
     </audio>
     
     <div id="nameSetupPage" class="setup-page" style="display: none;">
@@ -259,7 +259,7 @@
     <script src="js/story/progress.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/ui-show.js"></script>
-    <script src="js/music.js"></script>
+    <script src="js/music-fixed.js"></script>
     <script src="js/ambient-sound.js"></script>
     <script src="js/prompts/monologue.js"></script>
     <!-- 游戏数据（必须在 game.js 之前加载） -->

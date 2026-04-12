@@ -33,25 +33,34 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 8px;
-    padding: 4px 20px;
+    gap: 4px;
+    padding: 4px 8px;
     background: rgba(255, 255, 255, 0.15) !important;
     border-radius: 25px !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     min-width: auto;
-    max-width: 80%;
+    max-width: 65%; /* 减少最大宽度，给音乐按钮留空间 */
+    overflow: hidden; /* 防止溢出 */
 }
 
 .scene-header.mobile .scene-name span:first-child {
-    font-size: 1em;
+    font-size: 0.9em;
+    flex-shrink: 0; /* 不缩小 */
 }
 
 .scene-header.mobile .scene-name span:nth-child(2) {
-    font-size: 0.85em;
+    font-size: 0.75em;
     font-weight: 500;
     color: white;
     letter-spacing: 0.3px;
     white-space: nowrap;
+    overflow: hidden; /* 隐藏溢出 */
+    text-overflow: ellipsis; /* 显示省略号 */
+    max-width: 120px; /* 限制最大宽度 */
+}
+
+.scene-header.mobile .scene-name span:last-child {
+    flex-shrink: 0; /* 不缩小 */
 }
 
 /* 音乐按钮 - 绝对定位到右边，白色 */
@@ -352,8 +361,10 @@
     cursor: pointer;
     transition: all 0.2s ease;
     min-width: 48px;
+    max-width: 60px;
     /* 禁止文字换行 */
     white-space: nowrap;
+    overflow: hidden;
 }
 
 .function-btn.mobile span {
@@ -382,6 +393,18 @@
     padding: 10px;
     padding-bottom: calc(10px + env(safe-area-inset-bottom));
     box-shadow: 0 -4px 12px rgba(255, 107, 157, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px; /* 按钮之间的间距 */
+}
+
+/* 输入包装器 */
+.input-wrapper.mobile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0; /* 允许缩小 */
 }
 
 /* 移动端输入区域 */
@@ -394,6 +417,7 @@
     border-radius: 20px;
     border: none;
     transition: all 0.3s ease;
+    min-width: 0; /* 允许缩小 */
 }
 
 .input-area.mobile:focus-within {
@@ -411,6 +435,7 @@
     outline: none !important;
     min-width: 0;
     border-radius: 20px;
+    width: 100%; /* 占满父容器 */
 }
 
 .input-area.mobile input:focus {
@@ -419,84 +444,81 @@
     box-shadow: none !important;
 }
 
-/* 图标按钮（语音、发送） - 圆形突出效果 */
-body .input-area.mobile .icon-btn,
-body .input-area.mobile #voiceInputBtn {
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
-    border: none !important;
-    border-radius: 50% !important;
-    background: linear-gradient(135deg, #FF85C2 0%, #FF6B9D 50%, #FF5A8F 100%) !important;
+/* 图标按钮（语音、发送） - 平面设计 */
+.input-wrapper.mobile .icon-btn,
+.input-wrapper.mobile #voiceInputBtn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: #FF6B9D;  /* 纯色，无渐变 */
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-shrink: 0 !important;
-    padding: 0 !important;
-    box-shadow: 
-        0 6px 16px rgba(255, 107, 157, 0.4),
-        0 2px 6px rgba(0, 0, 0, 0.15),
-        inset 0 2px 3px rgba(255, 255, 255, 0.4),
-        inset 0 -2px 3px rgba(0, 0, 0, 0.1) !important;
-    position: relative !important;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* 不缩小 */
+    padding: 0;
+    /* 无阴影，平面效果 */
 }
 
-body .input-area.mobile .icon-btn svg,
-body .input-area.mobile #voiceInputBtn svg {
-    width: 20px !important;
-    height: 20px !important;
-    fill: white !important;
+.input-wrapper.mobile .icon-btn svg,
+.input-wrapper.mobile #voiceInputBtn svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
 }
 
-body .input-area.mobile .icon-btn:hover,
-body .input-area.mobile #voiceInputBtn:hover {
-    background: linear-gradient(135deg, #FF9FD4 0%, #FF85C2 50%, #FF6B9D 100%) !important;
-    transform: translateY(-3px) scale(1.08);
-    box-shadow: 
-        0 10px 24px rgba(255, 107, 157, 0.5),
-        0 4px 10px rgba(0, 0, 0, 0.2),
-        inset 0 2px 3px rgba(255, 255, 255, 0.5),
-        inset 0 -2px 3px rgba(0, 0, 0, 0.1) !important;
+.input-wrapper.mobile .icon-btn:hover,
+.input-wrapper.mobile #voiceInputBtn:hover {
+    background: #FF5A8F;  /* 悬停时变深 */
+    transform: scale(1.05);  /* 轻微放大 */
 }
 
-body .input-area.mobile .icon-btn:active {
-    transform: translateY(2px) scale(0.92);
-    box-shadow: 
-        0 2px 6px rgba(255, 107, 157, 0.3),
-        0 1px 3px rgba(0, 0, 0, 0.1),
-        inset 0 2px 5px rgba(0, 0, 0, 0.15),
-        inset 0 -1px 2px rgba(255, 255, 255, 0.3) !important;
+.input-wrapper.mobile .icon-btn:active {
+    transform: scale(0.95);  /* 点击时缩小 */
 }
 
-body .input-area.mobile .icon-btn.listening,
-body .input-area.mobile #voiceInputBtn.listening {
-    background: #FF6B9D !important;
+.input-wrapper.mobile .icon-btn.listening,
+.input-wrapper.mobile #voiceInputBtn.listening {
+    background: #FF6B9D;
     animation: pulse 1.5s infinite;
 }
 
-/* 发送按钮 - 参考微信设计 */
-.send-btn {
-    padding: 5px 14px;
+/* 发送按钮 - 平面设计 */
+.send-btn.mobile {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
     border: none;
-    border-radius: 14px;
-    background: #FF6B9D;  /* 跟顶部一致的芭乐粉 */
-    color: white;
-    font-size: 13px;
-    font-weight: 500;
+    border-radius: 50%;
+    background: #FF6B9D;  /* 纯色，无渐变 */
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* 不缩小 */
+    padding: 0;
+    /* 无阴影，平面效果 */
 }
 
-.send-btn:hover {
-    background: #FF5A8F;
-    transform: translateY(-1px);
+.send-btn.mobile svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
 }
 
-.send-btn:active {
-    transform: translateY(0) scale(0.95);
+.send-btn.mobile:hover {
+    background: #FF5A8F;  /* 悬停时变深 */
+    transform: scale(1.05);  /* 轻微放大 */
+}
+
+.send-btn.mobile:active {
+    transform: scale(0.95);  /* 点击时缩小 */
 }
 
 /* 输入框禁用状态 */
@@ -685,7 +707,14 @@ body .input-area.mobile #voiceInputBtn.listening {
 /* 小屏手机 */
 @media (max-width: 375px) {
     .scene-name.mobile span:nth-child(2) {
-        font-size: 0.85em;
+        font-size: 0.7em;
+        max-width: 100px; /* 更小屏幕进一步缩小 */
+    }
+    
+    .scene-header.mobile .scene-name {
+        max-width: 60%; /* 更小屏幕减少宽度 */
+        padding: 4px 6px;
+        gap: 3px;
     }
     
     .function-btn.mobile {
@@ -700,6 +729,36 @@ body .input-area.mobile #voiceInputBtn.listening {
     .send-btn {
         padding: 6px 12px;
         font-size: 13px;
+    }
+}
+
+/* 超小屏幕 */
+@media (max-width: 350px) {
+    .scene-name.mobile span:nth-child(2) {
+        font-size: 0.65em;
+        max-width: 80px;
+    }
+    
+    .scene-header.mobile .scene-name {
+        max-width: 55%;
+    }
+}
+
+/* iPhone SE 等超小屏幕 */
+@media (max-width: 320px) {
+    .scene-header.mobile .scene-name {
+        max-width: 50%;
+        padding: 4px 4px;
+        gap: 2px;
+    }
+    
+    .scene-name.mobile span:nth-child(2) {
+        font-size: 0.6em;
+        max-width: 60px;
+    }
+    
+    .scene-header.mobile .scene-name span:first-child {
+        font-size: 0.8em;
     }
 }
 
