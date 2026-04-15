@@ -29,7 +29,15 @@ function toggleMusic() {
                 currentAudio.pause();
             });
         }
-        musicIcon.textContent = '🔇';
+        
+        // 移动端使用 SVG 图标，桌面端使用 emoji
+        if (musicIcon.tagName === 'svg') {
+            // SVG 图标：改变透明度表示静音
+            musicIcon.style.opacity = '0.5';
+        } else {
+            musicIcon.textContent = '🔇';
+        }
+        
         if (musicText) musicText.textContent = 'Muted';
         if (musicBtn) {
             musicBtn.classList.remove('playing');
@@ -147,7 +155,14 @@ function playTrack(index, musicIcon, musicText, musicBtn) {
         playPromise.then(_ => {
             // 淡入效果：1 秒内从 0 到目标音量
             fadeInMusic(currentAudio, 1000, targetVolume, () => {
-                musicIcon.textContent = '🎵';
+                // 移动端使用 SVG 图标，桌面端使用 emoji
+                if (musicIcon.tagName === 'svg') {
+                    // SVG 图标：恢复正常透明度
+                    musicIcon.style.opacity = '1';
+                } else {
+                    musicIcon.textContent = '🎵';
+                }
+                
                 if (musicText) musicText.textContent = 'Playing';
                 if (musicBtn) {
                     musicBtn.classList.add('playing');
