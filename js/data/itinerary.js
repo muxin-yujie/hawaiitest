@@ -5,10 +5,20 @@ const ITINERARY_DATA = {
     primaryLocations: [
         { 
             name: "威基基区域", 
-            emoji: "🌺", 
+            emoji: "", 
             description: "这里是世界著名的夏威夷度假区，拥有美丽的海滩、繁华的购物街和丰富的文化景点。" 
         },
-        { name: "钻石头山", emoji: "🌋", description: "夏威夷的标志性地标，可俯瞰全景" }
+        { name: "钻石头山", emoji: "🌋", description: "夏威夷的标志性地标，可俯瞰全景" },
+        { 
+            name: "波利尼西亚文化中心", 
+            emoji: "🌺", 
+            description: "体验波利尼西亚传统文化，欣赏草裙舞和火刀舞表演" 
+        },
+        { 
+            name: "古兰尼牧场", 
+            emoji: "", 
+            description: "好莱坞电影取景地，探索侏罗纪公园等电影的拍摄地" 
+        }
     ],
     hotel: { 
         name: "威基基海滩酒店", 
