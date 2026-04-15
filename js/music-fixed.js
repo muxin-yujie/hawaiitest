@@ -13,11 +13,11 @@ const playlist = [
 function toggleMusic() {
     const musicIcon = document.getElementById('musicIcon');
     const musicText = document.getElementById('musicText');
-    const musicBtn = document.querySelector('button[onclick="toggleMusic()"]');
+    const musicBtn = document.querySelector('button[onclick="toggleMusic()"]') || document.getElementById('musicToggle');
     
-    // 检查元素是否存在
-    if (!musicIcon || !musicText) {
-        console.warn('音乐按钮元素未找到');
+    // 检查元素是否存在（移动端可能没有 musicText）
+    if (!musicIcon) {
+        console.warn('音乐图标元素未找到');
         return;
     }
     
@@ -30,7 +30,7 @@ function toggleMusic() {
             });
         }
         musicIcon.textContent = '🔇';
-        musicText.textContent = 'Muted';
+        if (musicText) musicText.textContent = 'Muted';
         if (musicBtn) {
             musicBtn.classList.remove('playing');
         }
@@ -85,9 +85,9 @@ function fadeInMusic(audio, duration, targetVolume, callback) {
 }
 
 function playTrack(index, musicIcon, musicText, musicBtn) {
-    // 检查元素是否存在
-    if (!musicIcon || !musicText) {
-        console.warn('音乐图标或文本元素未找到');
+    // 检查元素是否存在（移动端可能没有 musicText）
+    if (!musicIcon) {
+        console.warn('音乐图标元素未找到');
         return;
     }
     
@@ -114,7 +114,7 @@ function playTrack(index, musicIcon, musicText, musicBtn) {
         }
         
         musicIcon.textContent = '⚠️';
-        musicText.textContent = 'Error';
+        if (musicText) musicText.textContent = 'Error';
         return;
     }
     
@@ -148,7 +148,7 @@ function playTrack(index, musicIcon, musicText, musicBtn) {
             // 淡入效果：1 秒内从 0 到目标音量
             fadeInMusic(currentAudio, 1000, targetVolume, () => {
                 musicIcon.textContent = '🎵';
-                musicText.textContent = 'Playing';
+                if (musicText) musicText.textContent = 'Playing';
                 if (musicBtn) {
                     musicBtn.classList.add('playing');
                 }
