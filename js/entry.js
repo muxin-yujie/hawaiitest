@@ -211,6 +211,11 @@ function initGame() {
     gameState.itinerary = [];
     gameState.dynamicNpcRoles = {};
     
+    // 预加载所有图片，避免显示时卡顿
+    if (typeof preloadImages === 'function') {
+        preloadImages();
+    }
+    
     startCustomsScene();
 }
 

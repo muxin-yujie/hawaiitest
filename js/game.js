@@ -1,4 +1,40 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
+
+// 预加载所有图片，避免显示时卡顿
+function preloadImages() {
+    const imagesToPreload = [
+        // 机场地图
+        "pictures/oahumap.png",
+        // 卢奥晚宴邂逅 CG
+        "pictures/luauencounter.png",
+        // 鸡尾酒图片
+        "pictures/Mai Tai.png",
+        "pictures/lava flow.png",
+        "pictures/blue Hawaii.png",
+        // 海关照片
+        "pictures/檀香山机场.png",
+        // 卢奥晚宴美食
+        "pictures/luau-feast.png"
+    ];
+    
+    console.log('🖼️ 开始预加载图片...');
+    let loadedCount = 0;
+    
+    imagesToPreload.forEach(src => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+            loadedCount++;
+            console.log(`✅ 已加载：${src} (${loadedCount}/${imagesToPreload.length})`);
+            if (loadedCount === imagesToPreload.length) {
+                console.log('🎉 所有图片预加载完成！');
+            }
+        };
+        img.onerror = () => {
+            console.warn(`⚠️ 加载失败：${src}`);
+        };
+    });
+}
 
 // 启动海关场景（游戏第一个场景）
 async function startCustomsScene() {
