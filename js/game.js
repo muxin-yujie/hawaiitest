@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
 
 // 启动海关场景（游戏第一个场景）
 async function startCustomsScene() {
@@ -48,6 +48,19 @@ async function triggerAirportRandomEvent() {
 // 遇到导游
 async function meetGuide() {
     console.log("=== 遇到导游 Lani ===");
+    
+    // 确保输入框已启用（防止之前场景禁用后未恢复）
+    const userInputEl = document.getElementById('userInput');
+    const sendButton = document.querySelector('.send-btn');
+    if (userInputEl) {
+        userInputEl.disabled = false;
+        userInputEl.placeholder = "输入消息...";
+    }
+    if (sendButton) {
+        sendButton.disabled = false;
+        sendButton.style.opacity = "1";
+        sendButton.style.cursor = "pointer";
+    }
     
     // 设置游戏状态
     设置状态 ({
