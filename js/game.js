@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
 
 // 启动海关场景（游戏第一个场景）
 async function startCustomsScene() {
@@ -65,7 +65,19 @@ async function meetGuide() {
     await generateInnerMonologue("哇，这就是 Lani！好热情好漂亮啊！接下来的旅程一定会很精彩！", "兴奋、期待、开心");
     
     // 显示欧胡岛地图（使用统一的图片显示方式）
-    显示照片 ("pictures/oahumap.png", "🗺️ 欧胡岛地图", "Lani 微笑着递给你一张欧胡岛地图：\"This is Oahu! Let me show you around!\"");
+    console.log('准备显示欧胡岛地图，检查 window.显示照片:', typeof window.显示照片);
+    console.log('当前 gameState:', gameState);
+    console.log('当前 gameState.photos:', gameState ? gameState.photos : 'gameState 未定义');
+    
+    if (window.显示照片) {
+        window.显示照片 ("pictures/oahumap.png", "🗺️ 欧胡岛地图", "Lani 微笑着递给你一张欧胡岛地图：\"This is Oahu! Let me show you around!\"");
+        console.log('已调用 window.显示照片，500ms 后检查 photos 数组');
+        setTimeout(() => {
+            console.log('500ms 后 gameState.photos:', gameState ? gameState.photos : 'gameState 未定义');
+        }, 500);
+    } else {
+        console.error('window.显示照片 未定义！');
+    }
     
     const guideDialoguePrompt = window.PROMPTS.GUIDE_FIRST_MEET;
     await window.generateNPCDialogue("导游 Lani", guideDialoguePrompt);
@@ -78,7 +90,12 @@ async function meetGuide() {
  * @param {string} description - 图片描述
  */
 function 显示照片 (imageUrl, title = '', description = '') {
-    const chatContainer = getChatContainer();
+    const chatContainer = document.getElementById('chatContainer');
+    if (!chatContainer) {
+        console.error('显示照片：chatContainer 未找到');
+        return;
+    }
+    
     const photoDiv = document.createElement('div');
     photoDiv.innerHTML = `
         <div style="
@@ -101,6 +118,35 @@ function 显示照片 (imageUrl, title = '', description = '') {
     `;
     chatContainer.appendChild(photoDiv);
     chatContainer.scrollTop = chatContainer.scrollHeight;
+    
+    // 同时将照片收录到 gameState.photos 中
+    if (typeof gameState !== 'undefined' && gameState) {
+        if (!gameState.photos) {
+            gameState.photos = [];
+        }
+        
+        // 提取地点信息（从 title 中）
+        let location = '其他';
+        if (title.includes('欧胡岛地图')) location = '欧胡岛地图';
+        else if (title.includes('机场')) location = '海关';
+        
+        const newPhoto = {
+            src: imageUrl,
+            name: title.replace(/^[^\s]+\s+/, ''), // 移除 emoji
+            nameChinese: title,
+            emoji: title.match(/^[^\s]+/) ? title.match(/^[^\s]+/)[0] : '',
+            location: location,
+            description: description
+        };
+        
+        // 避免重复添加
+        if (!gameState.photos.some(p => p.src === newPhoto.src)) {
+            gameState.photos.push(newPhoto);
+            console.log('📸 照片已收录:', newPhoto.name);
+        }
+    } else {
+        console.warn('显示照片：gameState 未定义，跳过照片收录');
+    }
 }
 
 // 导出到全局
@@ -755,7 +801,8 @@ async function acceptLuauInvitation() {
         description: "在卢奥晚宴上遇到了一位神秘高贵的男人，度过了一个难忘的夜晚",
         status: "active",
         startTime: new Date().toLocaleString('zh-CN'),
-        location: "酒店海滨草坪"
+        location: "酒店海滨草坪",
+        image: "pictures/luauencounter.png"
     });
     
     // 设置故事阶段为卢奥晚宴邂逅
@@ -769,12 +816,30 @@ async function acceptLuauInvitation() {
         '夜幕降临，你来到了酒店的海滨草坪。<br>篝火熊熊燃烧，空气中弥漫着烤猪的香气和热带花朵的芬芳。<br>草裙舞者随着夏威夷音乐翩翩起舞，火刀舞表演即将开始。<br><br>在人群中，你注意到一个气质非凡的男人独自坐着。<br>他穿着考究，眼神深邃，举手投足间散发着神秘高贵的气息。<br>似乎感受到了你的目光，他微微抬头，与你四目相对...<br><br><em style="color: #888;">一场神秘的邂逅即将开始...</em>'
     );
     
+    // 显示 CG 图片
+    setTimeout(() => {
+        if (window.显示照片) {
+            window.显示照片(
+                "pictures/luauencounter.png",
+                "🌺 卢奥晚宴邂逅",
+                "在传统的夏威夷卢奥晚宴上，一场神秘的邂逅即将开始..."
+            );
+        }
+    }, 800);
+    
+    // 显示卢奥文化指南菜单
+    setTimeout(() => {
+        if (window.showLuauMenu) {
+            window.showLuauMenu();
+        }
+    }, 1500);
+    
     // 延迟 1 秒后触发邂逅
     setTimeout(async () => {
         if (window.triggerLuauMysteryEncounter) {
             await window.triggerLuauMysteryEncounter();
         }
-    }, 1000);
+    }, 2000);
 }
 
 async function declineLuauInvitation() {

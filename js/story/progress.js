@@ -379,6 +379,126 @@ async function checkPoolPartyProgress(userInput, npcResponse) {
 }
 
 /**
+ * 检查机场邂逅阶段的进度
+ */
+async function checkEncounterProgress(userInput, npcResponse) {
+    console.log('=== 检查机场邂逅进度 ===');
+    console.log('storyPhase:', gameState.storyPhase);
+    console.log('conversationCount:', gameState.conversationCount);
+    
+    // 机场邂逅：使用 shouldEndConversation 检测对话是否结束
+    const endCheck = window.shouldEndConversation(npcResponse, userInput, {
+        currentTurns: gameState.conversationCount,
+        minTurns: 1,
+        maxTurns: 6,
+        requireFarewell: true  // 需要告别词
+    });
+    
+    console.log('对话结束检测结果:', endCheck);
+    
+    // 如果检测应该结束，结束邂逅并触发遇到导游
+    if (endCheck.shouldEnd) {
+        console.log('✅ 机场邂逅结束，准备遇到导游');
+        
+        // 禁用输入框
+        const userInputEl = document.getElementById('userInput');
+        const sendButton = document.querySelector('.send-btn');
+        if (userInputEl) {
+            userInputEl.disabled = true;
+            userInputEl.placeholder = "";
+        }
+        if (sendButton) {
+            sendButton.disabled = true;
+            sendButton.style.opacity = "0.5";
+            sendButton.style.cursor = "not-allowed";
+        }
+        
+        // 显示加载动画
+        const chatContainer = document.getElementById('chatContainer');
+        const loadingMessage = document.createElement('div');
+        loadingMessage.className = 'system-message';
+        loadingMessage.id = 'transitionLoading';
+        loadingMessage.innerHTML = `
+            <div style="display: inline-block; width: 24px; height: 24px; border: 3px solid #e0e0e0; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        `;
+        chatContainer.appendChild(loadingMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        // 延迟后遇到导游
+        setTimeout(async () => {
+            // 清空当前 NPC
+            gameState.currentNpc = null;
+            gameState.conversationHistory = [];
+            
+            // 遇到导游
+            await meetGuide();
+        }, 1000);
+    } else {
+        console.log("机场邂逅还在继续（" + endCheck.reason + "）");
+    }
+}
+
+/**
+ * 检查机场 Medal 阶段的进度
+ */
+async function checkMedalProgress(userInput, npcResponse) {
+    console.log('=== 检查机场 Medal 进度 ===');
+    console.log('storyPhase:', gameState.storyPhase);
+    console.log('conversationCount:', gameState.conversationCount);
+    
+    // 机场 Medal：使用 shouldEndConversation 检测对话是否结束
+    const endCheck = window.shouldEndConversation(npcResponse, userInput, {
+        currentTurns: gameState.conversationCount,
+        minTurns: 0,
+        maxTurns: 6,
+        requireFarewell: false  // 不需要告别词
+    });
+    
+    console.log('对话结束检测结果:', endCheck);
+    
+    // 如果检测应该结束，结束 Medal 并触发遇到导游
+    if (endCheck.shouldEnd) {
+        console.log('✅ 机场 Medal 结束，准备遇到导游');
+        
+        // 禁用输入框
+        const userInputEl = document.getElementById('userInput');
+        const sendButton = document.querySelector('.send-btn');
+        if (userInputEl) {
+            userInputEl.disabled = true;
+            userInputEl.placeholder = "";
+        }
+        if (sendButton) {
+            sendButton.disabled = true;
+            sendButton.style.opacity = "0.5";
+            sendButton.style.cursor = "not-allowed";
+        }
+        
+        // 显示加载动画
+        const chatContainer = document.getElementById('chatContainer');
+        const loadingMessage = document.createElement('div');
+        loadingMessage.className = 'system-message';
+        loadingMessage.id = 'transitionLoading';
+        loadingMessage.innerHTML = `
+            <div style="display: inline-block; width: 24px; height: 24px; border: 3px solid #e0e0e0; border-top-color: #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        `;
+        chatContainer.appendChild(loadingMessage);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        
+        // 延迟后遇到导游
+        setTimeout(async () => {
+            // 清空当前 NPC
+            gameState.currentNpc = null;
+            gameState.conversationHistory = [];
+            
+            // 遇到导游
+            await meetGuide();
+        }, 1000);
+    } else {
+        console.log("机场 Medal 还在继续（" + endCheck.reason + "）");
+    }
+}
+
+/**
  * 剧情进度检查主函数
  * 根据当前剧情阶段调用对应的处理器函数
  */
@@ -393,7 +513,9 @@ async function checkStoryProgress(userInput, npcResponse) {
         tertiary_visit: checkTertiaryVisitProgress,
         "Duke's Waikiki": checkDukesDateProgress,
         "luau_encounter": checkLuauEncounterProgress,
-        "pool_party": checkPoolPartyProgress
+        "pool_party": checkPoolPartyProgress,
+        "encounter": checkEncounterProgress,  // 机场邂逅
+        "medal": checkMedalProgress           // 机场 Medal
     };
     
     const handler = handlers[gameState.storyPhase];

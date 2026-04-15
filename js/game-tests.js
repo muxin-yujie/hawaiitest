@@ -18,6 +18,46 @@ window.testConfetti = function() {
     chatContainer.appendChild(testMessage);
 }
 
+// 测试去海滩
+window.testGoToBeach = async function() {
+    console.log("=== 开始测试去海滩 ===");
+    
+    // 初始化游戏状态
+    gameState.locations = [];
+    gameState.conversationHistory = [];
+    gameState.storyPhase = "guide";
+    gameState.conversationCount = 0;
+    
+    const chatContainer = document.getElementById('chatContainer');
+    chatContainer.innerHTML = '';
+    
+    // 显示测试标题
+    const testTitle = document.createElement('div');
+    testTitle.className = 'system-message';
+    testTitle.innerHTML = `
+        <span style="font-weight: bold; color: #6a1b9a;">
+            🧪 测试模式 - 威基基海滩 🧪<br><br>
+            正在前往海滩...
+        </span>
+    `;
+    chatContainer.appendChild(testTitle);
+    
+    // 调用实际的函数（从 game.js）
+    if (typeof goToBeachFirst === 'function') {
+        await goToBeachFirst();
+    } else {
+        console.error('goToBeachFirst 函数未定义！请确保 game.js 已加载');
+        testTitle.innerHTML = `
+            <span style="font-weight: bold; color: #d32f2f;">
+                ❌ 错误：goToBeachFirst 函数未定义<br><br>
+                请检查 game.js 是否正确加载
+            </span>
+        `;
+    }
+    
+    console.log("海滩测试已启动！");
+};
+
 // 测试机场邂逅
 window.testAirportEncounter = async function() {
     console.log("=== 开始测试机场邂逅 ===");
@@ -202,13 +242,26 @@ window.testHotel = async function() {
 // 测试导游部分
 window.testGuide = async function() {
     console.log("=== 开始测试导游部分 ===");
+    console.log("🔴🔴🔴  testGuide 函数被调用了！ 🔴🔴🔴");
     
     // 初始化游戏状态
+    if (typeof gameState === 'undefined') {
+        console.error('❌ gameState 未定义！游戏状态未初始化！');
+        alert('错误：gameState 未定义，游戏可能未正确初始化');
+        return;
+    }
+    
     gameState.currentNpc = null;
     gameState.conversationHistory = [];
     gameState.conversationCount = 0;
     
     const chatContainer = document.getElementById('chatContainer');
+    if (!chatContainer) {
+        console.error('❌ chatContainer 未找到！');
+        alert('错误：chatContainer 未找到');
+        return;
+    }
+    
     chatContainer.innerHTML = '';
     
     // 显示测试标题
@@ -223,9 +276,22 @@ window.testGuide = async function() {
     chatContainer.appendChild(testTitle);
     
     // 直接调用 meetGuide（会自动设置 storyPhase = "guide"）
+    console.log('=== 测试模式：调用 meetGuide 前 ===');
+    console.log('window.显示照片:', typeof window.显示照片);
+    console.log('gameState:', gameState);
+    console.log('gameState.photos:', gameState ? gameState.photos : 'gameState 未定义');
+    
+    if (typeof meetGuide === 'undefined') {
+        console.error('❌ meetGuide 函数未定义！');
+        alert('错误：meetGuide 函数未找到');
+        return;
+    }
+    
     await meetGuide();
     
-    console.log("导游测试已启动，现在可以和 Lani 对话了！");
+    console.log('=== 测试模式：调用 meetGuide 后 ===');
+    console.log('gameState.photos:', gameState ? gameState.photos : 'gameState 未定义');
+    console.log("✅ 导游测试已启动，现在可以和 Lani 对话了！");
 }
 
 // 测试 Koa 邀请（说 byebye 后弹出选项）

@@ -248,6 +248,15 @@ function showLocation() {
             const modal = document.getElementById('modal');
             const modalContent = document.getElementById('modalContent');
             
+            // 调试：检查 gameState.photos
+            console.log('=== 打开照片收集面板 ===');
+            console.log('gameState:', gameState);
+            console.log('gameState.photos:', gameState ? gameState.photos : 'gameState 未定义');
+            console.log('照片数量:', gameState && gameState.photos ? gameState.photos.length : 0);
+            if (gameState && gameState.photos && gameState.photos.length > 0) {
+                console.log('照片详情:', gameState.photos);
+            }
+            
             let content = '<h3>📸 照片收集</h3>';
             
             // 检查 gameState.photos 是否存在（只有到达对应场景才会收录照片）
