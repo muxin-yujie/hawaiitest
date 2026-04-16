@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
 
 // 预加载所有图片，避免显示时卡顿
 function preloadImages() {
@@ -7,6 +7,8 @@ function preloadImages() {
         "pictures/oahumap.png",
         // 卢奥晚宴邂逅 CG
         "pictures/luauencounter.png",
+        // Koa 约会 CG
+        "pictures/koa-date.png",
         // 鸡尾酒图片
         "pictures/Mai Tai.png",
         "pictures/lava flow.png",
@@ -475,11 +477,35 @@ async function dukesWaikikiDate() {
     gameState.dateConversationCount = 0;
     gameState.conversationHistory = [];
     
+    // 记录分支
+    if (!gameState.branches) {
+        gameState.branches = [];
+    }
+    gameState.branches.push({
+        title: "Duke's Waikiki 海边酒吧约会",
+        description: "与冲浪教练 Koa 在海边酒吧共进晚餐，欣赏美丽的日落，度过了一个浪漫的夜晚",
+        status: "active",
+        startTime: new Date().toLocaleString('zh-CN'),
+        location: "Duke's Waikiki 海边酒吧",
+        image: "pictures/koa-date.png"
+    });
+    
     紫色场景切换 (
         '🍹',
         "Duke's Waikiki",
         '傍晚时分，你来到了位于威基基海滩的 Duke\'s Waikiki。<br>夕阳将海面染成金红色，海风轻拂，棕榈树在微风中摇曳。<br><br>酒吧里已经热闹非凡，现场乐队演奏着轻松的夏威夷音乐，<br>空气中弥漫着热带鸡尾酒和烤海鲜的香气。<br><br>你一眼就看到了站在露台上的 Koa，<br>他穿着休闲的夏威夷衬衫，手里拿着两杯色彩缤纷的饮料，<br>看到你到来，他的脸上绽放出灿烂的笑容...<br><br><em style="color: #888;">一场浪漫的海边约会即将开始</em>'
     );
+    
+    // 显示 CG 图片
+    setTimeout(() => {
+        if (window.显示照片) {
+            window.显示照片(
+                "pictures/koa-date.png",
+                "🍹 Duke's Waikiki 约会",
+                "夕阳西下，与 Koa 在海边酒吧共度浪漫时光..."
+            );
+        }
+    }, 800);
     
     // 显示鸡尾酒菜单（延迟一点，等场景切换完成）
     setTimeout(() => {
