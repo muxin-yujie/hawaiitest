@@ -589,24 +589,51 @@
 
 .voice-input-status {
     position: fixed;
-    bottom: 100px;
+    top: 80px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
+    background: linear-gradient(135deg, #ffc3d9 0%, #c3e6ff 100%);
+    color: #c2185b;
     padding: 10px 20px;
     border-radius: 25px;
     font-size: 13px;
+    font-weight: 600;
     z-index: 10000;
     display: flex;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    animation: fadeInUp 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    animation: slideDown 0.3s ease;
+    min-width: 200px;
+    max-width: 400px;
 }
 
 .voice-input-status.hide {
-    animation: fadeOutDown 0.3s ease forwards;
+    animation: slideUp 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
 }
 
 @keyframes fadeInUp {
