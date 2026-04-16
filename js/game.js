@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
 
 // 预加载所有图片，避免显示时卡顿
 function preloadImages() {
@@ -1122,6 +1122,25 @@ window.closeCocktailPopup = function() {
 
 window.showCocktailMenu = function() {
     const chatContainer = document.getElementById('chatContainer');
+    
+    // 检查是否已经添加过鸡尾酒菜单到 notebook
+    const hasCocktailNotebook = gameState.notebook && gameState.notebook.some(note => 
+        note.title === "🍹 特色鸡尾酒"
+    );
+    
+    // 如果没有添加过，添加到 notebook
+    if (!hasCocktailNotebook) {
+        if (!gameState.notebook) {
+            gameState.notebook = [];
+        }
+        gameState.notebook.push({
+            title: "🍹 特色鸡尾酒",
+            content: "Duke's Waikiki 酒吧的特色鸡尾酒：Mai Tai、Lava Flow、Blue Hawaii",
+            timestamp: new Date().toLocaleString('zh-CN'),
+            type: "cocktail_menu"
+        });
+        console.log("✅ 鸡尾酒菜单已添加到 notebook");
+    }
     
     const menuDiv = document.createElement('div');
     menuDiv.className = 'system-message';
