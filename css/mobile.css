@@ -2,6 +2,160 @@
    🌺 阳光夏威夷 - 移动端专属样式
    ======================================== */
 
+/* ========== 章节目录面板 ========== */
+
+/* 章节面板容器（右滑面板） */
+.chapter-panel {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100vh;
+    background: linear-gradient(135deg, #FF6B9D 0%, #FF8FAB 100%);
+    z-index: 2000;
+    transition: right 0.3s ease;
+    overflow-y: auto;
+    color: white;
+}
+
+.chapter-panel.open {
+    right: 0;
+}
+
+.chapter-panel-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.chapter-panel-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.chapter-panel-header {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.chapter-panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+}
+
+.chapter-panel-close {
+    background: rgba(255, 255, 255, 0.25);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.chapter-panel-close:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: rotate(90deg);
+}
+
+.chapter-panel-body {
+    padding: 15px;
+}
+
+/* 章节卡片 - 默认状态 */
+.chapter-card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    position: relative;
+}
+
+.chapter-card:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* 当前章节 - 更亮的白色 */
+.chapter-card.active {
+    background: rgba(255, 255, 255, 0.28);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* 已完成章节 - 稍亮的白色 */
+.chapter-card.completed {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.chapter-card.completed .chapter-card-status {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* 锁定章节 - 半透明 */
+.chapter-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.chapter-card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.chapter-card-icon {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.chapter-card-title {
+    font-weight: 600;
+    font-size: 15px;
+    flex: 1;
+}
+
+.chapter-card-status {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    font-weight: 500;
+}
+
+.chapter-card-desc {
+    font-size: 12px;
+    opacity: 0.9;
+    line-height: 1.5;
+}
+
 /* ========== 基础样式 ========== */
 
 /* 移动端容器 */
@@ -229,6 +383,16 @@
 }
 
 /* ========== 聊天区域 ========== */
+
+/* 章节聊天窗口 - 默认隐藏 */
+.chat-window {
+    display: none;
+}
+
+/* 激活的聊天窗口 - 显示 */
+.chat-window.active {
+    display: block;
+}
 
 /* 移动端聊天容器 */
 .chat-container.mobile {

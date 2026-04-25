@@ -151,7 +151,7 @@ window.closeCocktailPopup = function() {
 
 // 显示鸡尾酒菜单（小巧横条）
 window.showCocktailMenu = function() {
-    const chatContainer = document.getElementById('chatContainer');
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     
     // 检查是否已经添加过鸡尾酒菜单到 notebook
     const hasCocktailNotebook = gameState.notebook && gameState.notebook.some(note => 

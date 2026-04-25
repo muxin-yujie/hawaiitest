@@ -33,7 +33,13 @@ async function generateInnerMonologue(context, emotionHint) {
  * @param {string} text - 独白内容
  */
 function displayInnerMonologue(text) {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return;
+    }
     
     const monologueMessage = document.createElement('div');
     monologueMessage.className = 'system-message';

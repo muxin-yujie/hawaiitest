@@ -286,10 +286,14 @@ const GameCore = {
                 <div>${cleanedResponse}</div>
                 <div class="translation">${translation}</div>
             `;
-            const chatContainer = document.getElementById('chatContainer');
+            
+            // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+            const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
             if (chatContainer) {
                 chatContainer.appendChild(npcMessage);
                 chatContainer.scrollTop = chatContainer.scrollHeight;
+            } else {
+                console.error('❌ 聊天容器未找到！');
             }
             
             GameCore.state.conversationHistory.push({ role: "assistant", content: cleanedResponse });

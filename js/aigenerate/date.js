@@ -25,11 +25,15 @@
             gameState.dateConversationCount = 0;
             
             // 清空当前对话，准备约会剧情
-            const chatContainer = document.getElementById('chatContainer');
-            chatContainer.innerHTML = '';
-            
-            // 生成约会开场
-            generateDateOpening(encounter);
+            const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+            if (chatContainer) {
+                chatContainer.innerHTML = '';
+                
+                // 生成约会开场
+                generateDateOpening(encounter);
+            } else {
+                console.error('❌ 聊天容器未找到！');
+            }
         };
         
         /**
@@ -37,6 +41,13 @@
          */
         async function generateDateOpening(encounter) {
             const invitation = encounter.invitationData;
+            
+            // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+            const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+            if (!chatContainer) {
+                console.error('❌ 聊天容器未找到！');
+                return;
+            }
             
             // 显示约会场景
             const sceneMessage = document.createElement('div');
@@ -50,7 +61,7 @@
                     你按照约定来到了${invitation.scene}，心中既期待又紧张...
                 </span>
             `;
-            document.getElementById('chatContainer').appendChild(sceneMessage);
+            chatContainer.appendChild(sceneMessage);
             
             // 生成 NPC 的见面问候
             const greetingPrompt = `
@@ -89,7 +100,7 @@ NPC 刚刚看到你来了，会说什么做什么？
                 const descMessage = document.createElement('div');
                 descMessage.className = 'system-message';
                 descMessage.innerHTML = `<span style="font-size: 0.95em; line-height: 1.6;">${greetingData.scene}</span>`;
-                document.getElementById('chatContainer').appendChild(descMessage);
+                chatContainer.appendChild(descMessage);
                 
                 // 显示 NPC 台词
                 const npcMessage = document.createElement('div');
@@ -98,11 +109,10 @@ NPC 刚刚看到你来了，会说什么做什么？
                     <div class="message-sender">${encounter.emoji || '👤'} ${encounter.chineseName}</div>
                     <div>${greetingData.npcLine}</div>
                 `;
-                document.getElementById('chatContainer').appendChild(npcMessage);
+                chatContainer.appendChild(npcMessage);
                 
                 // 滚动到底部
-                const container = document.getElementById('chatContainer');
-                container.scrollTop = container.scrollHeight;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
                 
             } catch (error) {
                 console.error("生成约会开场失败:", error);
@@ -119,8 +129,15 @@ NPC 刚刚看到你来了，会说什么做什么？
             // 更新邀约状态
             encounter.invitationStatus = 'completed';
             
+            // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+            const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+            
+            if (!chatContainer) {
+                console.error('❌ 聊天容器未找到！');
+                return;
+            }
+            
             // 显示约会结束消息
-            const chatContainer = document.getElementById('chatContainer');
             const completeMessage = document.createElement('div');
             completeMessage.className = 'system-message';
             completeMessage.style.background = 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)';

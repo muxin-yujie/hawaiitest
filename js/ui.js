@@ -14,7 +14,13 @@
  * @returns {HTMLDivElement} 创建的消息元素
  */
 function createMessage(type, sender = null, content, options = {}) {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return null;
+    }
     
     const message = document.createElement('div');
     message.className = `message ${type}-message`;
@@ -75,16 +81,20 @@ function createMessage(type, sender = null, content, options = {}) {
  * 滚动聊天容器到底部
  */
 function scrollToBottom() {
-    const chatContainer = document.getElementById('chatContainer');
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 }
 
 /**
  * 清空聊天容器
  */
 function clearChat() {
-    const chatContainer = document.getElementById('chatContainer');
-    chatContainer.innerHTML = '';
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    if (chatContainer) {
+        chatContainer.innerHTML = '';
+    }
 }
 
 /**
@@ -93,7 +103,13 @@ function clearChat() {
  * @param {string} content - 旁白内容
  */
 function showSceneNarration(type, content) {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return;
+    }
     
     // 根据类型自动匹配 emoji
     const emojiMap = {
@@ -259,7 +275,12 @@ function displayNPCMessage(npcName, text, translation) {
  * @param {string} npcName - NPC 名称
  */
 function displayLoadingMessage(npcName) {
-    const chatContainer = document.getElementById('chatContainer');
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return null;
+    }
     
     const loadingMessage = document.createElement('div');
     loadingMessage.className = 'message npc-message';
@@ -290,8 +311,6 @@ function removeLoadingMessage() {
     }
 }
 
-/*
-
 /**
  * 显示选项让玩家选择
  * @param {Array} options - 选项数组，每个选项包含：
@@ -302,7 +321,8 @@ function removeLoadingMessage() {
  * @returns {HTMLElement} 选项容器元素
  */
 function showOptions(options) {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用智能路由获取当前章节对应的聊天容器
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     
     // 创建选项容器
     const optionsContainer = document.createElement('div');

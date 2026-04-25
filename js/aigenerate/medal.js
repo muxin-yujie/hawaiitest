@@ -10,7 +10,13 @@
  * @param {string} defaultNationality - 默认国籍
  */
 async function showMedalEvent(result, sceneTitle, defaultSceneText, defaultOccupation = "Local", defaultAge = 30, defaultNationality = "Hawaiian") {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return;
+    }
     
     console.log("Medal 事件:", result);
     

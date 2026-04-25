@@ -94,17 +94,24 @@ ${existingTipsText}
                         <div class="culture-tip-header">🌸 文化小贴士</div>
                         <div>${tip}</div>
                     `;
-                    document.getElementById('chatContainer').appendChild(tipElement);
-                    document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
                     
-                    // 保存到 notebook
-                    gameState.notebook.push({
-                        title: "🌸 文化小贴士",
-                        content: tip,
-                        date: new Date().toLocaleString('zh-CN')
-                    });
-                    
-                    console.log("文化小贴士已保存到 notebook");
+                    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+                    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+                    if (chatContainer) {
+                        chatContainer.appendChild(tipElement);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                        
+                        // 保存到 notebook
+                        gameState.notebook.push({
+                            title: "🌸 文化小贴士",
+                            content: tip,
+                            date: new Date().toLocaleString('zh-CN')
+                        });
+                        
+                        console.log("文化小贴士已保存到 notebook");
+                    } else {
+                        console.warn("⚠️ 聊天窗口未找到，文化小贴士无法显示");
+                    }
                 }
             } catch (error) {
                 console.error("文化小贴士生成失败:", error);
@@ -271,7 +278,13 @@ window.closeCocktailPopup = function() {
 };
 
 window.showCocktailMenu = function() {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return;
+    }
     
     const menuDiv = document.createElement('div');
     menuDiv.className = 'system-message';
@@ -475,7 +488,13 @@ window.closeLuauCultureGuide = function() {
 };
 
 window.showLuauMenu = function() {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return;
+    }
     
     const menuDiv = document.createElement('div');
     menuDiv.className = 'system-message';

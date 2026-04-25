@@ -4,7 +4,13 @@
  * 触发机场邂逅事件（从固定库中抽取）
  */
 async function triggerAirportEncounter() {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return;
+    }
     
     console.log("开始触发机场邂逅...");
     
@@ -104,7 +110,13 @@ console.log("邂逅事件模块已加载 ✓");
  * 生成冲浪店浪漫故事（Koa 邂逅）
  */
 async function generateSurfShopRomance(location) {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return;
+    }
     
     console.log("=== 生成冲浪店浪漫故事（Koa 邂逅）===");
     
@@ -227,7 +239,7 @@ async function generateSurfShopRomance(location) {
  * 触发卢奥晚宴神秘邂逅（从固定库中抽取）
  */
 async function triggerLuauMysteryEncounter() {
-    const chatContainer = document.getElementById('chatContainer');
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     
     console.log("开始触发卢奥晚宴神秘邂逅...");
     
@@ -510,7 +522,7 @@ window.triggerLuauMysteryEncounter = triggerLuauMysteryEncounter;
  * 触发火刀舞表演事件
  */
 async function triggerLuauFireDanceEvent() {
-    const chatContainer = document.getElementById('chatContainer');
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     
     console.log("=== 触发火刀舞表演事件 ===");
     
@@ -545,7 +557,7 @@ async function triggerLuauFireDanceEvent() {
  * 触发海边漫步事件
  */
 async function triggerLuauBeachWalkEvent() {
-    const chatContainer = document.getElementById('chatContainer');
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     
     console.log("=== 触发海边漫步事件 ===");
     
@@ -582,7 +594,7 @@ async function triggerLuauBeachWalkEvent() {
  * 触发赠送礼物事件
  */
 async function triggerLuauGiftEvent() {
-    const chatContainer = document.getElementById('chatContainer');
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     
     console.log("=== 触发赠送礼物事件 ===");
     

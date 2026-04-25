@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌺 新 UI 测试 - 阳光夏威夷</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* 游戏容器 */
+        .game-container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        /* 主视图区域 - 场景展示 */
+        .main-view {
+            position: relative;
+            height: 350px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        /* 场景背景图 */
+        .scene-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+        }
+
+        /* 角色展示区 */
+        .character-display {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+        }
+
+        /* 角色头像 */
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            object-fit: cover;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+        }
+
+        /* 当前对话内容 */
+        .current-dialogue {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.95);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .current-dialogue .speaker {
+            font-size: 0.85em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .current-dialogue .content {
+            font-size: 1.1em;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .current-dialogue .translation {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        /* 文化提示 */
+        .culture-tip {
+            position: absolute;
+            bottom: 110px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            color: #666;
+            max-width: 180px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-left: 3px solid #667eea;
+        }
+
+        /* 互动区域 */
+        .interaction-area {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        /* 字幕显示区域 */
+        .subtitle-area {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .subtitle-label {
+            font-size: 0.75em;
+            color: #999;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .subtitle-text {
+            font-size: 1.1em;
+            color: #333;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .subtitle-translation {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed #e0e0e0;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        /* 自动回复选项 */
+        .auto-reply-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .reply-option {
+            padding: 12px 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            color: #333;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .reply-option:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .reply-option:active {
+            transform: scale(0.98);
+        }
+
+        .reply-option .emoji {
+            font-size: 1.3em;
+        }
+
+        .reply-option .text-en {
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .reply-option .text-cn {
+            font-size: 0.8em;
+            color: #999;
+            line-height: 1.2;
+        }
+
+        .reply-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .reply-option.selected .text-cn {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* 输入区域（可选） */
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .input-section input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.95em;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-section input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-section button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .input-section button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 对话历史面板（右切框） */
+        .history-panel {
+            position: fixed;
+            top: 0;
+            right: -350px;
+            width: 350px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.2);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .history-panel.open {
+            right: 0;
+        }
+
+        .history-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-header h3 {
+            font-size: 1.1em;
+        }
+
+        .history-close {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .history-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        /* 历史消息气泡 */
+        .history-message {
+            margin-bottom: 15px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 85%;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .history-message.player {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .history-message.npc {
+            background: white;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 触发区域 */
+        .swipe-trigger {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 50px;
+            height: 100vh;
+            z-index: 999;
+            /* background: rgba(255,0,0,0.1); 调试时取消注释 */
+        }
+
+        /* 状态指示器 */
+        .status-bar {
+            padding: 10px 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 测试按钮 */
+        .test-controls {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 2000;
+        }
+
+        .test-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .test-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- 测试控制按钮 -->
+    <div class="test-controls">
+        <button class="test-btn" onclick="toggleHistory()">📜 切换历史</button>
+        <button class="test-btn" onclick="addTestMessage()">💬 添加消息</button>
+        <button class="test-btn" onclick="changeScene()">🌴 切换场景</button>
+    </div>
+
+    <!-- 游戏容器 -->
+    <div class="game-container">
+        <!-- 主视图：场景 + 当前对话 -->
+        <div class="main-view" id="mainView">
+            <!-- 背景图（使用占位图） -->
+            <img src="https://via.placeholder.com/450x350/667eea/ffffff?text=Airport+Scene" 
+                 alt="Scene Background" 
+                 class="scene-background"
+                 id="sceneBg">
+            
+            <!-- 当前对话内容 -->
+            <div class="current-dialogue">
+                <div class="speaker">
+                    <span>👮</span>
+                    <span>海关官员 Koa</span>
+                </div>
+                <div class="content">
+                    "Welcome to Hawaii! What's the purpose of your visit today?"
+                </div>
+                <div class="translation">
+                    📝 欢迎来到夏威夷！您今天来访的目的是什么？
+                </div>
+            </div>
+
+            <!-- 文化提示 -->
+            <div class="culture-tip">
+                💡 <strong>文化小知识：</strong><br>
+                夏威夷海关通常会询问来访目的，如实回答"tourism"（旅游）即可
+            </div>
+
+            <!-- 角色展示 -->
+            <div class="character-display">
+                <div class="character-avatar">👮</div>
+            </div>
+        </div>
+
+        <!-- 互动区域 -->
+        <div class="interaction-area">
+            <!-- 字幕显示 -->
+            <div class="subtitle-area">
+                <div class="subtitle-label">
+                    💬 字幕 / 你的回复预览
+                </div>
+                <div class="subtitle-text" id="subtitleText">
+                    选择一个回复选项，或输入自定义内容...
+                </div>
+                <div class="subtitle-translation" id="subtitleTranslation">
+                    📝 等待你的选择...
+                </div>
+            </div>
+
+            <!-- 自动回复选项 -->
+            <div class="auto-reply-options">
+                <div class="reply-option" onclick="selectOption(this, 'I\'m here for vacation. I\'ll be staying for 5 days.', '我是来度假的，会待 5 天。')">
+                    <span class="emoji">🏖️</span>
+                    <span class="text-en">I'm here for vacation. I'll be staying for 5 days.</span>
+                    <span class="text-cn">我是来度假的，会待 5 天。</span>
+                </div>
+                <div class="reply-option" onclick="selectOption(this, 'I want to visit Waikiki Beach and take photos!', '我想去威基基海滩拍照！')">
+                    <span class="emoji">📸</span>
+                    <span class="text-en">I want to visit Waikiki Beach and take photos!</span>
+                    <span class="text-cn">我想去威基基海滩拍照！</span>
+                </div>
+                <div class="reply-option" onclick="selectOption(this, 'Just tourism. I\'m so excited to be here!', '就是旅游，来到这儿我太兴奋了！')">
+                    <span class="emoji">🌺</span>
+                    <span class="text-en">Just tourism. I'm so excited to be here!</span>
+                    <span class="text-cn">就是旅游，来到这儿我太兴奋了！</span>
+                </div>
+                <div class="reply-option" onclick="selectOption(this, 'I\'ve always dreamed of visiting Hawaii!', '我一直梦想着来夏威夷！')">
+                    <span class="emoji">✨</span>
+                    <span class="text-en">I've always dreamed of visiting Hawaii!</span>
+                    <span class="text-cn">我一直梦想着来夏威夷！</span>
+                </div>
+            </div>
+
+            <!-- 自由输入（可选） -->
+            <div class="input-section">
+                <input type="text" placeholder="或输入自定义回复..." id="userInput">
+                <button onclick="sendCustomMessage()">发送</button>
+            </div>
+        </div>
+
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <div class="status-item">
+                <span>📍</span>
+                <span>檀香山国际机场</span>
+            </div>
+            <div class="status-item">
+                <span>💬</span>
+                <span id="msgCount">2 条对话</span>
+            </div>
+            <div class="status-item">
+                <span>⭐</span>
+                <span>Lv.1 新手</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 对话历史面板（右切框） -->
+    <div class="history-panel" id="historyPanel">
+        <div class="history-header">
+            <h3>📜 对话历史</h3>
+            <button class="history-close" onclick="toggleHistory()">✕</button>
+        </div>
+        <div class="history-content" id="historyContent">
+            <!-- 历史消息 -->
+            <div class="history-message npc">
+                <strong>海关官员 Koa:</strong><br>
+                "Welcome to Hawaii! What's the purpose of your visit today?"
+            </div>
+            <div class="history-message player">
+                🏖️ I'm here for vacation. I'll be staying for 5 days.
+            </div>
+        </div>
+    </div>
+
+    <!-- 右滑触发区域 -->
+    <div class="swipe-trigger" id="swipeTrigger"></div>
+
+    <script>
+        let messageCount = 2;
+        const scenes = [
+            {
+                name: '檀香山国际机场',
+                bg: 'https://via.placeholder.com/450x350/667eea/ffffff?text=Airport+Scene',
+                emoji: '✈️'
+            },
+            {
+                name: '威基基海滩',
+                bg: 'https://via.placeholder.com/450x350/4facfe/ffffff?text=Beach+Scene',
+                emoji: '🏖️'
+            },
+            {
+                name: '夏威夷火山',
+                bg: 'https://via.placeholder.com/450x350/f093fb/ffffff?text=Volcano+Scene',
+                emoji: '🌋'
+            }
+        ];
+        let currentScene = 0;
+
+        // 切换历史面板
+        function toggleHistory() {
+            const panel = document.getElementById('historyPanel');
+            panel.classList.toggle('open');
+        }
+
+        let selectedReply = null;
+        let selectedTranslation = null;
+
+        // 选择回复选项
+        function selectOption(element, english, chinese) {
+            selectedReply = english;
+            selectedTranslation = chinese;
+            
+            // 更新字幕显示
+            document.getElementById('subtitleText').textContent = english;
+            document.getElementById('subtitleTranslation').textContent = '📝 ' + chinese;
+            
+            // 高亮选中
+            document.querySelectorAll('.reply-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            // 自动发送（延迟 800ms）
+            setTimeout(() => {
+                sendAutoReply(english, chinese);
+            }, 800);
+        }
+
+        // 发送自动回复
+        function sendAutoReply(english, chinese) {
+            // 添加到历史
+            const historyContent = document.getElementById('historyContent');
+            const playerMsg = document.createElement('div');
+            playerMsg.className = 'history-message player';
+            playerMsg.textContent = english;
+            historyContent.appendChild(playerMsg);
+            
+            messageCount++;
+            document.getElementById('msgCount').textContent = `${messageCount} 条对话`;
+            
+            // 滚动到底部
+            historyContent.scrollTop = historyContent.scrollHeight;
+            
+            // 更新主视图的当前对话
+            document.querySelector('.current-dialogue .content').textContent = english;
+            document.querySelector('.current-dialogue .translation').textContent = '📝 ' + chinese;
+            
+            // 模拟 NPC 回复
+            setTimeout(() => {
+                const npcResponses = [
+                    {
+                        en: "That's wonderful! Enjoy your stay in Hawaii!",
+                        cn: "太好了！祝你在夏威夷玩得开心！",
+                        emoji: "😊"
+                    },
+                    {
+                        en: "Great! Let me know if you need any recommendations.",
+                        cn: "太棒了！如果需要推荐请告诉我。",
+                        emoji: "🌺"
+                    },
+                    {
+                        en: "Perfect! Hawaii has so much to offer.",
+                        cn: "完美！夏威夷有很多值得探索的地方。",
+                        emoji: "🏝️"
+                    }
+                ];
+                
+                const randomResponse = npcResponses[Math.floor(Math.random() * npcResponses.length)];
+                
+                const npcMsg = document.createElement('div');
+                npcMsg.className = 'history-message npc';
+                npcMsg.innerHTML = `<strong>海关官员 Koa:</strong><br>"${randomResponse.en}"`;
+                historyContent.appendChild(npcMsg);
+                
+                // 滚动到底部
+                historyContent.scrollTop = historyContent.scrollHeight;
+                
+                // 更新主视图
+                document.querySelector('.current-dialogue .speaker').innerHTML = 
+                    `<span>${randomResponse.emoji}</span><span>海关官员 Koa</span>`;
+                document.querySelector('.current-dialogue .content').textContent = randomResponse.en;
+                document.querySelector('.current-dialogue .translation').textContent = 
+                    '📝 ' + randomResponse.cn;
+                
+                messageCount++;
+                document.getElementById('msgCount').textContent = `${messageCount} 条对话`;
+                
+                // 重置字幕
+                setTimeout(() => {
+                    document.getElementById('subtitleText').textContent = '等待你的下一个回复...';
+                    document.getElementById('subtitleTranslation').textContent = '📝 选择一个选项继续对话';
+                    document.querySelectorAll('.reply-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    selectedReply = null;
+                    selectedTranslation = null;
+                }, 1500);
+            }, 1000);
+        }
+
+        // 发送自定义消息
+        function sendCustomMessage() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            // 添加到历史
+            const historyContent = document.getElementById('historyContent');
+            const playerMsg = document.createElement('div');
+            playerMsg.className = 'history-message player';
+            playerMsg.textContent = text;
+            historyContent.appendChild(playerMsg);
+            
+            // 更新字幕
+            document.getElementById('subtitleText').textContent = text;
+            document.getElementById('subtitleTranslation').textContent = '📝 已发送自定义回复';
+            
+            // 模拟 NPC 回复
+            setTimeout(() => {
+                const npcMsg = document.createElement('div');
+                npcMsg.className = 'history-message npc';
+                npcMsg.innerHTML = '<strong>海关官员 Koa:</strong><br>"That\'s great! Welcome to Hawaii!"';
+                historyContent.appendChild(npcMsg);
+                
+                // 滚动到底部
+                historyContent.scrollTop = historyContent.scrollHeight;
+                
+                // 更新主视图
+                document.querySelector('.current-dialogue .content').textContent = 
+                    '"That\'s great! Welcome to Hawaii!"';
+                document.querySelector('.current-dialogue .translation').textContent = 
+                    '📝 太好了！欢迎来到夏威夷！';
+                
+                messageCount += 2;
+                document.getElementById('msgCount').textContent = `${messageCount} 条对话`;
+            }, 1000);
+            
+            input.value = '';
+            messageCount++;
+            document.getElementById('msgCount').textContent = `${messageCount} 条对话`;
+            
+            // 滚动到底部
+            historyContent.scrollTop = historyContent.scrollHeight;
+        }
+
+        // 添加测试消息
+        function addTestMessage() {
+            const historyContent = document.getElementById('historyContent');
+            const testMsg = document.createElement('div');
+            testMsg.className = 'history-message npc';
+            testMsg.innerHTML = '<strong>测试 NPC:</strong><br>"This is a test message!"';
+            historyContent.appendChild(testMsg);
+            historyContent.scrollTop = historyContent.scrollHeight;
+        }
+
+        // 切换场景
+        function changeScene() {
+            currentScene = (currentScene + 1) % scenes.length;
+            const scene = scenes[currentScene];
+            
+            document.getElementById('sceneBg').src = scene.bg;
+            document.querySelector('.status-item span:nth-child(2)').textContent = scene.name;
+            document.querySelector('.character-avatar').textContent = scene.emoji;
+        }
+
+        // 手势支持
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.getElementById('swipeTrigger').addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        document.getElementById('swipeTrigger').addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchEndX < touchStartX - 50) {
+                toggleHistory();
+            }
+        }, { passive: true });
+
+        // 回车发送
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>

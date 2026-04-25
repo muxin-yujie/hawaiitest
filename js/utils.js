@@ -1,15 +1,26 @@
 // ========== 工具函数 ==========
 
 /**
- * 获取聊天容器（安全获取）
- * @returns {HTMLElement} chatContainer 元素
+ * 获取聊天容器（智能路由 - 根据当前章节自动选择窗口）
+ * @returns {HTMLElement} 当前章节对应的 chatContainer 元素
  */
 function getChatContainer() {
-    const el = document.getElementById('chatContainer');
-    if (!el) {
-        console.error('chatContainer 未找到！');
+    // 根据游戏状态中的章节索引，而不是当前激活的窗口
+    // 这样玩家随便点哪个窗口都不影响，剧情总是发送到正确的窗口
+    const currentChapter = window.currentChapter || window.ChapterManager?.getCurrentChapter() || 0;
+    
+    const windowMap = ['Intro', 'Day1'];
+    const windowId = `chatContainer${windowMap[currentChapter] || 'Intro'}`;
+    
+    const container = document.getElementById(windowId);
+    
+    if (!container) {
+        console.error(`❌ 聊天窗口未找到：${windowId}`);
+        // 如果找不到，返回默认的 Intro 窗口
+        return document.getElementById('chatContainerIntro');
     }
-    return el;
+    
+    return container;
 }
 
 /**

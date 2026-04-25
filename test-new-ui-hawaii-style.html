@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌺 夏威夷邂逅 - 游戏化学英语</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        /* ========== 主游戏容器 ========== */
+        .game-wrapper {
+            display: flex;
+            gap: 15px;
+            max-width: 1200px;
+            width: 100%;
+            height: 90vh;
+        }
+
+        /* 游戏主容器 */
+        .game-container {
+            flex: 1;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* ========== 主视图区域 ========== */
+        .main-view {
+            position: relative;
+            height: 380px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            flex-shrink: 0;
+        }
+
+        .scene-background {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 对话气泡 */
+        .dialogue-bubble {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 16px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 105, 180, 0.3);
+        }
+
+        .dialogue-speaker {
+            font-size: 0.85em;
+            color: #FF1493;
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dialogue-content {
+            font-size: 1em;
+            color: #333;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        /* ========== 互动区域 ========== */
+        .interaction-area {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f5ff 0%, #fff5f8 100%);
+            border-top: 2px dashed #E6E6FA;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* 回复选项 */
+        .reply-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .reply-option {
+            padding: 10px 12px;
+            background: white;
+            border: 2px solid #E6E6FA;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85em;
+            text-align: left;
+        }
+
+        .reply-option:hover {
+            border-color: #667eea;
+            background: #f0f0ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .reply-option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .reply-option .emoji {
+            font-size: 1.2em;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .reply-option .text-en {
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .reply-option .text-cn {
+            font-size: 0.8em;
+            color: #999;
+            display: block;
+            margin-top: 3px;
+        }
+
+        .reply-option.selected .text-cn {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* 输入区域 */
+        .input-section {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .input-section input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #E6E6FA;
+            border-radius: 20px;
+            font-size: 0.9em;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-section input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-section button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .input-section button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ========== 状态栏 ========== */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        /* ========== 左切框：NPC 列表 ========== */
+        .left-panel {
+            width: 300px;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .left-panel.closed {
+            width: 0;
+            padding: 0;
+        }
+
+        /* 面板标签导航 */
+        .panel-tabs {
+            display: flex;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.7;
+        }
+
+        .panel-tab:hover {
+            opacity: 0.9;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .panel-tab.active {
+            opacity: 1;
+            background: rgba(255,255,255,0.2);
+            border-bottom: 3px solid white;
+        }
+
+        /* 面板内容区域 */
+        .panel-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .panel-section {
+            display: none;
+        }
+
+        .panel-section.active {
+            display: block;
+        }
+
+        .panel-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+
+        .panel-close {
+            background: rgba(255,255,255,0.3);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .panel-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        /* NPC 卡片 */
+        .npc-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #E6E6FA;
+        }
+
+        .npc-card:hover {
+            border-color: #667eea;
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .npc-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #f0f0ff 0%, #fff5f8 100%);
+        }
+
+        .npc-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .npc-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .npc-info h4 {
+            font-size: 0.95em;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .npc-info p {
+            font-size: 0.75em;
+            color: #999;
+        }
+
+        .npc-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75em;
+            color: #666;
+        }
+
+        .npc-heart {
+            color: #FF69B4;
+        }
+
+        /* ========== 右切框：对话历史 ========== */
+        .right-panel {
+            width: 320px;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .right-panel.closed {
+            width: 0;
+            padding: 0;
+        }
+
+        /* 成就卡片 */
+        .achievement-card {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 2px solid #E6E6FA;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card.locked {
+            opacity: 0.5;
+            filter: grayscale(100%);
+        }
+
+        .achievement-card.unlocked {
+            border-color: #FFD700;
+            background: linear-gradient(135deg, #fff9c4 0%, #ffecb3 100%);
+        }
+
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+        }
+
+        .achievement-info h4 {
+            font-size: 0.9em;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .achievement-info p {
+            font-size: 0.75em;
+            color: #999;
+        }
+
+        .achievement-progress {
+            font-size: 0.75em;
+            color: #666;
+            margin-top: 6px;
+        }
+
+        /* 学习笔记 */
+        .notebook-section {
+            background: white;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .notebook-section h4 {
+            font-size: 0.85em;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .notebook-word {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px dashed #E6E6FA;
+        }
+
+        .notebook-word:last-child {
+            border-bottom: none;
+        }
+
+        .word-en {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .word-cn {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .history-content {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .history-message {
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 16px;
+            max-width: 85%;
+            font-size: 0.85em;
+            line-height: 1.4;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .history-message.player {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .history-message.npc {
+            background: white;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* ========== 学习提示卡片 ========== */
+        .learning-tip {
+            background: linear-gradient(135deg, #fff9c4 0%, #ffecb3 100%);
+            border-left: 4px solid #FFB300;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .learning-tip h4 {
+            font-size: 0.85em;
+            color: #F57F17;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .learning-tip p {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 1024px) {
+            .left-panel, .right-panel {
+                position: fixed;
+                top: 20px;
+                bottom: 20px;
+                z-index: 1000;
+            }
+
+            .left-panel {
+                left: 20px;
+            }
+
+            .right-panel {
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <!-- 左切框：NPC 列表 + Notebook + 成就 -->
+        <div class="left-panel" id="leftPanel">
+            <div class="panel-header">
+                <h3 id="leftPanelTitle">💕 邂逅角色</h3>
+                <button class="panel-close" onclick="toggleLeftPanel()">✕</button>
+            </div>
+            
+            <!-- 标签导航 -->
+            <div class="panel-tabs">
+                <button class="panel-tab active" onclick="switchLeftTab('npcs')">💕 邂逅</button>
+                <button class="panel-tab" onclick="switchLeftTab('notebook')">📝 笔记</button>
+                <button class="panel-tab" onclick="switchLeftTab('achievements')">🏅 成就</button>
+                <button class="panel-tab" onclick="switchLeftTab('story')">📖 剧情</button>
+            </div>
+            
+            <div class="panel-content">
+                <!-- NPC 列表 -->
+                <div class="panel-section active" id="npcsSection">
+                    <!-- 学习提示 -->
+                    <div class="learning-tip">
+                        <h4>💡 游戏目标</h4>
+                        <p>提升所有 NPC 好感度到 100，解锁最终章结局！</p>
+                    </div>
+
+                    <!-- NPC 卡片 -->
+                    <div class="npc-card active" onclick="selectNpc('koa')">
+                        <div class="npc-card-header">
+                            <div class="npc-avatar">🏄</div>
+                            <div class="npc-info">
+                                <h4>Koa</h4>
+                                <p>当地冲浪教练</p>
+                            </div>
+                        </div>
+                        <div class="npc-status">
+                            <span class="npc-heart">💕</span>
+                            <span>好感度：65/100</span>
+                        </div>
+                    </div>
+
+                    <div class="npc-card" onclick="selectNpc('leilani')">
+                        <div class="npc-card-header">
+                            <div class="npc-avatar">🌺</div>
+                            <div class="npc-info">
+                                <h4>Leilani</h4>
+                                <p>花店老板娘</p>
+                            </div>
+                        </div>
+                        <div class="npc-status">
+                            <span class="npc-heart">💕</span>
+                            <span>好感度：30/100</span>
+                        </div>
+                    </div>
+
+                    <div class="npc-card" onclick="selectNpc('kai')">
+                        <div class="npc-card-header">
+                            <div class="npc-avatar">🎸</div>
+                            <div class="npc-info">
+                                <h4>Kai</h4>
+                                <p>街头音乐家</p>
+                            </div>
+                        </div>
+                        <div class="npc-status">
+                            <span class="npc-heart">💕</span>
+                            <span>好感度：45/100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 学习笔记 -->
+                <div class="panel-section" id="notebookSection">
+                    <div class="notebook-section">
+                        <h4>📖 今日生词</h4>
+                        <div class="notebook-word">
+                            <span class="word-en">Aloha</span>
+                            <span class="word-cn">你好/再见</span>
+                        </div>
+                        <div class="notebook-word">
+                            <span class="word-en">Sunset</span>
+                            <span class="word-cn">日落</span>
+                        </div>
+                        <div class="notebook-word">
+                            <span class="word-en">Beautiful</span>
+                            <span class="word-cn">美丽的</span>
+                        </div>
+                    </div>
+
+                    <div class="notebook-section">
+                        <h4>💡 常用表达</h4>
+                        <div class="notebook-word">
+                            <span class="word-en">Can't wait!</span>
+                            <span class="word-cn">迫不及待</span>
+                        </div>
+                        <div class="notebook-word">
+                            <span class="word-en">Let's walk</span>
+                            <span class="word-cn">去散步</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 成就系统 -->
+                <div class="panel-section" id="achievementsSection">
+                    <div class="achievement-card unlocked">
+                        <div class="achievement-header">
+                            <div class="achievement-icon">🌺</div>
+                            <div class="achievement-info">
+                                <h4>初次邂逅</h4>
+                                <p>第一次与 NPC 对话</p>
+                            </div>
+                        </div>
+                        <div class="achievement-progress">✅ 已完成</div>
+                    </div>
+
+                    <div class="achievement-card unlocked">
+                        <div class="achievement-header">
+                            <div class="achievement-icon">💬</div>
+                            <div class="achievement-info">
+                                <h4>健谈者</h4>
+                                <p>进行 10 次对话</p>
+                            </div>
+                        </div>
+                        <div class="achievement-progress">📊 <span id="talkativeProgress">2</span>/10</div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-header">
+                            <div class="achievement-icon">💕</div>
+                            <div class="achievement-info">
+                                <h4>人气王</h4>
+                                <p>与所有 NPC 好感度满级</p>
+                            </div>
+                        </div>
+                        <div class="achievement-progress">🔒 未解锁</div>
+                    </div>
+
+                    <div class="achievement-card locked">
+                        <div class="achievement-header">
+                            <div class="achievement-icon">🎓</div>
+                            <div class="achievement-info">
+                                <h4>英语达人</h4>
+                                <p>学会 50 个单词</p>
+                            </div>
+                        </div>
+                        <div class="achievement-progress">🔒 未解锁</div>
+                    </div>
+                </div>
+
+                <!-- 剧情章节 -->
+                <div class="panel-section" id="storySection">
+                    <div class="learning-tip">
+                        <h4>📖 剧情说明</h4>
+                        <p>提升 NPC 好感度解锁新剧情章节，所有 NPC 好感度满级可解锁最终结局！</p>
+                    </div>
+                    <!-- 由 renderStoryChapters() 动态渲染 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏主容器 -->
+        <div class="game-container">
+            <!-- 主视图 -->
+            <div class="main-view">
+                <img src="pictures/koa-date.png" alt="Scene" class="scene-background" id="sceneBg">
+                
+                <div class="dialogue-bubble">
+                    <div class="dialogue-speaker">
+                        <span>🏄</span>
+                        <span>Koa</span>
+                    </div>
+                    <div class="dialogue-content">
+                        "Aloha! Ready for our beach date? The sunset is beautiful today!"
+                    </div>
+                </div>
+            </div>
+
+            <!-- 互动区域 -->
+            <div class="interaction-area">
+                <div class="reply-options">
+                    <div class="reply-option" onclick="selectOption(this)">
+                        <span class="emoji">💕</span>
+                        <span class="text-en">Yes! Can't wait!</span>
+                        <span class="text-cn">好期待！</span>
+                    </div>
+                    <div class="reply-option" onclick="selectOption(this)">
+                        <span class="emoji">🌅</span>
+                        <span class="text-en">Beautiful sunset!</span>
+                        <span class="text-cn">夕阳真美</span>
+                    </div>
+                    <div class="reply-option" onclick="selectOption(this)">
+                        <span class="emoji">👣</span>
+                        <span class="text-en">Let's walk!</span>
+                        <span class="text-cn">去散步</span>
+                    </div>
+                    <div class="reply-option" onclick="selectOption(this)">
+                        <span class="emoji">💖</span>
+                        <span class="text-en">Love this!</span>
+                        <span class="text-cn">喜欢此刻</span>
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <input type="text" placeholder="输入你的回复..." id="userInput">
+                    <button onclick="sendMessage()">发送</button>
+                </div>
+            </div>
+
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <span>🌅 威基基海滩</span>
+                <span>💬 <span id="dialogueCount">2</span> 条对话</span>
+                <span>⭐ <span id="playerLevel">Lv.3</span> 初学者</span>
+            </div>
+        </div>
+
+        <!-- 右切框：对话历史 -->
+        <div class="right-panel" id="rightPanel">
+            <div class="panel-header">
+                <h3>📜 对话历史</h3>
+                <button class="panel-close" onclick="toggleRightPanel()">✕</button>
+            </div>
+            <div class="history-content" id="historyContent">
+                <div class="history-message npc">
+                    <strong>Koa:</strong><br>
+                    "Aloha! Ready for our beach date?"
+                </div>
+                <div class="history-message player">
+                    Yes! I've been waiting for this!
+                </div>
+                <div class="history-message npc">
+                    <strong>Koa:</strong><br>
+                    "The sunset is beautiful today!"
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 游戏说明弹窗 -->
+    <div id="helpModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;" onclick="this.style.display='none'">
+        <div style="background:white;padding:30px;border-radius:24px;max-width:500px;max-height:80vh;overflow-y:auto;" onclick="event.stopPropagation()">
+            <h2 style="color:#667eea;margin-bottom:20px;">🌺 夏威夷邂逅 - 游戏玩法</h2>
+            
+            <h3 style="color:#FF1493;margin:15px 0 10px;">🎮 核心玩法</h3>
+            <ul style="line-height:2;color:#333;">
+                <li>💕 <strong>邂逅 NPC</strong>：点击左切框选择角色</li>
+                <li>💬 <strong>英语对话</strong>：选择回复或自由输入</li>
+                <li>📈 <strong>提升好感</strong>：好的回答增加好感度</li>
+                <li>📚 <strong>学习英语</strong>：学习生词和常用表达</li>
+                <li>🏆 <strong>解锁成就</strong>：完成各种挑战</li>
+            </ul>
+
+            <h3 style="color:#FF1493;margin:15px 0 10px;">📱 界面说明</h3>
+            <ul style="line-height:2;color:#333;">
+                <li><strong>左侧面板</strong>：NPC 列表、学习笔记、成就系统</li>
+                <li><strong>中间区域</strong>：场景、对话、回复选项</li>
+                <li><strong>右侧面板</strong>：对话历史记录</li>
+            </ul>
+
+            <h3 style="color:#FF1493;margin:15px 0 10px;">💡 游戏技巧</h3>
+            <ul style="line-height:2;color:#333;">
+                <li>✅ 选择符合情境的回答</li>
+                <li>✅ 多使用礼貌用语</li>
+                <li>✅ 注意文化差异</li>
+                <li>✅ 收集所有成就</li>
+            </ul>
+
+            <button onclick="document.getElementById('helpModal').style.display='none'" style="margin-top:20px;padding:12px 30px;background:linear-gradient(135deg,#667eea,#764ba2);color:white;border:none;border-radius:20px;cursor:pointer;font-size:1em;font-weight:600;">开始游戏</button>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态
+        const gameState = {
+            dialogueCount: 2,
+            playerLevel: 3,
+            currentNpc: 'koa',
+            currentScene: 0,
+            currentStoryIndex: 0,
+            npcs: {
+                koa: { name: 'Koa', affinity: 65, maxAffinity: false },
+                leilani: { name: 'Leilani', affinity: 30, maxAffinity: false },
+                kai: { name: 'Kai', affinity: 45, maxAffinity: false }
+            },
+            achievements: {
+                first_contact: true,
+                talkative: 2,
+                popular: false,
+                master: false
+            },
+            vocabulary: ['Aloha', 'Sunset', 'Beautiful'],
+            // 剧情章节
+            storyChapters: [
+                {
+                    title: "第一章：初次邂逅",
+                    scene: "威基基海滩",
+                    requirement: "与 Koa 好感度达到 50",
+                    unlocked: true,
+                    completed: false
+                },
+                {
+                    title: "第二章：花店奇遇",
+                    scene: "夏威夷花店",
+                    requirement: "与 Leilani 好感度达到 60",
+                    unlocked: false,
+                    completed: false
+                },
+                {
+                    title: "第三章：音乐之夜",
+                    scene: "街头音乐会",
+                    requirement: "与 Kai 好感度达到 70",
+                    unlocked: false,
+                    completed: false
+                },
+                {
+                    title: "最终章：夏威夷之恋",
+                    scene: "日落海滩",
+                    requirement: "所有 NPC 好感度满级",
+                    unlocked: false,
+                    completed: false
+                }
+            ],
+            // 每个 NPC 的剧情对话
+            storyDialogues: {
+                koa: [
+                    { affinity: 50, text: "I've been thinking... would you like to go on a sunset tour with me?", next: "日落观光" },
+                    { affinity: 70, text: "You're different from other tourists. I really enjoy our time together.", next: "心意相通" },
+                    { affinity: 90, text: "I don't want this to end. Will you stay in Hawaii... with me?", next: "告白" }
+                ],
+                leilani: [
+                    { affinity: 50, text: "This flower represents my feelings for you. Do you know what it means?", next: "花语" },
+                    { affinity: 70, text: "My flower shop feels empty without you. Please come back often.", next: "思念" },
+                    { affinity: 90, text: "I've never felt this way before. You've become special to me.", next: "真心" }
+                ],
+                kai: [
+                    { affinity: 50, text: "I wrote a song for you. Want to hear it?", next: "专属歌曲" },
+                    { affinity: 70, text: "Music brings us together. You're my inspiration.", next: "灵感" },
+                    { affinity: 90, text: "This song is incomplete without your voice. Sing with me?", next: "合唱" }
+                ]
+            }
+        };
+
+        // 切换左切框
+        function toggleLeftPanel() {
+            document.getElementById('leftPanel').classList.toggle('closed');
+        }
+
+        // 切换右切框
+        function toggleRightPanel() {
+            document.getElementById('rightPanel').classList.toggle('closed');
+        }
+
+        // 切换左切框标签
+        function switchLeftTab(tabName) {
+            const titles = {
+                'npcs': '💕 邂逅角色',
+                'notebook': '📝 学习笔记',
+                'achievements': '🏅 成就系统',
+                'story': '📖 剧情章节'
+            };
+            document.getElementById('leftPanelTitle').textContent = titles[tabName];
+
+            document.querySelectorAll('.panel-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            document.querySelectorAll('.panel-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(tabName + 'Section').classList.add('active');
+            
+            if (tabName === 'story') {
+                renderStoryChapters();
+            }
+        }
+
+        // 渲染剧情章节
+        function renderStoryChapters() {
+            const section = document.getElementById('storySection');
+            section.innerHTML = '';
+            
+            gameState.storyChapters.forEach((chapter, index) => {
+                const chapterCard = document.createElement('div');
+                chapterCard.className = 'achievement-card' + (chapter.unlocked ? ' unlocked' : ' locked');
+                chapterCard.style.marginBottom = '15px';
+                chapterCard.style.padding = '15px';
+                
+                let statusText = '';
+                let statusIcon = '';
+                
+                if (chapter.unlocked) {
+                    if (chapter.completed) {
+                        statusText = '已完成';
+                        statusIcon = '✅';
+                    } else {
+                        statusText = '进行中';
+                        statusIcon = '🎯';
+                    }
+                } else {
+                    statusText = chapter.requirement;
+                    statusIcon = '🔒';
+                }
+                
+                chapterCard.innerHTML = `
+                    <div class="achievement-header">
+                        <div class="achievement-icon" style="background: ${chapter.unlocked ? 'linear-gradient(135deg, #FFD700, #FFA500)' : 'linear-gradient(135deg, #999, #666)'}">
+                            ${statusIcon}
+                        </div>
+                        <div class="achievement-info">
+                            <h4 style="font-size: 1em; color: ${chapter.unlocked ? '#333' : '#999'}">${chapter.title}</h4>
+                            <p style="color: #667eea; font-weight: 600;">📍 ${chapter.scene}</p>
+                        </div>
+                    </div>
+                    <div class="achievement-progress" style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #E6E6FA;">
+                        <strong>${statusText}</strong>
+                    </div>
+                `;
+                section.appendChild(chapterCard);
+            });
+        }
+
+        // 选择 NPC
+        function selectNpc(npcId) {
+            gameState.currentNpc = npcId;
+            document.querySelectorAll('.npc-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // 更新对话气泡
+            const npc = gameState.npcs[npcId];
+            document.querySelector('.dialogue-speaker span:last-child').textContent = npc.name;
+            
+            // 检查是否触发剧情
+            checkStoryTrigger(npcId);
+        }
+
+        // 检查剧情触发
+        function checkStoryTrigger(npcId) {
+            const npc = gameState.npcs[npcId];
+            const dialogues = gameState.storyDialogues[npcId];
+            
+            if (dialogues) {
+                for (let dialogue of dialogues) {
+                    if (npc.affinity >= dialogue.affinity && !gameState.currentStoryTriggered) {
+                        triggerStoryDialogue(npcId, dialogue);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 触发剧情对话
+        function triggerStoryDialogue(npcId, dialogue) {
+            gameState.currentStoryTriggered = true;
+            
+            setTimeout(() => {
+                alert(`📖 剧情触发！\n\n${gameState.npcs[npcId].name}: "${dialogue.text}"\n\n下一章：${dialogue.next}`);
+                
+                // 更新对话气泡
+                document.querySelector('.dialogue-content').textContent = `"${dialogue.text}"`;
+            }, 500);
+        }
+
+        // 选择回复
+        function selectOption(element) {
+            document.querySelectorAll('.reply-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            setTimeout(() => {
+                sendMessage(element.querySelector('.text-en').textContent);
+            }, 500);
+        }
+
+        // 发送消息
+        function sendMessage(text) {
+            const input = document.getElementById('userInput');
+            const message = text || input.value.trim();
+            
+            if (!message) return;
+            
+            const historyContent = document.getElementById('historyContent');
+            
+            // 添加玩家消息
+            const playerMsg = document.createElement('div');
+            playerMsg.className = 'history-message player';
+            playerMsg.textContent = message;
+            historyContent.appendChild(playerMsg);
+            
+            // 更新对话数
+            gameState.dialogueCount++;
+            updateStats();
+            
+            // 根据好感度给出不同回复
+            setTimeout(() => {
+                const npc = gameState.npcs[gameState.currentNpc];
+                let response;
+                
+                if (npc.affinity >= 80) {
+                    response = `I love you! You always know what to say! 💕`;
+                } else if (npc.affinity >= 50) {
+                    response = `You're making me smile more and more! 😊`;
+                } else {
+                    response = `That's wonderful! Let's talk more! ✨`;
+                }
+                
+                const npcMsg = document.createElement('div');
+                npcMsg.className = 'history-message npc';
+                npcMsg.innerHTML = `<strong>${npc.name}:</strong><br>"${response}"`;
+                historyContent.appendChild(npcMsg);
+                historyContent.scrollTop = historyContent.scrollHeight;
+                
+                // 增加好感度
+                increaseAffinity(3);
+                
+                // 检查成就和剧情
+                checkAchievements();
+                checkChapterProgress();
+            }, 1000);
+            
+            if (!text) input.value = '';
+        }
+
+        // 增加好感度
+        function increaseAffinity(points) {
+            const npc = gameState.npcs[gameState.currentNpc];
+            const oldAffinity = npc.affinity;
+            npc.affinity += points;
+            
+            if (npc.affinity >= 100) {
+                npc.affinity = 100;
+                npc.maxAffinity = true;
+                showAchievementUnlock(`${npc.name} 好感度 MAX！`);
+            } else if (Math.floor(oldAffinity / 10) < Math.floor(npc.affinity / 10)) {
+                // 每提升 10 点好感度提示一次
+                showAffinityLevelUp(npc.name, npc.affinity);
+            }
+            
+            updateNpcDisplay();
+        }
+
+        // 显示好感度升级
+        function showAffinityLevelUp(npcName, affinity) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #FF69B4, #FF1493);
+                color: white;
+                padding: 15px 30px;
+                border-radius: 25px;
+                font-weight: bold;
+                box-shadow: 0 4px 20px rgba(255,105,180,0.4);
+                z-index: 10000;
+                animation: slideDown 0.5s ease;
+            `;
+            toast.textContent = `💕 ${npcName} 好感度提升至 ${affinity}！`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // 更新 NPC 显示
+        function updateNpcDisplay() {
+            const npc = gameState.npcs[gameState.currentNpc];
+            const activeCard = document.querySelector('.npc-card.active .npc-status span:last-child');
+            if (activeCard) {
+                activeCard.textContent = `好感度：${npc.affinity}/100`;
+            }
+        }
+
+        // 更新统计数据
+        function updateStats() {
+            document.getElementById('dialogueCount').textContent = gameState.dialogueCount;
+            
+            // 更新等级
+            if (gameState.dialogueCount >= 50) gameState.playerLevel = 10;
+            else if (gameState.dialogueCount >= 30) gameState.playerLevel = 7;
+            else if (gameState.dialogueCount >= 10) gameState.playerLevel = 5;
+            else if (gameState.dialogueCount >= 5) gameState.playerLevel = 4;
+            
+            document.getElementById('playerLevel').textContent = `Lv.${gameState.playerLevel}`;
+        }
+
+        // 检查章节进度
+        function checkChapterProgress() {
+            const chapters = gameState.storyChapters;
+            
+            // 检查第一章
+            if (gameState.npcs.koa.affinity >= 50) {
+                chapters[0].completed = true;
+                if (!chapters[1].unlocked) {
+                    chapters[1].unlocked = true;
+                    setTimeout(() => {
+                        alert('🎉 第二章解锁！\n\n花店奇遇 - 与 Leilani 的邂逅');
+                    }, 1500);
+                }
+            }
+            
+            // 检查第二章
+            if (gameState.npcs.leilani.affinity >= 60) {
+                chapters[1].completed = true;
+                if (!chapters[2].unlocked) {
+                    chapters[2].unlocked = true;
+                    setTimeout(() => {
+                        alert('🎉 第三章解锁！\n\n音乐之夜 - 与 Kai 的邂逅');
+                    }, 1500);
+                }
+            }
+            
+            // 检查最终章
+            if (gameState.npcs.koa.affinity >= 100 && 
+                gameState.npcs.leilani.affinity >= 100 && 
+                gameState.npcs.kai.affinity >= 100) {
+                chapters[3].unlocked = true;
+                if (!chapters[3].completed) {
+                    setTimeout(() => {
+                        alert('🎊 最终章解锁！\n\n夏威夷之恋 - 达成所有 NPC 满好感度！\n\n前往日落海滩，见证最终结局！');
+                    }, 1500);
+                }
+            }
+        }
+
+        // 检查成就
+        function checkAchievements() {
+            // 健谈者成就
+            if (gameState.dialogueCount >= 10 && gameState.achievements.talkative < 10) {
+                gameState.achievements.talkative = 10;
+                showAchievementUnlock('健谈者');
+            }
+            
+            // 人气王成就
+            if (gameState.npcs.koa.affinity >= 100 && 
+                gameState.npcs.leilani.affinity >= 100 && 
+                gameState.npcs.kai.affinity >= 100 &&
+                !gameState.achievements.popular) {
+                gameState.achievements.popular = true;
+                setTimeout(() => {
+                    showAchievementUnlock('人气王 - 所有 NPC 好感度满级！');
+                    showEnding();
+                }, 2000);
+            }
+        }
+
+        // 显示结局
+        function showEnding() {
+            setTimeout(() => {
+                const ending = `
+🌺 夏威夷邂逅 - 完整结局 🌺
+
+恭喜你完成了所有剧情！
+
+你在夏威夷的旅程中：
+💕 与 Koa 在海滩邂逅
+🌺 与 Leilani 在花店相遇  
+🎸 与 Kai 在音乐中相知
+
+最终，你找到了属于自己的...
+
+（点击确定查看完整结局）
+                `;
+                alert(ending);
+            }, 3000);
+        }
+
+        // 显示成就解锁
+        function showAchievementUnlock(name) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #FFD700, #FFA500);
+                color: white;
+                padding: 15px 30px;
+                border-radius: 25px;
+                font-weight: bold;
+                box-shadow: 0 4px 20px rgba(255,215,0,0.4);
+                z-index: 10000;
+                animation: slideDown 0.5s ease;
+            `;
+            toast.textContent = `🏆 成就解锁：${name}！`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // 功能函数
+        function showNotebook() { 
+            switchLeftTab('notebook');
+            document.getElementById('leftPanel').classList.remove('closed');
+        }
+        function showLocation() { alert('位置功能：完成章节解锁新场景'); }
+        function showAchievements() { 
+            switchLeftTab('achievements');
+            document.getElementById('leftPanel').classList.remove('closed');
+        }
+
+        // 回车发送
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // 页面加载时显示帮助
+        window.onload = function() {
+            setTimeout(() => {
+                document.getElementById('helpModal').style.display = 'flex';
+            }, 500);
+        };
+    </script>
+</body>
+</html>

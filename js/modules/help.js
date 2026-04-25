@@ -5,7 +5,13 @@
  * 基于当前场景、NPC 身份和最后一句 NPC 的话
  */
 async function showHelpSuggestions() {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return;
+    }
     
     // 检查是否有 NPC 对话
     if (!gameState.currentNpc) {
@@ -132,7 +138,8 @@ ${context}
  * 显示回答建议按钮（紧凑样式 - 参考 showOptions）
  */
 function displaySuggestions(suggestions) {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用智能路由获取当前章节对应的聊天容器
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     
     // 创建选项容器（类似 showOptions）
     const suggestionsContainer = document.createElement('div');
@@ -234,8 +241,10 @@ function useSuggestion(text) {
         inputEl.focus();
         
         // 滚动到底部
-        const chatContainer = document.getElementById('chatContainer');
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
         
         // 隐藏建议框（可选）
         const suggestionsEl = document.querySelector('.help-suggestions');
@@ -250,7 +259,7 @@ function useSuggestion(text) {
  * 显示系统消息
  */
 function showSystemMessage(message) {
-    const chatContainer = document.getElementById('chatContainer');
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     const msgEl = document.createElement('div');
     msgEl.className = 'system-message';
     msgEl.innerHTML = `<span style="color: #6a1b9a;">${message}</span>`;

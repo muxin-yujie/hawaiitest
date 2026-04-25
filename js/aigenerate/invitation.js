@@ -560,7 +560,14 @@ window.acceptSMSInvitation = function(npcName) {
         encounter.invitationStatus = 'accepted';
         console.log("✅ 接受短信邀约:", encounter.chineseName);
         
-        const chatContainer = document.getElementById('chatContainer');
+        // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+        const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+        
+        if (!chatContainer) {
+            console.error('❌ 聊天容器未找到！');
+            return;
+        }
+        
         const acceptMessage = document.createElement('div');
         acceptMessage.className = 'system-message';
         acceptMessage.style.background = 'linear-gradient(135deg, #ffc3d9 0%, #a8e6ff 100%)';

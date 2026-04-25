@@ -78,16 +78,25 @@
             </span>
         </div>
         
-        <!-- 聊天容器 -->
-        <div class="chat-container mobile" id="chatContainer">
+        <!-- 聊天容器 - 每个章节独立窗口 -->
+        <!-- 序章窗口 -->
+        <div class="chat-container mobile chat-window active" id="chatContainerIntro">
             <!-- 初始加载提示 -->
-            <div class="system-message" style="text-align: center;">
+            <div class="system-message" style="text-align: center; margin: 10px 0;">
                 🌺 正在初始化游戏，请稍候...
             </div>
         </div>
         
+        <!-- DAY 1 窗口 -->
+        <div class="chat-container mobile chat-window" id="chatContainerDay1">
+            <!-- DAY 1 的内容将在切换时加载 -->
+        </div>
+        
         <!-- 底部功能栏 -->
         <div class="function-bar mobile">
+            <button class="function-btn mobile" onclick="openChapterPanel()" title="章节目录">
+                <span>📖</span>
+            </button>
             <button class="function-btn mobile" onclick="showLocation()" title="当前位置">
                 <span>📍</span>
             </button>
@@ -106,9 +115,18 @@
             <button class="function-btn mobile" onclick="showPhotos()" title="照片">
                 <span>📸</span>
             </button>
-            <button class="function-btn mobile" onclick="showBranches()" title="剧情分支">
-                <span>🌿</span>
-            </button>
+        </div>
+        
+        <!-- 章节目录面板 -->
+        <div class="chapter-panel-overlay" id="chapterPanelOverlay" onclick="closeChapterPanel()"></div>
+        <div class="chapter-panel" id="chapterPanel">
+            <div class="chapter-panel-header">
+                <div class="chapter-panel-title">📖 章节目录</div>
+                <button class="chapter-panel-close" onclick="closeChapterPanel()">×</button>
+            </div>
+            <div class="chapter-panel-body" id="chapterPanelBody">
+                <!-- 章节卡片会动态生成 -->
+            </div>
         </div>
         
         <!-- 输入区域 -->
@@ -159,6 +177,7 @@
     <script src="js/aigenerate/innermo.js"></script>
     <script src="js/story/progress.js"></script>
     <script src="js/ui.js"></script>
+    <script src="js/chapter-system.js"></script>
     <script src="js/ui-show.js"></script>
     <script src="js/music-fixed.js"></script>
     <script src="js/ambient-sound.js"></script>
@@ -337,8 +356,11 @@ async function handleInput() {
         errorEl.className = 'system-message';
         errorEl.style.cssText = 'background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); color: #c62828;';
         errorEl.textContent = errorMsg;
-        document.getElementById('chatContainer').appendChild(errorEl);
-        errorEl.scrollIntoView({ behavior: 'smooth' });
+        const chatContainer = document.querySelector('.chat-window.active') || document.getElementById('chatContainerIntro');
+        if (chatContainer) {
+            chatContainer.appendChild(errorEl);
+            errorEl.scrollIntoView({ behavior: 'smooth' });
+        }
     } finally {
         // 恢复输入框
         inputEl.disabled = false;

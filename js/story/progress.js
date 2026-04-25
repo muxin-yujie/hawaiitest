@@ -117,8 +117,15 @@ async function checkTertiaryVisitProgress(userInput, npcResponse) {
                 sendButton.style.cursor = "not-allowed";
             }
             
+            // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+            const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+            
+            if (!chatContainer) {
+                console.error('❌ 聊天容器未找到！');
+                return;
+            }
+            
             // 显示加载动画
-            const chatContainer = document.getElementById('chatContainer');
             const loadingMessage = document.createElement('div');
             loadingMessage.className = 'system-message';
             loadingMessage.id = 'transitionLoading';
@@ -166,7 +173,13 @@ async function checkCustomsProgress(userInput, npcResponse) {
     if (endCheck.shouldEnd && gameState.conversationCount >= 1 && !gameState.customsCompleted) {
         gameState.customsCompleted = true;
         
-        const chatContainer = document.getElementById('chatContainer');
+        // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+        const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+        
+        if (!chatContainer) {
+            console.error('❌ 聊天容器未找到！');
+            return;
+        }
         
         // 显示内心独白
         const innerThought = document.createElement('div');
@@ -413,8 +426,15 @@ async function checkEncounterProgress(userInput, npcResponse) {
             sendButton.style.cursor = "not-allowed";
         }
         
+        // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+        const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+        
+        if (!chatContainer) {
+            console.error('❌ 聊天容器未找到！');
+            return;
+        }
+        
         // 显示加载动画
-        const chatContainer = document.getElementById('chatContainer');
         const loadingMessage = document.createElement('div');
         loadingMessage.className = 'system-message';
         loadingMessage.id = 'transitionLoading';
@@ -473,8 +493,15 @@ async function checkMedalProgress(userInput, npcResponse) {
             sendButton.style.cursor = "not-allowed";
         }
         
+        // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+        const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+        
+        if (!chatContainer) {
+            console.error('❌ 聊天容器未找到！');
+            return;
+        }
+        
         // 显示加载动画
-        const chatContainer = document.getElementById('chatContainer');
         const loadingMessage = document.createElement('div');
         loadingMessage.className = 'system-message';
         loadingMessage.id = 'transitionLoading';

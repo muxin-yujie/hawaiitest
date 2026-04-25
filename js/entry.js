@@ -196,6 +196,14 @@ function startGameWithName(name) {
  * 调用者：submitName()
  */
 function initGame() {
+    // 直接开始新游戏
+    startNewGame();
+}
+
+/**
+ * 开始新游戏
+ */
+function startNewGame() {
     // 使用统一适配器初始化所有状态
     window.gameState = window.initUnifiedAdapter(window.gameState);
     
@@ -229,7 +237,14 @@ async function handleEndConversation() {
         return;
     }
     
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天容器未找到！');
+        return;
+    }
+    
     const endBtn = document.getElementById('endConversationBtn');
     
     // 禁用按钮防止重复点击

@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌺 language tour~ 阳光夏威夷 🌺</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 背景音乐 -->
+    <audio id="bgMusic1" preload="auto">
+        <source src="music/wave.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgMusic2" preload="auto">
+        <source src="music/ipanema.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bgMusic3" preload="auto">
+        <source src="music/red-blouse.mp3" type="audio/mpeg">
+    </audio>
+    
+    <!-- 环境音效 -->
+    <audio id="ambientOcean" loop preload="auto">
+        <source src="music/ocean-ambient.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="ambientAirport" loop preload="auto">
+        <source src="music/airport-ambient.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="ambientHotel" loop preload="auto">
+        <source src="music/hotel-ambient.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="ambientNature" loop preload="auto">
+        <source src="music/nature-ambient.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div id="nameSetupPage" class="setup-page" style="display: none;">
+        <div class="floating-elements">
+            <div class="floating-element">👒</div>
+            <div class="floating-element">🌊</div>
+            <div class="floating-element">🌸</div>
+            <div class="floating-element">🏄‍♀️</div>
+            <div class="floating-element">🌺</div>
+            <div class="floating-element">🌴</div>
+            <div class="floating-element">☀️</div>
+            <div class="floating-element">✨</div>
+            <div class="floating-element">🌞</div>
+            <div class="floating-element">🏖️</div>
+            <div class="floating-element">🌼</div>
+            <div class="floating-element">💫</div>
+        </div>
+        <div class="setup-container">
+            <div class="setup-header">
+                <h1>🌺 language tour~ 阳光夏威夷 🌺</h1>
+                <p>沉浸式英语学习文字冒险游戏</p>
+            </div>
+            <div class="setup-content">
+                <div class="welcome-message">
+                    <p>你准备好开启一段沉浸式英语学习之旅了吗？</p>
+                    <p>在这个游戏中，你将以一名 20 岁中国女大学生的身份，独自前往夏威夷体验风土人情，通过真实场景的对话来提升英语口语能力！</p>
+                </div>
+                <div class="name-input-section">
+                    <label for="nameInput">请输入你的姓名：</label>
+                    <input type="text" id="nameInput" placeholder="输入你的姓名...">
+                    <button id="nameSubmitBtn" onclick="submitName()">开始冒险</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gamePage" class="container" style="display: none;">
+        <div class="scene-header">
+            <!-- 右上角装饰 -->
+            <img src="pictures/language tour (18).png" alt="Top Right Decoration" 
+                 style="position: absolute; top: -9px; right: -18px; width: 104px; z-index: 1; pointer-events: none; opacity: 0.8;">
+            
+            <div class="scene-name" style="position: relative; z-index: 2;">
+                <span>✈️</span>
+                <span>檀香山国际机场</span>
+                <span>🌸</span>
+            </div>
+            <div class="user-menu" style="position: relative; z-index: 2; margin-right: 120px;">
+                <button class="user-menu-btn" onclick="toggleUserMenu()" 
+                        style="background: rgba(255,255,255,0.2); border: none; color: #fff; 
+                               padding: 8px 16px; border-radius: 25px; cursor: pointer; 
+                               font-size: 1em; display: flex; align-items: center; gap: 10px;
+                               transition: all 0.3s ease; backdrop-filter: blur(10px);
+                               box-shadow: 0 2px 8px rgba(255,255,255,0.1);">
+                    <span style="font-size: 1.2em;">👤</span>
+                    <span id="userName" style="font-weight: 600;">游客</span>
+                    <span style="font-size: 0.7em; margin-left: 4px;">▼</span>
+                </button>
+                
+                <!-- 用户菜单下拉内容 -->
+                <div id="userMenuDropdown" class="user-menu-content" 
+                     style="display: none; position: absolute; right: 0; top: 100%; 
+                            background: white; border-radius: 20px; 
+                            box-shadow: 0 8px 32px rgba(255,105,180,0.15);
+                            width: 360px; z-index: 1000; margin-top: 10px; overflow: hidden;
+                            animation: userMenuSlide 0.3s ease-out;
+                            border: 1px solid #ffe4ec;">
+                    
+                    <!-- 用户信息卡片 -->
+                    <div style="background: linear-gradient(135deg, #FFB6C1 0%, #FFC2D1 100%);
+                                padding: 14px; color: white; text-align: center;
+                                border-radius: 18px 18px 0 0;">
+                        <div style="font-size: 1.8em; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(255,255,255,0.3);">👤</div>
+                        <div id="menuUserName" style="font-size: 1.1em; font-weight: bold; margin-bottom: 3px;">游客</div>
+                        <div style="font-size: 0.7em; opacity: 0.9;">🌺 夏威夷之旅</div>
+                    </div>
+                    
+                    <!-- 功能说明 -->
+                    <div style="padding: 10px; border-top: 1px dashed #ffe4ec;">
+                        <div style="font-size: 0.75em; color: #ec407a; margin-bottom: 6px; font-weight: 700;">
+                            🎮 功能说明
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;">
+                            <div style="padding: 6px 3px; background: #fff; 
+                                        border-radius: 6px; font-size: 0.65em; text-align: center;
+                                        border: 1px solid #f5f5f5; cursor: pointer;"
+                                 onclick="showLocation()"
+                                 onmouseover="this.style.background='#fff5f8'; this.style.borderColor='#ffe4ec'; this.style.transform='translateY(-1px)'" 
+                                 onmouseout="this.style.background='#fff'; this.style.borderColor='#f5f5f5'; this.style.transform='translateY(0)'">
+                                <div style="font-size: 1.2em; margin-bottom: 2px;">📍</div>
+                                <div style="color: #666; font-weight: 700;">Location</div>
+                            </div>
+                            <div style="padding: 6px 3px; background: #fff; 
+                                        border-radius: 6px; font-size: 0.65em; text-align: center;
+                                        border: 1px solid #f5f5f5;"
+                                 onmouseover="this.style.background='#fff5f8'; this.style.borderColor='#ffe4ec'; this.style.transform='translateY(-1px)'" 
+                                 onmouseout="this.style.background='#fff'; this.style.borderColor='#f5f5f5'; this.style.transform='translateY(0)'">
+                                <div style="font-size: 1.2em; margin-bottom: 2px;">💕</div>
+                                <div style="color: #666; font-weight: 700;">Encounters</div>
+                            </div>
+                            <div style="padding: 6px 3px; background: #fff; 
+                                        border-radius: 6px; font-size: 0.65em; text-align: center;
+                                        border: 1px solid #f5f5f5;"
+                                 onmouseover="this.style.background='#fff5f8'; this.style.borderColor='#ffe4ec'; this.style.transform='translateY(-1px)'" 
+                                 onmouseout="this.style.background='#fff'; this.style.borderColor='#f5f5f5'; this.style.transform='translateY(0)'">
+                                <div style="font-size: 1.2em; margin-bottom: 2px;">📝</div>
+                                <div style="color: #666; font-weight: 700;">Notebook</div>
+                            </div>
+                            <div style="padding: 6px 3px; background: #fff; 
+                                        border-radius: 6px; font-size: 0.65em; text-align: center;
+                                        border: 1px solid #f5f5f5;"
+                                 onmouseover="this.style.background='#fff5f8'; this.style.borderColor='#ffe4ec'; this.style.transform='translateY(-1px)'" 
+                                 onmouseout="this.style.background='#fff'; this.style.borderColor='#f5f5f5'; this.style.transform='translateY(0)'">
+                                <div style="font-size: 1.2em; margin-bottom: 2px;">🏅</div>
+                                <div style="color: #666; font-weight: 700;">Medals</div>
+                            </div>
+                            <div style="padding: 6px 3px; background: #fff; 
+                                        border-radius: 6px; font-size: 0.65em; text-align: center;
+                                        border: 1px solid #f5f5f5;"
+                                 onmouseover="this.style.background='#fff5f8'; this.style.borderColor='#ffe4ec'; this.style.transform='translateY(-1px)'" 
+                                 onmouseout="this.style.background='#fff'; this.style.borderColor='#f5f5f5'; this.style.transform='translateY(0)'">
+                                <div style="font-size: 1.2em; margin-bottom: 2px;">🌿</div>
+                                <div style="color: #666; font-weight: 700;">Branches</div>
+                            </div>
+                            <div style="padding: 6px 3px; background: #fff; 
+                                        border-radius: 6px; font-size: 0.65em; text-align: center;
+                                        border: 1px solid #f5f5f5;"
+                                 onmouseover="this.style.background='#fff5f8'; this.style.borderColor='#ffe4ec'; this.style.transform='translateY(-1px)'" 
+                                 onmouseout="this.style.background='#fff'; this.style.borderColor='#f5f5f5'; this.style.transform='translateY(0)'">
+                                <div style="font-size: 1.2em; margin-bottom: 2px;">🎵</div>
+                                <div style="color: #666; font-weight: 700;">Music</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 帮助提示 -->
+                    <div style="padding: 6px 10px; background: #fff8e1; 
+                                border-top: 1px dashed #ffe0b2; font-size: 0.65em; color: #f57f17; text-align: center;">
+                        💡 按 <b>💡 Help</b> 获取帮助
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-container" id="chatContainer"></div>
+        
+        <div class="input-container">
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="请用英语回复，按 💡 获取帮助">
+                <button id="voiceInputBtn" onclick="toggleVoiceInput()" title="语音输入">🎤</button>
+                <button onclick="handleInput()">发送</button>
+                <!-- 结束对话按钮（2 轮后浮现） -->
+                <button id="endConversationBtn" class="end-conversation-btn" onclick="handleEndConversation()" style="display: none;" title="结束对话">
+                    🚪
+                </button>
+            </div>
+        </div>
+        
+        <div class="function-bar" style="position: relative;">
+            <!-- 左下角装饰 -->
+            <img src="./pictures/language tour (17).png" alt="Bottom Left Decoration" 
+                 style="position: absolute; bottom: 0px; left: 0px; width: 90px; z-index: 1; pointer-events: none; opacity: 0.8;">
+            
+            <button class="function-btn" onclick="showLocation()">
+                <span>📍</span>
+                <span>Location</span>
+            </button>
+            <button class="function-btn" onclick="showEncounters()">
+                <span>💕</span>
+                <span>Encounters</span>
+            </button>
+            <button class="function-btn" onclick="showNotebook()">
+                <span>📝</span>
+                <span>Notebook</span>
+            </button>
+            <button class="function-btn" onclick="showMedals()">
+                <span>🏅</span>
+                <span>Medals</span>
+            </button>
+            <button class="function-btn" onclick="showPhotos()">
+                <span>📸</span>
+                <span>Photos</span>
+            </button>
+            <button class="function-btn" onclick="showBranches()">
+                <span>🌿</span>
+                <span>Branches</span>
+            </button>
+            <button class="function-btn" onclick="toggleMusic()">
+                <span id="musicIcon">🎵</span>
+                <span id="musicText">Music</span>
+            </button>
+            <button class="function-btn" onclick="showHelpSuggestions()" title="获取回答建议">
+                <span>💡</span>
+                <span>Help</span>
+            </button>
+        </div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent">内容</div>
+        </div>
+    </div>
+    
+    <!-- 引入 JavaScript 文件 -->
+    <!-- 核心状态管理（必须最先加载！） -->
+    <script src="js/core.js"></script>
+    <!-- 错误处理模块 -->
+    <script src="js/utils/error-handler.js"></script>
+    <!-- 配置文件（游戏配置中心） -->
+    <script src="js/config/game-config.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/prompts/index.js"></script>
+    <script src="js/prompts/encounter.js"></script>
+    <script src="js/prompts/medal.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/modules/npc.js?v=3"></script>
+    <script src="js/aigenerate/ai.js"></script>
+    <script src="js/modules/help.js"></script>
+    <script src="js/aigenerate/Cclip.js"></script>
+    <script src="js/aigenerate/encounter.js"></script>
+    <script src="js/aigenerate/medal.js"></script>
+    <script src="js/aigenerate/invitation.js"></script>
+    <script src="js/aigenerate/innermo.js"></script>
+    <!-- 剧情进度检查模块 -->
+    <script src="js/story/progress.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/ui-show.js"></script>
+    <script src="js/music-fixed.js"></script>
+    <script src="js/ambient-sound.js"></script>
+    <script src="js/prompts/monologue.js"></script>
+    <!-- 游戏数据（必须在 game.js 之前加载） -->
+    <script src="js/data/itinerary.js"></script>
+    <script src="js/data/fixed-npcs.js"></script>
+    <script src="js/data/airport-npcs.js"></script>
+    <script src="js/data/airport-medals.js"></script>
+    <script src="js/data/waikiki-medals.js"></script>
+    <script src="js/data/luau-npcs.js"></script>
+    
+    <!-- 游戏逻辑 -->
+    <script src="js/game.js"></script>
+    <script src="js/game-cocktails.js"></script>
+    <script>
+        // 验证鸡尾酒模块是否加载成功
+        console.log("=== 鸡尾酒模块检查 ===");
+        console.log("showCocktailMenu:", window.showCocktailMenu);
+        console.log("showCocktailStory:", window.showCocktailStory);
+    </script>
+    
+    <script src="js/game-tests.js"></script>
+    
+
+<!-- 内联脚本：entry-adapted.js -->
+<script>
+// ========== 用户菜单控制 ==========
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userMenuDropdown');
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+        dropdown.style.display = 'block';
+        // 同步用户名
+        const userName = document.getElementById('userName').textContent;
+        const menuUserName = document.getElementById('menuUserName');
+        if (menuUserName) {
+            menuUserName.textContent = userName;
+        }
+    } else {
+        dropdown.style.display = 'none';
+    }
+}
+
+// 点击其他地方关闭菜单
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('userMenuDropdown');
+    const button = document.querySelector('.user-menu-btn');
+    
+    if (dropdown && !dropdown.contains(event.target) && !button.contains(event.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
+// ========== 游戏入口和场景调度模块 ==========
+// ✅ 全局变量已由 core.js 集中管理
+window.playerContext = GameCore.state.playerContext;
+
+
+// ============================================================================
+// 第 2 部分：场景函数（被调用的放在前面）
+// ============================================================================
+
+// 场景入口函数已移到 game.js：
+// - startCustomsScene() - 海关场景
+// - meetGuide() - 遇到导游
+
+// ============================================================================
+// 第 3 部分：剧情调度函数
+// ============================================================================
+
+/**
+ * 剧情进度检查
+ * 调用者：handleInput()
+ * 注意：实际实现在 game.js 中，包含所有阶段的处理逻辑
+ */
+// checkStoryProgress 函数已移到 game.js，包含海关、导游、邂逅等所有阶段的处理
+
+/**
+ * 处理用户输入（核心交互入口）
+ * 调用者：回车键事件监听器
+ * 
+ * 完整流程：
+ * 1. 显示玩家消息
+ * 2. 保存到对话历史
+ * 3. 清空输入框
+ * 4. 显示"NPC 正在思考..."
+ * 5. 获取 AI 回复（英文）
+ * 6. 翻译成中文
+ * 7. 移除加载提示
+ * 8. 显示 NPC 消息（英文 + 中文）
+ * 9. 保存到对话历史
+ * 10. 生成文化提示（90% 概率）
+ * 11. 对话计数 +1
+ * 12. 检查剧情进度
+ */
+async function handleInput() {
+    const inputEl = document.getElementById('userInput');
+    if (!inputEl) return;
+
+    const userInput = inputEl.value;
+    if (!userInput.trim()) return;
+    
+    if (!gameState.currentNpc && gameState.storyPhase === "test") {
+        alert("当前没有可以对话的 NPC。请刷新页面或开始新游戏！");
+        return;
+    }
+    
+    // 显示玩家消息
+    displayPlayerMessage(userInput);
+    
+    // 保存到对话历史
+    gameState.conversationHistory.push({ role: "user", content: userInput });
+    
+    // 同时保存到当前 NPC 的对话历史（用于邀约系统）
+    if (gameState.currentNpc && gameState.storyPhase === "encounter") {
+        const npcEncounter = gameState.encounters.find(e => e.name === gameState.currentNpc);
+        if (npcEncounter) {
+            if (!npcEncounter.chatHistory) {
+                npcEncounter.chatHistory = [];
+            }
+            npcEncounter.chatHistory.push({ role: "user", content: userInput });
+        }
+    }
+    
+    // 清空输入框
+    inputEl.value = '';
+    
+    // 显示加载提示
+    displayLoadingMessage(gameState.currentNpc);
+    
+    // 获取 AI 回复（英文）
+    const npcResponse = await getAIResponse(userInput, gameState.currentNpc, gameState.conversationHistory);
+    
+    // 翻译成中文
+    const translation = await translateToChinese(npcResponse);
+    
+    // 移除加载提示
+    removeLoadingMessage();
+    
+    // 显示 NPC 消息（英文 + 中文翻译）
+    displayNPCMessage(gameState.currentNpc, npcResponse, translation);
+    
+    // 保存到对话历史
+    gameState.conversationHistory.push({ role: "assistant", content: npcResponse });
+    
+    // 同时保存到当前 NPC 的对话历史（用于邀约系统）
+    if (gameState.currentNpc && gameState.storyPhase === "encounter") {
+        const npcEncounter = gameState.encounters.find(e => e.name === gameState.currentNpc);
+        if (npcEncounter) {
+            if (!npcEncounter.chatHistory) {
+                npcEncounter.chatHistory = [];
+            }
+            npcEncounter.chatHistory.push({ role: "assistant", content: npcResponse });
+        }
+    }
+    
+    // 90% 概率生成文化提示
+    if (Math.random() < 0.9) {
+        await generateAICultureTip(gameState.currentPrimaryLocation, npcResponse);
+    }
+    
+    // 对话计数 +1
+    gameState.conversationCount = (gameState.conversationCount || 0) + 1;
+    
+    // 调试日志
+    console.log("对话计数:", gameState.conversationCount, "当前阶段:", gameState.storyPhase);
+    console.log("准备检查进度 - 玩家输入:", userInput, "NPC 回复:", npcResponse);
+    
+    // 检查剧情进度
+    await checkStoryProgress(userInput, npcResponse);
+}
+
+
+// ============================================================================
+// 第 4 部分：游戏入口函数
+// ============================================================================
+
+/**
+ * 提交玩家姓名（真正的游戏入口）
+ * 调用者：HTML 按钮点击 / window.submitName
+ */
+function submitName() {
+    const nameInput = document.getElementById('nameInput');
+    const name = nameInput.value.trim();
+    
+    if (name) {
+        startGameWithName(name);
+    } else {
+        alert('请输入你的姓名');
+    }
+}
+
+/**
+ * 从 URL 参数读取名字（如果有的话）
+ */
+function checkURLForName() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const name = urlParams.get('name');
+    
+    if (name) {
+        // 有名字参数，直接开始游戏
+        startGameWithName(name);
+    } else {
+        // 没有名字参数，显示名字输入页面
+        document.getElementById('nameSetupPage').style.display = 'flex';
+    }
+}
+
+/**
+ * 使用名字开始游戏
+ */
+function startGameWithName(name) {
+    // 检查 gameState 是否存在
+    if (typeof gameState === 'undefined') {
+        console.error('gameState 未定义！请确保 game.js 已加载');
+        alert('游戏初始化失败，请刷新页面重试');
+        return;
+    }
+    
+    gameState.player.name = name;
+    document.getElementById('userName').textContent = name;
+    document.getElementById('nameSetupPage').style.display = 'none';
+    document.getElementById('gamePage').style.display = 'flex';
+    initGame();
+}
+
+/**
+ * 游戏初始化
+ * 调用者：submitName()
+ */
+function initGame() {
+    // 初始化游戏状态
+    gameState.locations = [];
+    gameState.encounters = [];
+    gameState.notebook = [];
+    gameState.medals = [];
+    gameState.branches = [];
+    gameState.completedTasks = [];
+    gameState.storyPhase = "customs";
+    gameState.currentItineraryIndex = 0;
+    gameState.itinerary = [];
+    gameState.dynamicNpcRoles = {};
+    
+    // 初始化事件触发锁，防止重复触发
+    gameState.medalTriggered = false;
+    gameState.koaEncounterTriggered = false;
+    gameState.airportEventTriggered = false;
+    gameState.luauEncounterTriggered = false;
+    
+    startCustomsScene();
+}
+
+
+// ============================================================================
+// 第 5 部分：全局暴露
+// ============================================================================
+
+window.submitName = submitName;
+window.handleInput = handleInput;
+
+// 页面加载时检查 URL 参数
+document.addEventListener('DOMContentLoaded', function() {
+    checkURLForName();
+});
+
+window.onclick = function(event) {
+    const modal = document.getElementById('modal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+
+// ============================================================================
+// 第 6 部分：事件监听器（最后执行）
+// ============================================================================
+
+// 初始化 UI 特效
+initRippleEffect();
+
+// 检查 localStorage 中是否有保存的 API Key
+(function checkSavedAPIKey() {
+    const savedApiKey = localStorage.getItem('hawaii_game_api_key');
+    if (savedApiKey) {
+        console.log('✓ 已加载保存的 API Key');
+        window.CUSTOM_API_KEY = savedApiKey;
+        window.USE_DEVELOPER_API = false;
+    } else {
+        console.log('ℹ️ 未找到保存的 API Key，将使用默认配置');
+    }
+})();
+
+// 回车键发送消息
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        handleInput();
+    }
+});
+
+// ========== 语音输入功能 ==========
+let recognition = null;
+let isListening = false;
+let permissionChecked = false;  // 标记是否已检查过权限
+
+/**
+ * 检查并请求麦克风权限（只在页面加载时请求一次）
+ */
+async function checkMicrophonePermission() {
+    if (permissionChecked) return true;
+    
+    try {
+        // 使用 getUserMedia 请求一次权限
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        
+        // 立即停止流，我们只需要权限
+        stream.getTracks().forEach(track => track.stop());
+        
+        permissionChecked = true;
+        console.log('✅ 麦克风权限已授予');
+        return true;
+    } catch (error) {
+        console.error('❌ 麦克风权限请求失败:', error);
+        permissionChecked = false;
+        return false;
+    }
+}
+
+/**
+ * 初始化语音识别
+ */
+function initSpeechRecognition() {
+    if (recognition) return recognition;
+    
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        return null;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    
+    // 设置识别语言为英语
+    recognition.lang = 'en-US';
+    recognition.continuous = true;  // 持续监听，不自动停止
+    recognition.interimResults = true;
+    
+    // 标记是否首次启动（用于权限管理）
+    recognition.isFirstStart = true;
+    
+    recognition.onresult = function(event) {
+        const transcript = Array.from(event.results)
+            .map(result => result[0].transcript)
+            .join('');
+        
+        // 实时更新输入框
+        document.getElementById('userInput').value = transcript;
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('语音识别错误:', event.error);
+        let errorMsg = '语音识别失败';
+        
+        switch(event.error) {
+            case 'no-speech':
+                errorMsg = '未检测到语音，请重试';
+                break;
+            case 'audio-capture':
+                errorMsg = '无法访问麦克风';
+                break;
+            case 'not-allowed':
+                errorMsg = '麦克风权限被拒绝，请在浏览器设置中允许麦克风权限';
+                isListening = false;
+                permissionChecked = false;
+                break;
+            case 'network':
+                errorMsg = '网络错误，请检查连接';
+                break;
+        }
+        
+        showVoiceStatus(errorMsg, '⚠️');
+        // 不要调用 stopVoiceInput()，让 recognition 继续保持
+    };
+    
+    recognition.onend = function() {
+        console.log('语音识别已停止');
+        // 重要：onend 触发后，如果要继续使用，需要重新启动
+        // 但不要自动重启，等待用户再次点击按钮
+        if (isListening && !recognition.manuallyStopped) {
+            // 如果是意外停止，尝试重启（但这样会重新请求权限，所以不推荐）
+            // 更好的做法是让用户手动再次点击按钮
+            isListening = false;
+            const voiceBtn = document.getElementById('voiceInputBtn');
+            if (voiceBtn) {
+                voiceBtn.classList.remove('listening');
+            }
+        }
+        recognition.manuallyStopped = false;  // 重置标志
+    };
+    
+    return recognition;
+}
+
+/**
+ * 切换语音输入状态
+ */
+async function toggleVoiceInput() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        showVoiceStatus('您的浏览器不支持语音输入', '❌');
+        return;
+    }
+
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    
+    if (isListening) {
+        // 停止录音（但不销毁 recognition）
+        stopVoiceInput();
+    } else {
+        // 先检查权限（只在第一次弹窗）
+        const hasPermission = await checkMicrophonePermission();
+        if (!hasPermission) {
+            showVoiceStatus('麦克风权限被拒绝', '❌');
+            return;
+        }
+        
+        // 开始录音
+        startVoiceInput();
+    }
+}
+
+// 注意：Web Speech API 的权限机制
+// 即使我们优化了代码，浏览器每次调用 start() 时仍可能显示权限提示
+// 这是浏览器的安全策略，无法完全绕过
+// 但通过保持 recognition 对象复用，可以减少权限提示频率
+
+/**
+ * 开始语音输入
+ */
+async function startVoiceInput() {
+    if (isListening) return;
+    
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    
+    // 初始化语音识别（只在第一次）
+    if (!recognition) {
+        recognition = initSpeechRecognition();
+        if (!recognition) {
+            showVoiceStatus('您的浏览器不支持语音输入', '❌');
+            return;
+        }
+    }
+    
+    // 关键：在调用 recognition.start() 之前，先确保有一个活跃的音频流
+    // 这样可以避免浏览器每次都重新请求权限
+    try {
+        console.log('=== 开始语音输入调试 ===');
+        console.log('persistentAudioStream 存在吗？', !!window.persistentAudioStream);
+        
+        // 第一次请求麦克风权限并创建音频流
+        if (!window.persistentAudioStream) {
+            console.log('正在创建持久化音频流...');
+            window.persistentAudioStream = await navigator.mediaDevices.getUserMedia({ 
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                } 
+            });
+            console.log('✅ 创建了持久化音频流（只需授权一次）');
+        } else {
+            console.log('✅ 复用已有音频流，不会弹窗！');
+        }
+        
+        // 现在启动 recognition，浏览器会使用已有的音频流，不会再次请求权限
+        voiceBtn.classList.add('listening');
+        showVoiceStatus('正在听，请说英语...', '🎤');
+        recognition.start();
+        isListening = true;
+        console.log('语音输入已启动（复用音频流）');
+    } catch(e) {
+        console.error('启动语音识别失败:', e);
+        showVoiceStatus('启动失败，请重试', '⚠️');
+        isListening = false;
+        voiceBtn.classList.remove('listening');
+    }
+}
+
+/**
+ * 停止语音输入
+ */
+function stopVoiceInput() {
+    if (!isListening) return;
+    
+    const voiceBtn = document.getElementById('voiceInputBtn');
+    voiceBtn.classList.remove('listening');
+    
+    if (recognition) {
+        try {
+            recognition.manuallyStopped = true;  // 标记为手动停止
+            recognition.stop();
+            console.log('语音输入已手动停止');
+        } catch(e) {
+            console.log('语音识别已停止');
+        }
+    }
+    
+    isListening = false;
+    
+    // 只停止录音，不自动发送
+    // 用户可以继续编辑输入框的内容，然后按回车或点击发送按钮
+    showVoiceStatus('录音已停止，按回车键发送', '✅');
+    
+    // 延迟隐藏状态提示
+    setTimeout(() => {
+        hideVoiceStatus();
+    }, 1500);
+}
+
+/**
+ * 显示语音输入状态提示
+ */
+function showVoiceStatus(message, icon) {
+    // 移除已存在的状态提示
+    const existingStatus = document.querySelector('.voice-input-status');
+    if (existingStatus) {
+        existingStatus.remove();
+    }
+    
+    const statusEl = document.createElement('div');
+    statusEl.className = 'voice-input-status';
+    statusEl.innerHTML = `
+        <span class="mic-icon">${icon}</span>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(statusEl);
+    
+    // 3 秒后自动隐藏（如果是错误提示）
+    if (icon === '❌' || icon === '⚠️') {
+        setTimeout(() => {
+            hideVoiceStatus();
+        }, 3000);
+    }
+}
+
+/**
+ * 隐藏语音输入状态提示
+ */
+function hideVoiceStatus() {
+    const statusEl = document.querySelector('.voice-input-status');
+    if (statusEl) {
+        statusEl.classList.add('hide');
+        setTimeout(() => {
+            statusEl.remove();
+        }, 300);
+    }
+}
+
+// 暴露到全局作用域
+window.toggleVoiceInput = toggleVoiceInput;
+
+
+// ============================================================================
+// 第 7 部分：加载日志
+// ============================================================================
+
+console.log("游戏入口模块已加载 ✓");
+
+</script>
+</body>
+</html>

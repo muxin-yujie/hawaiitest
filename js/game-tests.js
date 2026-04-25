@@ -6,7 +6,14 @@ window.testConfetti = function() {
     console.log("=== 测试撒花特效 ===");
     showConfetti();
     
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天窗口未找到！');
+        return;
+    }
+    
     const testMessage = document.createElement('div');
     testMessage.className = 'system-message';
     testMessage.innerHTML = `
@@ -28,7 +35,14 @@ window.testGoToBeach = async function() {
     gameState.storyPhase = "guide";
     gameState.conversationCount = 0;
     
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天窗口未找到！');
+        return;
+    }
+    
     chatContainer.innerHTML = '';
     
     // 显示测试标题
@@ -67,7 +81,14 @@ window.testAirportEncounter = async function() {
     gameState.conversationHistory = [];
     gameState.conversationCount = 0;
     
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天窗口未找到！');
+        return;
+    }
+    
     chatContainer.innerHTML = '';
     
     // 显示测试标题
@@ -140,7 +161,14 @@ window.testAirportMedal = async function() {
     gameState.storyPhase = "test";
     gameState.conversationCount = 0;
     
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天窗口未找到！');
+        return;
+    }
+    
     chatContainer.innerHTML = '';
     
     // 显示测试标题
@@ -164,7 +192,14 @@ window.testAirportMedal = async function() {
 window.testHotel = async function() {
     console.log("=== 开始测试酒店部分 ===");
     
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天窗口未找到！');
+        return;
+    }
+    
     chatContainer.innerHTML = '';
     
     // 初始化游戏状态
@@ -255,10 +290,12 @@ window.testGuide = async function() {
     gameState.conversationHistory = [];
     gameState.conversationCount = 0;
     
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
     if (!chatContainer) {
-        console.error('❌ chatContainer 未找到！');
-        alert('错误：chatContainer 未找到');
+        console.error('❌ 聊天窗口未找到！');
+        alert('错误：聊天窗口未找到，请确保游戏已初始化');
         return;
     }
     
@@ -298,7 +335,14 @@ window.testGuide = async function() {
 window.testKoaInvitation = async function() {
     console.log("=== 开始测试 Koa 邀请 ===");
     
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天窗口未找到！');
+        return;
+    }
+    
     chatContainer.innerHTML = '';
     
     // 初始化游戏状态
@@ -374,7 +418,14 @@ window.testLuauEncounter = async function() {
         gameState.photoGallery = [];
     }
     
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+    
+    if (!chatContainer) {
+        console.error('❌ 聊天窗口未找到！');
+        return;
+    }
+    
     chatContainer.innerHTML = '';
     
     // 显示测试标题

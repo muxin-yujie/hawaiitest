@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿// ========== 1. 游戏开场流程 ==========
 
 // 预加载所有图片，避免显示时卡顿
 function preloadImages() {
@@ -141,9 +141,10 @@ async function meetGuide() {
  * @param {string} description - 图片描述
  */
 function 显示照片 (imageUrl, title = '', description = '') {
-    const chatContainer = document.getElementById('chatContainer');
+    // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     if (!chatContainer) {
-        console.error('显示照片：chatContainer 未找到');
+        console.error('显示照片：聊天窗口未找到');
         return;
     }
     
@@ -256,6 +257,19 @@ async function generateItinerary() {
 
 // 去酒店
 async function goToHotel() {
+    // 解锁 Chapter 1（Day1）
+    if (typeof gameChapters !== 'undefined' && gameChapters[1]) {
+        gameChapters[1].unlocked = true;
+        console.log("✅ Chapter 1 已解锁");
+    }
+    
+    // 切换到 Chapter 1（Day1）
+    if (typeof switchToChapter === 'function') {
+        switchToChapter(1, () => {
+            console.log("✅ 已切换到 Chapter 1（Day1）");
+        });
+    }
+    
     const primaryName = gameState.currentPrimaryLocationData.name;
     const primaryEmoji = gameState.currentPrimaryLocationData.emoji;
     const primaryDesc = gameState.currentPrimaryLocationData.description;
@@ -290,6 +304,19 @@ async function goToHotel() {
 }
 
 async function goToBeachFirst() {
+    // 解锁 Chapter 1（Day1）
+    if (typeof gameChapters !== 'undefined' && gameChapters[1]) {
+        gameChapters[1].unlocked = true;
+        console.log("✅ Chapter 1 已解锁");
+    }
+    
+    // 切换到 Chapter 1（Day1）
+    if (typeof switchToChapter === 'function') {
+        switchToChapter(1, () => {
+            console.log("✅ 已切换到 Chapter 1（Day1）");
+        });
+    }
+    
     addPrimaryLocation(gameState.currentPrimaryLocationData.name, gameState.currentPrimaryLocationData.emoji, gameState.currentPrimaryLocationData.description);
     
     const beachLocation = gameState.secondaryLocationsPerPrimary[0][1];
@@ -555,8 +582,15 @@ async function controlDukesDate(userInput, npcResponse) {
                 sendButton.style.cursor = "not-allowed";
             }
             
+            // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+            const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+            
+            if (!chatContainer) {
+                console.error('❌ 聊天容器未找到！');
+                return;
+            }
+            
             // 显示加载动画
-            const chatContainer = document.getElementById('chatContainer');
             const loadingMessage = document.createElement('div');
             loadingMessage.className = 'system-message';
             loadingMessage.id = 'transitionLoading';
@@ -724,8 +758,15 @@ async function returnToHotelRoom() {
             locationContent = '<div style="margin-bottom: 15px;"><span style="font-size: 1em; color: rgba(255,255,255,0.95);">你在酒店附近悠闲地度过了第一天</span></div>';
         }
         
+        // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+        const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+        
+        if (!chatContainer) {
+            console.error('❌ 聊天容器未找到！');
+            return;
+        }
+        
         // 显示合并的卡片
-        const chatContainer = document.getElementById('chatContainer');
         const mergedCard = document.createElement('div');
         mergedCard.className = 'system-message';
         mergedCard.style.cssText = `
@@ -948,8 +989,15 @@ async function declineLuauInvitation() {
                 你在海滩边漫步，享受着温暖的海风和美丽的景色...
             </span>
         `;
-        const chatContainer = document.getElementById('chatContainer');
-        chatContainer.appendChild(arrivalMessage);
+        
+        // 使用统一的 getChatContainer 函数获取当前激活的聊天窗口
+        const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
+        
+        if (chatContainer) {
+            chatContainer.appendChild(arrivalMessage);
+        } else {
+            console.error('❌ 聊天容器未找到！');
+        }
         
         // 直接在海边遇到 Koa（跳过冲浪店和 Maya）
         // 防止重复触发 Koa 邂逅
@@ -1121,7 +1169,7 @@ window.closeCocktailPopup = function() {
 };
 
 window.showCocktailMenu = function() {
-    const chatContainer = document.getElementById('chatContainer');
+    const chatContainer = window.getChatContainer ? window.getChatContainer() : document.querySelector('.chat-window.active');
     
     // 检查是否已经添加过鸡尾酒菜单到 notebook
     const hasCocktailNotebook = gameState.notebook && gameState.notebook.some(note => 
