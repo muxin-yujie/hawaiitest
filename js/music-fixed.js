@@ -129,6 +129,9 @@ function playTrack(index, musicIcon, musicText, musicBtn) {
     // 降低音量到 20%，避免太大声
     const targetVolume = 0.2;
     
+    // 设置循环播放
+    currentAudio.loop = true;
+    
     // 预加载音频
     currentAudio.preload = 'auto';
     currentAudio.load();
