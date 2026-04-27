@@ -507,6 +507,13 @@ function initGame() {
     gameState.airportEventTriggered = false;
     gameState.luauEncounterTriggered = false;
     
+    // 自动开始播放音乐（用户已点击提交名字，满足浏览器自动播放策略）
+    if (typeof toggleMusic === 'function') {
+        setTimeout(() => {
+            toggleMusic();
+        }, 500);
+    }
+    
     startCustomsScene();
 }
 
