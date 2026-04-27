@@ -289,20 +289,20 @@ function showLocation() {
                                     'linear-gradient(135deg, #ffc3d9 0%, #a8e6ff 100%)';
                     
                     content += `
-                        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.3s ease; border: 3px solid #FF69B4; display: flex; flex-direction: column;" 
+                        <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.3s ease; border: 3px solid #FF69B4; display: flex; flex-direction: column; min-height: 280px;" 
                              onmouseover="this.style.transform='scale(1.05)'" 
                              onmouseout="this.style.transform='scale(1)'">
-                            <div style="position: relative; width: 100%;">
+                            <div style="position: relative; width: 100%; flex: 1; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
                                 <img src="${photo.src}" alt="${photo.name}" 
-                                     style="width: 100%; height: auto; display: block;"
-                                     onload="this.parentElement.style.aspectRatio = this.naturalWidth / this.naturalHeight">
+                                     style="max-width: 100%; max-height: 220px; object-fit: contain; display: block;"
+                                     onload="this.style.maxHeight = Math.min(220, this.naturalHeight) + 'px'">
                             </div>
-                            <div style="padding: 10px 12px; background: ${gradient}; border-top: 1px solid rgba(255,255,255,0.5);">
-                                <div style="text-align: center; font-weight: 600; font-size: 0.95em; color: #6a1b9a; margin-bottom: 5px;">
+                            <div style="padding: 12px; background: ${gradient}; border-top: 1px solid rgba(255,255,255,0.5); flex-shrink: 0;">
+                                <div style="text-align: center; font-weight: 600; font-size: 0.95em; color: #6a1b9a; margin-bottom: 6px; min-height: 40px; display: flex; align-items: center; justify-content: center;">
                                     ${photo.emoji || '📸'} ${photo.name || photo.nameChinese || '照片'}
                                 </div>
                                 ${photo.location ? `
-                                <div style="text-align: center; font-size: 0.8em; color: #666;">
+                                <div style="text-align: center; font-size: 0.8em; color: #666; margin-top: 4px;">
                                     📍 ${photo.location}
                                 </div>
                                 ` : ''}
