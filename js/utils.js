@@ -5,8 +5,19 @@
  * @returns {HTMLElement} 当前章节对应的 chatContainer 元素
  */
 function getChatContainer() {
-    // 根据游戏状态中的章节索引，而不是当前激活的窗口
-    // 这样玩家随便点哪个窗口都不影响，剧情总是发送到正确的窗口
+    // 检查是否是 PC 端（没有章节系统）
+    const isPC = !document.getElementById('chatContainerIntro') && 
+                 !document.getElementById('chatContainerDay1');
+    
+    // PC 端直接使用 chatContainer
+    if (isPC) {
+        const pcContainer = document.getElementById('chatContainer');
+        if (pcContainer) {
+            return pcContainer;
+        }
+    }
+    
+    // 移动端使用章节系统
     const currentChapter = window.currentChapter || window.ChapterManager?.getCurrentChapter() || 0;
     
     const windowMap = ['Intro', 'Day1'];
@@ -16,8 +27,8 @@ function getChatContainer() {
     
     if (!container) {
         console.error(`❌ 聊天窗口未找到：${windowId}`);
-        // 如果找不到，返回默认的 Intro 窗口
-        return document.getElementById('chatContainerIntro');
+        // 如果找不到，尝试返回 PC 端的 chatContainer
+        return document.getElementById('chatContainer');
     }
     
     return container;
